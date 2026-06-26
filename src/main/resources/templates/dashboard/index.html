@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vacapp — Panel de control</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Guard: redirige a login si no hay token JWT
+        if (!sessionStorage.getItem('vacapp_token')) {
+            window.location.replace('/login');
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4"> 
+    <h1 class="text-3xl font-bold text-gray-900">Bienvenido al Panel de Control de Vacapp</h1>  
+</body>
+</html>
