@@ -79,3 +79,12 @@ AGENTS.md                            ← Este archivo (raíz, leído por todos l
 2. Usa `/crear-modulo` para generar el scaffolding completo de un nuevo módulo (ej. `salud`, `reproductivo`).
 3. Usa `/crear-feature` para añadir un caso de uso a un módulo existente.
 4. Siempre revisa y ajusta el código generado antes de hacer commit.
+
+## Frontend (Vistas Web)
+
+- **Motor de plantillas**: Thymeleaf — archivos en `src/main/resources/templates/`.
+- **Estilos**: Tailwind CSS vía CDN (en desarrollo); para producción generar el CSS compilado en `src/main/resources/static/css/`.
+- **Estructura de vistas**: Cada vista/página estará compuesta de forma acoplada por su archivo HTML y su CSS, siguiendo estas reglas estrictas:
+  - **JavaScript integrado**: Todo el código JavaScript de una vista debe estar **dentro del mismo archivo HTML** (utilizando la etiqueta `<script>`). **No** se debe crear una carpeta `js/` ni archivos `.js` independientes por cada vista.
+  - **CSS independiente**: El archivo CSS sí puede mantenerse por separado o compilado según las necesidades de producción.
+- **Estructura de templates**:

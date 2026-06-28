@@ -1,18 +1,152 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vacapp — Panel de control</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/global.css}" />
+    <link rel="stylesheet" th:href="@{/css/navbard.css}" />
+    <link rel="stylesheet" th:href="@{/css/sidebard.css}" />
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
+  </head>
+  <body>
+    <div class="dashboard-shell">
+      <div th:replace="~{fragments/sidebard :: sidebar}"></div>
+      <div class="dashboard-main">
+        <div th:replace="~{fragments/navbard :: navbar}"></div>
+        <main class="dashboard-content">
+          <section class="page-header">
+            <div>
+              <p class="page-overline">Tablero central</p>
+              <h1 class="page-title">Bienvenido a Vacapp</h1>
+              <p class="page-subtitle">
+                Controla tu rancho, inventario y ciclo reproductivo desde un
+                solo lugar.
+              </p>
+            </div>
+          </section>
+
+          <section class="dashboard-grid">
+            <article class="card-panel">
+              <h2 class="card-title">Resúmenes rápidos</h2>
+              <p class="card-copy">
+                Revisa las métricas clave de tu ganado, vacunas y ventas
+                recientes.
+              </p>
+            </article>
+            <article class="card-panel">
+              <h2 class="card-title">Inventario</h2>
+              <p class="card-copy">
+                Activos, insumos y stock centralizados en un solo panel.
+              </p>
+            </article>
+            <article class="card-panel">
+              <h2 class="card-title">Ciclo reproductivo</h2>
+              <p class="card-copy">
+                Supervisa el estado de la reproducción y próximos eventos.
+              </p>
+            </article>
+            <article class="card-panel">
+              <h2 class="card-title">Ventas y compras</h2>
+              <p class="card-copy">
+                Registra transacciones y controla el flujo de caja.
+              </p>
+            </article>
+          </section>
+        </main>
+      </div>
+    </div>
+
     <script>
-        // Guard: redirige a login si no hay token JWT
-        if (!sessionStorage.getItem('vacapp_token')) {
-            window.location.replace('/login');
+      const token = sessionStorage.getItem("vacapp_token");
+
+      if (!token) {
+        window.location.replace("/login");
+      } else {
+        fetch("/api/v1/auth/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("No autorizado");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            const usernameNode = document.getElementById("navbar-username");
+            if (usernameNode) {
+              usernameNode.textContent = data.username || "Usuario";
+            }
+          })
+          .catch(() => {
+            sessionStorage.removeItem("vacapp_token");
+            window.location.replace("/login");
+          });
+      }
+
+      (function () {
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("sidebarOverlay");
+        const hambBtn = document.getElementById("hambBtn");
+        const toggleBtn = document.getElementById("sidebarToggle");
+        const dashboardShell = document.querySelector(".dashboard-shell");
+
+        function openDrawer() {
+          sidebar.classList.add("open");
+          overlay.classList.add("open");
+          document.body.style.overflow = "hidden";
         }
+
+        function closeDrawer() {
+          sidebar.classList.remove("open");
+          overlay.classList.remove("open");
+          document.body.style.overflow = "";
+        }
+
+        if (hambBtn) {
+          hambBtn.addEventListener("click", function () {
+            sidebar.classList.contains("open") ? closeDrawer() : openDrawer();
+          });
+        }
+
+        if (overlay) {
+          overlay.addEventListener("click", closeDrawer);
+        }
+
+        if (toggleBtn) {
+          toggleBtn.addEventListener("click", function () {
+            const isCollapsed = sidebar.classList.toggle("collapsed");
+            if (dashboardShell) {
+              dashboardShell.classList.toggle("sidebar-collapsed", isCollapsed);
+            }
+
+            const label = this.querySelector(".sidebar-toggle-label");
+            if (label) {
+              label.textContent = isCollapsed ? "Expandir" : "Ocultar";
+            }
+            this.setAttribute(
+              "aria-label",
+              isCollapsed ? "Expandir sidebar" : "Ocultar sidebar",
+            );
+          });
+        }
+
+        const mq = window.matchMedia("(max-width: 767px)");
+        mq.addEventListener("change", function (e) {
+          if (!e.matches) {
+            closeDrawer();
+          } else {
+            sidebar.classList.remove("collapsed");
+          }
+        });
+      })();
+
+      function cerrarSesion() {
+        sessionStorage.removeItem("vacapp_token");
+        window.location.replace("/login");
+      }
     </script>
-</head>
-<body class="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4"> 
-    <h1 class="text-3xl font-bold text-gray-900">Bienvenido al Panel de Control de Vacapp</h1>  
-</body>
+  </body>
 </html>

@@ -6,14 +6,18 @@ import com.vacapp.usuarios.domain.models.Usuario;
 import com.vacapp.usuarios.presentation.dtos.LoginRequest;
 import com.vacapp.usuarios.presentation.dtos.LoginResponse;
 import com.vacapp.usuarios.presentation.dtos.RegistroRequest;
+import com.vacapp.usuarios.presentation.dtos.UsuarioActualResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.security.Principal;
 
 /**
  * Controlador REST para autenticación y registro de usuarios.
@@ -35,6 +39,14 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse respuesta = autenticarUsuarioUseCase.ejecutar(request);
         return ResponseEntity.ok(respuesta);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioActualResponse> obtenerUsuarioActual(Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(new UsuarioActualResponse(principal.getName()));
     }
 
     /**

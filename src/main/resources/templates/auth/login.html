@@ -1,146 +1,497 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vacapp — Iniciar sesión</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&family=Playfair+Display:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" th:href="@{/css/global.css}" />
+    <link rel="stylesheet" th:href="@{/css/login.css}" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" th:href="@{/favicon.ico}" />
+  </head>
+  <body>
+    <button id="btn-tema" class="theme-btn" aria-label="Cambiar tema">
+      <svg
+        id="icono-sol"
+        class="theme-icon"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"
+        />
+      </svg>
+      <svg
+        id="icono-luna"
+        class="theme-icon"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+        />
+      </svg>
+      <span id="tema-label">Modo oscuro</span>
+    </button>
 
-    <div class="w-full max-w-md">
+    <div class="card">
+      <!-- ── LEFT PANEL ── -->
+      <div class="panel-left">
+        <svg
+          class="topo-bg"
+          viewBox="0 0 400 560"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="xMidYMid slice"
+          aria-hidden="true"
+        >
+          <path
+            d="M-40 180 Q60 120 140 180 Q220 240 300 170 Q380 100 440 160"
+            stroke="white"
+            stroke-width="1.2"
+            fill="none"
+            opacity="0.8"
+          />
+          <path
+            d="M-40 210 Q70 145 155 210 Q240 275 325 200 Q410 125 460 190"
+            stroke="white"
+            stroke-width="1"
+            fill="none"
+            opacity="0.7"
+          />
+          <path
+            d="M-40 240 Q80 170 170 240 Q260 310 350 230 Q440 150 480 220"
+            stroke="white"
+            stroke-width="0.8"
+            fill="none"
+            opacity="0.6"
+          />
+          <path
+            d="M-40 270 Q90 195 185 270 Q280 345 375 260 Q470 175 500 250"
+            stroke="white"
+            stroke-width="0.6"
+            fill="none"
+            opacity="0.5"
+          />
+          <path
+            d="M-40 300 Q100 220 200 300 Q300 380 400 290 Q500 200 530 280"
+            stroke="white"
+            stroke-width="0.5"
+            fill="none"
+            opacity="0.4"
+          />
+          <path
+            d="M-40 140 Q50 90 120 140 Q190 190 260 130 Q330 70 400 120"
+            stroke="white"
+            stroke-width="1"
+            fill="none"
+            opacity="0.6"
+          />
+          <path
+            d="M-40 110 Q40 65 100 110 Q160 155 220 100 Q280 45 340 90 Q400 135 450 90"
+            stroke="white"
+            stroke-width="0.7"
+            fill="none"
+            opacity="0.5"
+          />
+          <path
+            d="M-40 380 Q80 320 180 380 Q280 440 360 380 Q440 320 500 370"
+            stroke="white"
+            stroke-width="0.8"
+            fill="none"
+            opacity="0.4"
+          />
+          <path
+            d="M-40 420 Q90 355 195 420 Q300 485 385 415 Q470 345 520 410"
+            stroke="white"
+            stroke-width="0.6"
+            fill="none"
+            opacity="0.3"
+          />
+          <path
+            d="M100 0 Q120 80 100 160 Q80 240 110 320 Q140 400 110 480 Q80 560 100 600"
+            stroke="white"
+            stroke-width="0.8"
+            fill="none"
+            opacity="0.5"
+          />
+          <path
+            d="M160 0 Q185 90 160 180 Q135 270 165 360 Q195 450 165 540 Q135 630 160 700"
+            stroke="white"
+            stroke-width="0.6"
+            fill="none"
+            opacity="0.4"
+          />
+          <circle
+            cx="200"
+            cy="220"
+            r="60"
+            stroke="white"
+            stroke-width="0.8"
+            fill="none"
+            opacity="0.4"
+          />
+          <circle
+            cx="200"
+            cy="220"
+            r="40"
+            stroke="white"
+            stroke-width="0.6"
+            fill="none"
+            opacity="0.35"
+          />
+          <circle
+            cx="200"
+            cy="220"
+            r="20"
+            stroke="white"
+            stroke-width="0.5"
+            fill="none"
+            opacity="0.3"
+          />
+        </svg>
 
-        <!-- Logo / Encabezado -->
-        <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-emerald-600 rounded-2xl mb-4 shadow-lg">
-                <svg class="w-9 h-9 text-white" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                </svg>
-            </div>
-            <h1 class="text-3xl font-bold text-gray-900">Vacapp</h1>
-            <p class="text-gray-500 mt-1 text-sm">Gestión ganadera inteligente</p>
+        <!-- Logo centrado — imagen grande, nombre abajo -->
+        <div class="panel-logo-area anim-1">
+          <div class="logo-mark">
+            <img
+              th:src="@{/images/logoVacapp.png}"
+              src="/images/logoVacapp.png"
+              alt="Vacapp logo"
+              class="logo-img logo-img-large"
+            />
+          </div>
+          <span class="logo-wordmark">Vacapp</span>
         </div>
 
-        <!-- Tarjeta del formulario -->
-        <div class="bg-white rounded-2xl shadow-xl p-8">
-            <h2 class="text-xl font-semibold text-gray-800 mb-6">Iniciar sesión</h2>
+        <!-- Hero text -->
+        <div class="panel-hero">
+          <p class="panel-eyebrow anim-2">Gestión ganadera</p>
+          <h2 class="panel-headline anim-2">
+              <span id="hero-static">El campo</span><br />
+              <em id="hero-dynamic" class="hero-dynamic">moderno</em><br />
+              comienza aquí.
+          </p>
+        </div>
 
-            <!-- Alerta de error -->
-            <div id="alerta-error" class="hidden flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 mb-5 text-sm">
-                <svg class="w-5 h-5 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                </svg>
-                <span id="mensaje-error">Credenciales inválidas. Inténtalo de nuevo.</span>
-                <button onclick="cerrarError()" class="ml-auto text-red-400 hover:text-red-600">✕</button>
+        <!-- Pills -->
+        <div class="panel-pills anim-3"></div>
+      </div>
+
+      <!-- ── RIGHT PANEL ── -->
+      <div class="panel-right">
+        <div class="mobile-logo">
+          <div class="mobile-logo-mark">
+            <img
+              th:src="@{/images/logoVacapp.png}"
+              src="/images/logoVacapp.png"
+              alt=""
+              class="logo-img logo-img-small"
+            />
+          </div>
+          <span class="mobile-logo-name">Vacapp</span>
+        </div>
+
+        <div class="form-stagger">
+          <div class="form-header">
+            <span class="form-super">Acceso seguro</span>
+            <h1 class="form-title">Bienvenido</h1>
+            <p class="form-sub">Ingresa tus credenciales para continuar</p>
+          </div>
+
+          <div class="divider"></div>
+
+          <div id="alerta-error" class="error-box" role="alert">
+            <svg class="alert-icon" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span id="mensaje-error"
+              >Credenciales inválidas. Inténtalo de nuevo.</span
+            >
+            <button
+              class="error-close"
+              id="btn-error-close"
+              aria-label="Cerrar"
+            >
+              ✕
+            </button>
+          </div>
+
+          <form id="formulario-login" novalidate>
+            <div>
+              <label for="username" class="field-label">Usuario</label>
+              <div class="input-wrap">
+                <div class="input-icon-left">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1.8"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </div>
+                <input
+                  id="username"
+                  type="text"
+                  autocomplete="username"
+                  required
+                  placeholder="tu_usuario"
+                  class="field-input"
+                />
+              </div>
             </div>
 
-            <form id="formulario-login" class="space-y-5" novalidate>
-
-                <!-- Campo usuario -->
-                <div>
-                    <label for="username" class="block text-sm font-medium text-gray-700 mb-1.5">Usuario</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                            </svg>
-                        </div>
-                        <input id="username" type="text" autocomplete="username" required placeholder="tu_usuario"
-                               class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"/>
-                    </div>
+            <div>
+              <label for="password" class="field-label">Contraseña</label>
+              <div class="input-wrap">
+                <div class="input-icon-left">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1.8"
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    />
+                  </svg>
                 </div>
-
-                <!-- Campo contraseña -->
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700 mb-1.5">Contraseña</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                            </svg>
-                        </div>
-                        <input id="password" type="password" autocomplete="current-password" required placeholder="••••••••"
-                               class="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition"/>
-                        <button type="button" onclick="alternarPassword()"
-                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
-                            <svg id="icono-ojo" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Botón de envío -->
-                <button type="submit" id="btn-login"
-                        class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-lg text-sm transition focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed">
-                    <span id="texto-btn">Iniciar sesión</span>
+                <input
+                  id="password"
+                  type="password"
+                  autocomplete="current-password"
+                  required
+                  placeholder="••••••••"
+                  class="field-input has-right"
+                />
+                <button
+                  type="button"
+                  id="btn-password-toggle"
+                  class="input-icon-right"
+                  aria-label="Mostrar/ocultar contraseña"
+                >
+                  <svg
+                    id="icono-ojo"
+                    class="input-icon-svg"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1.8"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1.8"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
                 </button>
-            </form>
+              </div>
+            </div>
+
+            <button type="submit" id="btn-login" class="btn-submit">
+              <div class="btn-inner">
+                <div id="spinner" class="spinner"></div>
+                <span id="texto-btn">Iniciar sesión</span>
+              </div>
+            </button>
+          </form>
+
+          <p class="form-footer">
+            ¿Problemas para acceder? Contacta a tu administrador
+          </p>
         </div>
+      </div>
     </div>
 
-    <script>
-        // ── Alternar visibilidad de contraseña ──────────────────────────────────
-        function alternarPassword() {
-            const campo = document.getElementById('password');
-            campo.type = campo.type === 'password' ? 'text' : 'password';
+    <div id="login-exit-overlay" class="exit-overlay"></div>
+    <div id="login-exit-overlay" class="exit-overlay"></div>
+    <script defer>
+      (function () {
+        const saved = localStorage.getItem("vacapp_tema");
+        if (
+          saved === "dark" ||
+          (!saved && matchMedia("(prefers-color-scheme: dark)").matches)
+        ) {
+          document.documentElement.classList.add("dark");
         }
+      })();
 
-        // ── Mostrar / ocultar alerta de error ───────────────────────────────────
-        function mostrarError(mensaje) {
-            const alerta = document.getElementById('alerta-error');
-            document.getElementById('mensaje-error').textContent = mensaje;
-            alerta.classList.remove('hidden');
+      function syncThemeIcons() {
+        const dark = document.documentElement.classList.contains("dark");
+        const label = document.getElementById("tema-label");
+        const iconSol = document.getElementById("icono-sol");
+        const iconLuna = document.getElementById("icono-luna");
+
+        if (label) {
+          label.textContent = dark ? "Modo claro" : "Modo oscuro";
         }
-
-        function cerrarError() {
-            document.getElementById('alerta-error').classList.add('hidden');
+        if (iconSol) {
+          iconSol.style.display = dark ? "inline-flex" : "none";
         }
+        if (iconLuna) {
+          iconLuna.style.display = dark ? "none" : "inline-flex";
+        }
+      }
 
-        // ── Envío del formulario via fetch (JWT) ────────────────────────────────
-        document.getElementById('formulario-login').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            cerrarError();
+      function alternarTema() {
+        const dark = document.documentElement.classList.toggle("dark");
+        const nextTheme = dark ? "dark" : "light";
+        localStorage.setItem("vacapp_theme", nextTheme);
+        localStorage.setItem("vacapp_tema", nextTheme);
+        syncThemeIcons();
+      }
 
-            const usuario   = document.getElementById('username').value.trim();
-            const contrasena = document.getElementById('password').value;
-            const boton     = document.getElementById('btn-login');
-            const textoBton = document.getElementById('texto-btn');
+      function iniciarHeroTipado() {
+        const palabras = ["moderno", "inteligente", "conectado"];
+        const elemento = document.getElementById("hero-dynamic");
+        if (!elemento) return;
 
-            if (!usuario || !contrasena) {
-                mostrarError('Por favor completa todos los campos.');
-                return;
+        let indice = 0;
+        let letra = 0;
+        let escribiendo = true;
+
+        const escribir = () => {
+          const palabra = palabras[indice];
+          elemento.textContent = palabra.slice(0, letra);
+
+          if (escribiendo) {
+            if (letra < palabra.length) {
+              letra += 1;
+              setTimeout(escribir, 90);
+            } else {
+              escribiendo = false;
+              setTimeout(() => {
+                letra = 0;
+                indice = (indice + 1) % palabras.length;
+                escribiendo = true;
+                escribir();
+              }, 1800);
             }
+          }
+        };
 
-            boton.disabled = true;
-            textoBton.textContent = 'Iniciando sesión...';
+        escribir();
+      }
 
-            try {
-                const respuesta = await fetch('/api/v1/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: usuario, password: contrasena })
-                });
+      function iniciarAnimacionSalida(ruta) {
+        const overlay = document.getElementById("login-exit-overlay");
+        const card = document.querySelector(".card");
 
-                if (!respuesta.ok) {
-                    const datos = await respuesta.json().catch(() => ({}));
-                    mostrarError(datos.mensaje || 'Credenciales inválidas. Inténtalo de nuevo.');
-                    return;
-                }
+        if (card) {
+          card.classList.add("exit");
+        }
+        if (overlay) {
+          overlay.classList.add("active");
+        }
 
-                const datos = await respuesta.json();
-                // Guardar el token JWT en sessionStorage
-                sessionStorage.setItem('vacapp_token', datos.token);
-                window.location.href = '/dashboard';
+        setTimeout(() => {
+          window.location.href = ruta;
+        }, 700);
+      }
 
-            } catch (_) {
-                mostrarError('No se pudo conectar con el servidor. Verifica tu conexión.');
-            } finally {
-                boton.disabled = false;
-                textoBton.textContent = 'Iniciar sesión';
-            }
+      function inicializarLogos() {
+        document.querySelectorAll(".logo-img").forEach((img) => {
+          img.addEventListener("error", () => img.classList.add("error"));
         });
+      }
+
+      function alternarPassword() {
+        const campo = document.getElementById("password");
+        campo.type = campo.type === "password" ? "text" : "password";
+      }
+
+      function mostrarError(msg) {
+        const el = document.getElementById("alerta-error");
+        document.getElementById("mensaje-error").textContent = msg;
+        el.classList.add("visible");
+      }
+
+      function cerrarError() {
+        document.getElementById("alerta-error").classList.remove("visible");
+      }
+
+      const formularioLogin = document.getElementById("formulario-login");
+      if (formularioLogin) {
+        formularioLogin.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          cerrarError();
+
+          const usuario = document.getElementById("username").value.trim();
+          const contrasena = document.getElementById("password").value;
+          const boton = document.getElementById("btn-login");
+          const texto = document.getElementById("texto-btn");
+          const spinner = document.getElementById("spinner");
+
+          if (!usuario || !contrasena) {
+            mostrarError("Por favor completa todos los campos.");
+            return;
+          }
+
+          boton.disabled = true;
+          texto.textContent = "Iniciando sesión...";
+          spinner.style.display = "block";
+
+          try {
+            const res = await fetch("/api/v1/auth/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ username: usuario, password: contrasena }),
+            });
+
+            if (!res.ok) {
+              const data = await res.json().catch(() => ({}));
+              mostrarError(
+                data.mensaje || "Credenciales inválidas. Inténtalo de nuevo.",
+              );
+              return;
+            }
+
+            const data = await res.json();
+            sessionStorage.setItem("vacapp_token", data.token);
+            iniciarAnimacionSalida("/dashboard");
+          } catch {
+            mostrarError(
+              "No se pudo conectar con el servidor. Verifica tu conexión.",
+            );
+          } finally {
+            boton.disabled = false;
+            texto.textContent = "Iniciar sesión";
+            spinner.style.display = "none";
+          }
+        });
+      }
+
+      const btnTema = document.getElementById("btn-tema");
+      if (btnTema) {
+        btnTema.addEventListener("click", alternarTema);
+      }
+
+      iniciarHeroTipado();
+      syncThemeIcons();
+      inicializarLogos();
     </script>
-</body>
+  </body>
 </html>

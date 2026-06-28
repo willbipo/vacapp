@@ -1,7 +1,10 @@
 package com.vacapp.core.web;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import java.security.Principal;
 
 /**
  * Controlador raíz de vistas Thymeleaf.
@@ -30,7 +33,10 @@ public class SpaFallbackController {
      * Muestra el panel de control principal.
      */
     @GetMapping("/dashboard")
-    public String dashboard() {
+    public String dashboard(Principal principal, Model model) {
+        if (principal != null) {
+            model.addAttribute("usuarioActivo", principal.getName());
+        }
         return "dashboard/index";
     }
 }
