@@ -34,7 +34,7 @@ body::after {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: -1;
+  z-index: -2;
   opacity: 0.8;
   background-repeat: no-repeat;
   filter: blur(80px);
@@ -70,15 +70,34 @@ body::after {
   animation: glowDriftB 20s ease-in-out infinite alternate;
 }
 
+.fondo-puntos {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+html:not(.dark) .fondo-puntos {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.75) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+  opacity: 0.85;
+}
+
+html.dark .fondo-puntos {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.35) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+  opacity: 0.6;
+}
+
 html.dark body {
   background-image:
-    radial-gradient(
-      circle at 15% 20%,
-      rgba(16, 185, 129, 0.12),
-      transparent 24%
-    ),
-    radial-gradient(circle at 85% 80%, rgba(4, 47, 30, 0.16), transparent 28%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.02), transparent 35%);
+    linear-gradient(rgba(2, 8, 7, 0.72), rgba(1, 18, 10, 0.55)),
+    linear-gradient(180deg, rgba(0, 10, 30, 0.35) 0%, rgba(0, 30, 15, 0.2) 100%),
+    url("/images/bannerLogin.png");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  filter: none;
 }
 
 .card {
@@ -332,11 +351,11 @@ html.dark body {
 }
 
 html:not(.dark) .panel-right {
-  background: rgba(255, 255, 255, 0.5);
-  border-left-color: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.82);
+  border-left-color: rgba(255, 255, 255, 0.4);
   box-shadow:
     0 36px 96px rgba(16, 185, 129, 0.18),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
 }
 
 html:not(.dark) body::before {
