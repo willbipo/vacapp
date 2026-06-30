@@ -346,3 +346,71 @@
     pointer-events: auto;
   }
 }
+
+/* ── SweetAlert2 – Vacapp theme ────────────────────── */
+.swal-vacapp-popup {
+  border-radius: 20px !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--c-card-border) !important;
+  box-shadow:
+    0 24px 64px rgba(4, 47, 30, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+  font-family: var(--f-ui) !important;
+  padding: 2rem 1.75rem 1.75rem !important;
+}
+
+.swal-vacapp-title {
+  font-family: var(--f-display) !important;
+  font-size: 1.4rem !important;
+  font-weight: 700 !important;
+}
+
+.swal-vacapp-text {
+  font-size: 0.875rem !important;
+  line-height: 1.55 !important;
+}
+
+.swal-vacapp-icon {
+  border-color: var(--c-emerald) !important;
+  color: var(--c-emerald) !important;
+}
+
+.swal-vacapp-confirm {
+  background: var(--c-emerald) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 999px !important;
+  padding: 0.7rem 1.6rem !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  cursor: pointer !important;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease !important;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.28) !important;
+}
+
+.swal-vacapp-confirm:hover {
+  background: var(--c-emerald-d) !important;
+  transform: translateY(-1px) !important;
+}
+
+.swal-vacapp-cancel {
+  background: transparent !important;
+  color: var(--c-text-s) !important;
+  border: 1.5px solid var(--c-card-border) !important;
+  border-radius: 999px !important;
+  padding: 0.7rem 1.6rem !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  cursor: pointer !important;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease !important;
+}
+
+.swal-vacapp-cancel:hover {
+  background: var(--c-surface-muted) !important;
+  border-color: var(--c-text-s) !important;
+}

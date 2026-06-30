@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vacapp — Hasta luego</title>
+    <link rel="stylesheet" th:href="@{/css/global.css}" />
+    <link rel="stylesheet" th:href="@{/css/login.css}" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon" />
+  </head>
+  <body>
+    <div class="fondo-img" aria-hidden="true"></div>
+    <div class="fondo-puntos"></div>
+
+    <div class="logout-wrap">
+      <div class="logout-card">
+        <div class="logout-logo-area">
+          <div class="logo-mark logout-logo-mark">
+            <img
+              class="logo-img logout-logo-img"
+              src="/images/logoVacapp.png"
+              alt="Vacapp"
+            />
+            <div class="logo-fallback logout-logo-fallback" aria-hidden="true">
+              <span class="logo-fallback-text">V</span>
+            </div>
+          </div>
+        </div>
+
+        <p class="logout-eyebrow">Sesión cerrada</p>
+
+        <h1 class="logout-headline">
+          Hasta luego,<br />
+          <em id="logout-username" class="logout-username">amigo</em>
+        </h1>
+
+        <p class="logout-sub">Tu sesión ha terminado de forma segura.</p>
+
+        <a href="/login" class="logout-btn">Volver a iniciar sesión</a>
+      </div>
+
+      <footer class="logout-footer">
+        <span class="logout-brand">Vacapp</span>
+        <span class="logout-brand-sub">Gestión ganadera inteligente</span>
+      </footer>
+    </div>
+
+    <script>
+      (function () {
+        const tema =
+          localStorage.getItem("vacapp_theme") ||
+          localStorage.getItem("vacapp_tema");
+        if (
+          tema === "dark" ||
+          (!tema && matchMedia("(prefers-color-scheme: dark)").matches)
+        ) {
+          document.documentElement.classList.add("dark");
+        }
+
+        const nombre = localStorage.getItem("vacapp_ultimo_usuario");
+        if (nombre) {
+          document.getElementById("logout-username").textContent = nombre;
+          localStorage.removeItem("vacapp_ultimo_usuario");
+        }
+      })();
+    </script>
+  </body>
+</html>

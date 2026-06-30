@@ -8,6 +8,10 @@
     <link rel="stylesheet" th:href="@{/css/navbard.css}" />
     <link rel="stylesheet" th:href="@{/css/sidebard.css}" />
     <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
   </head>
   <body>
     <div class="dashboard-shell">
@@ -57,6 +61,7 @@
       </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <script>
       const token = sessionStorage.getItem("vacapp_token");
 
@@ -144,8 +149,42 @@
       })();
 
       function cerrarSesion() {
-        sessionStorage.removeItem("vacapp_token");
-        window.location.replace("/login");
+        const esDark = document.documentElement.classList.contains("dark");
+
+        Swal.fire({
+          title: "¿Cerrar sesión?",
+          text: "Se cerrará tu sesión actual.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Sí, salir",
+          cancelButtonText: "Cancelar",
+          reverseButtons: true,
+          customClass: {
+            popup: "swal-vacapp-popup",
+            title: "swal-vacapp-title",
+            htmlContainer: "swal-vacapp-text",
+            confirmButton: "swal-vacapp-confirm",
+            cancelButton: "swal-vacapp-cancel",
+            icon: "swal-vacapp-icon",
+          },
+          background: esDark
+            ? "rgba(8, 18, 12, 0.96)"
+            : "rgba(255, 255, 255, 0.96)",
+          color: esDark ? "#ecfdf5" : "#0f1f17",
+          buttonsStyling: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            const nombreNodo = document.getElementById("navbar-username");
+            if (nombreNodo) {
+              localStorage.setItem(
+                "vacapp_ultimo_usuario",
+                nombreNodo.textContent.trim(),
+              );
+            }
+            sessionStorage.removeItem("vacapp_token");
+            window.location.replace("/salida");
+          }
+        });
       }
     </script>
   </body>

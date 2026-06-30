@@ -39,4 +39,12 @@ public class SpaFallbackController {
         }
         return "dashboard/index";
     }
+
+    /**
+     * Muestra la página de despedida tras cerrar sesión.
+     */
+    @GetMapping("/salida")
+    public String adios() {
+        return "auth/logout";
+    }
 }

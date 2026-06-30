@@ -134,3 +134,26 @@
     justify-content: space-between;
   }
 }
+
+/* ── SweetAlert2 – Vacapp theme (navbar scope) ─────── */
+.swal2-container {
+  z-index: 9999 !important;
+}
+
+.swal2-backdrop-show {
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  background: rgba(4, 47, 30, 0.35) !important;
+}
+
+html.dark .swal-vacapp-popup {
+  border-color: rgba(110, 231, 183, 0.18) !important;
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(110, 231, 183, 0.06) !important;
+}
+
+html.dark .swal-vacapp-icon {
+  border-color: var(--c-emerald-l) !important;
+  color: var(--c-emerald-l) !important;
+}

@@ -48,7 +48,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 // Vistas Thymeleaf públicas
-                .requestMatchers("/", "/login", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/dashboard/**").permitAll()
+                .requestMatchers("/", "/login", "/salida", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/dashboard/**").permitAll()
                 .anyRequest().authenticated())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
