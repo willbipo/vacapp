@@ -9,6 +9,8 @@ import com.vacapp.usuarios.presentation.dtos.RegistroRequest;
 import com.vacapp.usuarios.presentation.dtos.UsuarioActualResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +28,7 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private final AutenticarUsuarioUseCase autenticarUsuarioUseCase;
@@ -55,6 +58,7 @@ public class AuthController {
      */
     @PostMapping("/registro")
     public ResponseEntity<Void> registro(@Valid @RequestBody RegistroRequest request) {
+        log.info("Registrando usuario");
         registrarUsuarioUseCase.ejecutar(request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
