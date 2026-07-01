@@ -1,8 +1,9 @@
 package com.vacapp.core.security;
 
-import com.vacapp.core.multitenancy.TenantContext;
+import com.vacapp.core.TenantContext;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -63,9 +64,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String extraerTokenDeCabecera(HttpServletRequest request) {
+        // 1. Intentar desde el header Authorization (API / móvil)
         String cabecera = request.getHeader("Authorization");
         if (StringUtils.hasText(cabecera) && cabecera.startsWith("Bearer ")) {
             return cabecera.substring(7);
+        }
+        // 2. Intentar desde la cookie HttpOnly (navegador web)
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("vacapp_jwt".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
         }
         return null;
     }

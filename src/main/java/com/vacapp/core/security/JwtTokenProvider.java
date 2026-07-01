@@ -1,7 +1,7 @@
 package com.vacapp.core.security;
 
-import com.vacapp.usuarios.internal.domain.repository.GeneradorDeToken;
-import com.vacapp.usuarios.internal.domain.model.Usuario;
+import com.vacapp.usuarios.DatosToken;
+import com.vacapp.usuarios.GeneradorDeToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -36,14 +36,14 @@ public class JwtTokenProvider implements GeneradorDeToken {
      * Genera un token JWT con los claims: sub (username), role y tenantId.
      */
     @Override
-    public String generar(Usuario usuario) {
+    public String generar(DatosToken datos) {
         Date ahora = new Date();
         Date expiracion = new Date(ahora.getTime() + expiracionMs);
 
         return Jwts.builder()
-                .subject(usuario.getUsername())
-                .claim("role", usuario.getRole().name())
-                .claim("tenantId", usuario.getTenantId())
+                .subject(datos.username())
+                .claim("role", datos.role())
+                .claim("tenantId", datos.tenantId())
                 .issuedAt(ahora)
                 .expiration(expiracion)
                 .signWith(claveSecreta)

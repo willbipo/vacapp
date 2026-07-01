@@ -1,4 +1,4 @@
-package com.vacapp.core.multitenancy;
+package com.vacapp.core;
 
 /**
  * Almacena el {@code tenantId} del usuario autenticado en un {@link ThreadLocal}

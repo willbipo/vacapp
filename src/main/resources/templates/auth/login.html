@@ -473,6 +473,9 @@
 
             const data = await res.json();
             sessionStorage.setItem("vacapp_token", data.token);
+            localStorage.setItem("vacapp_token", data.token);
+            // Cookie para que el filtro JWT funcione en navegación del browser
+            document.cookie = `vacapp_jwt=${data.token}; path=/; SameSite=Strict`;
             iniciarAnimacionSalida("/dashboard");
           } catch {
             mostrarError(

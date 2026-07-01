@@ -1,0 +1,231 @@
+/* ── Inventario de Ganado ────────────────────────────────────────────────── */
+.inv-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.inv-header h1 {
+  font-size: 1.5rem;
+  font-family: var(--f-display);
+  color: var(--c-text-h);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--c-emerald);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-input);
+  padding: 0.55rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.btn-primary:hover {
+  background: var(--c-emerald-d);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  color: var(--c-emerald);
+  border: 1.5px solid var(--c-emerald);
+  border-radius: var(--radius-input);
+  padding: 0.45rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.18s,
+    color 0.18s;
+}
+.btn-secondary:hover {
+  background: var(--c-emerald);
+  color: #fff;
+}
+
+/* Tabla */
+.tabla-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius-card);
+  box-shadow: var(--c-shadow-card);
+}
+
+.tabla-ganado {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--c-card-bg);
+  font-size: 0.875rem;
+}
+
+.tabla-ganado thead {
+  background: var(--c-panel-bg);
+  color: var(--c-emerald-l);
+}
+
+.tabla-ganado th {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.tabla-ganado td {
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--c-surface-muted);
+  color: var(--c-text-b);
+  white-space: nowrap;
+}
+
+.tabla-ganado tbody tr:last-child td {
+  border-bottom: none;
+}
+.tabla-ganado tbody tr:hover {
+  background: var(--c-surface-alt);
+}
+
+.badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 0.15rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.badge-vigente {
+  background: #d1fae5;
+  color: #065f46;
+}
+.badge-baja {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.badge-hembra {
+  background: #fce7f3;
+  color: #9d174d;
+}
+.badge-macho {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.text-muted {
+  color: var(--c-text-s);
+  font-style: italic;
+}
+
+/* Modal */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+.modal-backdrop.open {
+  display: flex;
+}
+
+.modal-card {
+  background: var(--c-surface);
+  border-radius: var(--radius-card);
+  padding: 2rem;
+  width: min(680px, 95vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+  animation: slideUp 0.22s var(--ease-out);
+}
+@keyframes slideUp {
+  from {
+    transform: translateY(32px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-title {
+  font-size: 1.15rem;
+  font-family: var(--f-display);
+  margin-bottom: 1.25rem;
+  color: var(--c-text-h);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem 1.2rem;
+}
+.form-grid .full {
+  grid-column: 1 / -1;
+}
+
+.form-field label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--c-text-s);
+  margin-bottom: 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: 100%;
+  padding: 0.55rem 0.8rem;
+  border: 1.5px solid var(--c-input-bdr);
+  border-radius: var(--radius-input);
+  background: var(--c-input-bg);
+  color: var(--c-text-h);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  border-color: var(--c-input-focus);
+}
+
+.form-field textarea {
+  resize: vertical;
+  min-height: 72px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--c-text-s);
+}
+.empty-state svg {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 0.75rem;
+  stroke: var(--c-emerald-l);
+  fill: none;
+  stroke-width: 1.5;
+}

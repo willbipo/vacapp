@@ -63,7 +63,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <script>
-      const token = sessionStorage.getItem("vacapp_token");
+      const token = localStorage.getItem("vacapp_token");
 
       if (!token) {
         window.location.replace("/login");
@@ -87,6 +87,9 @@
           })
           .catch(() => {
             sessionStorage.removeItem("vacapp_token");
+            localStorage.removeItem("vacapp_token");
+            document.cookie =
+              "vacapp_jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
             window.location.replace("/login");
           });
       }
@@ -182,7 +185,12 @@
               );
             }
             sessionStorage.removeItem("vacapp_token");
-            window.location.replace("/salida");
+            localStorage.removeItem("vacapp_token");
+            document.cookie =
+              "vacapp_jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            fetch("/api/v1/auth/logout", { method: "POST" }).finally(() => {
+              window.location.replace("/salida");
+            });
           }
         });
       }
