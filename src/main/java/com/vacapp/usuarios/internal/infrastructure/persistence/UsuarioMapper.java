@@ -4,12 +4,12 @@ import com.vacapp.usuarios.internal.domain.model.Usuario;
 import org.springframework.stereotype.Component;
 
 /**
- * Mapper para convertir entre {@link UsuarioEntidad} (JPA) y {@link Usuario} (dominio).
+ * Mapper para convertir entre {@link UsuarioEntidad} (Spring Data JDBC) y {@link Usuario} (dominio).
  */
 @Component
 public class UsuarioMapper {
 
-    /** Convierte una entidad JPA a un modelo de dominio. */
+    /** Convierte una entidad a un modelo de dominio. */
     public Usuario aDominio(UsuarioEntidad entidad) {
         return Usuario.builder()
                 .id(entidad.getId())
@@ -21,7 +21,7 @@ public class UsuarioMapper {
                 .build();
     }
 
-    /** Convierte un modelo de dominio a una entidad JPA. */
+    /** Convierte un modelo de dominio a una entidad. */
     public UsuarioEntidad aEntidad(Usuario usuario) {
         return UsuarioEntidad.builder()
                 .id(usuario.getId())

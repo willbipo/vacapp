@@ -10,7 +10,7 @@
 - **Nombre**: Vacapp
 - **Dominio**: Gestión ganadera SaaS
 - **Tipo**: Monolito Modular — Spring Modulith + Clean Architecture
-- **Stack**: Java 21 + Spring Boot 4.1.0 + Spring Modulith + MySQL + Spring Security (JWT) + Lombok + Thymeleaf + Tailwind CSS
+- **Stack**: Java 21 + Spring Boot 4.1.0 + Spring Modulith + MySQL + Spring Data JDBC + Spring Security (JWT) + Lombok + Thymeleaf + CSS Vanilla
 
 ---
 
@@ -69,22 +69,44 @@ HTTP Request
 
 ---
 
-## Frontend (Vistas Web)
+## Frontend Thymeleaf + HTML + CSS + JavaScript Vanilla
 
-- **Motor de plantillas**: Thymeleaf — archivos en `src/main/resources/templates/`.
-- **Estilos**: Tailwind CSS vía CDN (en desarrollo); para producción generar el CSS compilado en `src/main/resources/static/css/`.
-- **Estructura de templates**:
-  ```
-  templates/
-  ├── auth/
-  │   └── login.html
-  ├── dashboard/
-  └── layouts/
-      └── base.html   ← plantilla base (cuando se necesite)
-  ```
-- **Interacción con API**: Las páginas consumen los endpoints `/api/v1/**` mediante `fetch` y almacenan el token JWT en `sessionStorage`.
-- **Sin framework JS**: No usar React, Vue ni Angular. Solo HTML, CSS y JavaScript vanilla.
-- **JavaScript integrado**: Todo el código JS de una vista debe estar dentro del mismo archivo HTML (`<script>`). No crear carpetas `js/` ni archivos `.js` independientes por vista.
+El frontend es **server-rendered** con Thymeleaf, sin frameworks JavaScript complejos:
+
+- **Motor de plantillas**: Thymeleaf — archivos en `src/main/resources/templates/`
+- **Estilos**: CSS vanilla con variables custom en `src/main/resources/static/css/`
+- **JavaScript**: Vanilla integrado en HTML (sin Node, sin npm, sin React, sin Tailwind)
+- **Token JWT**: Guardado en `sessionStorage` tras login
+- **API**: Consumida con Fetch API desde JavaScript vanilla
+
+### Estructura de vistas
+
+```
+templates/
+├── auth/
+│   ├── login.html        ← Formulario de login con JS integrado
+│   └── logout.html       ← Confirmación de logout
+├── dashboard/
+│   └── index.html        ← Dashboard principal
+└── fragments/            ← Componentes reutilizables
+    ├── navbard.html
+    └── sidebard.html
+
+static/css/
+├── global.css            ← Estilos globales (reset, variables CSS)
+├── login.css
+├── dashboard.css
+├── navbard.css
+└── sidebard.css
+```
+
+### Reglas clave
+
+- **Nombres de archivos y carpetas en español**
+- **JavaScript integrado**: Todo código JS dentro de `<script>` al final del HTML
+- **Thymeleaf helpers**: `th:href`, `th:action`, `th:text` para URLs dinámicas
+- **Sin frameworks**: HTML + CSS + JS vanilla, sin React/Vue/Angular
+- **Sin preprocesadores CSS**: Usar CSS vanilla o variables CSS custom
 
 ---
 
@@ -110,20 +132,57 @@ HTTP Request
 
 ---
 
-## Estructura de Carpetas de este Repositorio de IA
+## Referencias Completas
 
-```
-.github/
-├── copilot-instructions.md          ← Instrucciones siempre activas para VS Code Copilot
-├── instructions/
-│   └── arquitecture.instructions.md ← Referencia completa de arquitectura y convenciones
-├── prompts/
-│   ├── crear-modulo.prompt.md       ← /crear-modulo  → Scaffolding SDD de un módulo completo
-│   └── crear-feature.prompt.md      ← /crear-feature → Scaffolding SDD de un caso de uso
-└── agents/
-    └── (agentes personalizados futuros)
+- **Arquitectura detallada con patrones de código**: Ver [`.github/instructions/arquitecture.instructions.md`](.github/instructions/arquitecture.instructions.md)
+- **Reglas de encapsulación, estructura de módulos, patrones Double DTO, y ejemplos ejecutables**: Ver la guía de arquitectura
+- **Prompts SDD para scaffolding rápido**: Ver [`.github/prompts/`](.github/prompts/)
 
-AGENTS.md                            ← Este archivo (raíz, leído por todos los agentes)
+---
+
+## Arquitectura del Frontend Thymeleaf
+
+Cada vista es un archivo `.html` con:
+
+1. **Head**: Links a CSS en `static/css/`
+2. **Body**: HTML semántico con `xmlns:th="http://www.thymeleaf.org"`
+3. **Script**: JavaScript vanilla al final para interactividad
+
+Ejemplo estructura:
+
+```html
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <link rel="stylesheet" th:href="@{/css/global.css}" />
+  <link rel="stylesheet" th:href="@{/css/login.css}" />
+</head>
+<body>
+  <!-- Contenido HTML semántico -->
+  <form id="formulario-login">
+    <input type="text" id="username" placeholder="Usuario" />
+    <input type="password" id="password" placeholder="Contraseña" />
+    <button type="submit">Iniciar sesión</button>
+  </form>
+
+  <script>
+    // JavaScript vanilla integrado
+    document.getElementById('formulario-login').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const res = await fetch('/api/v1/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        sessionStorage.setItem('vacapp_token', data.token);
+        window.location.href = '/dashboard';
+      }
+    });
+  </script>
+</body>
+</html>
 ```
 
 ---
@@ -131,16 +190,6 @@ AGENTS.md                            ← Este archivo (raíz, leído por todos l
 ## Cómo Usar los Prompts (SDD)
 
 1. En el chat de Copilot, escribe `/` para ver los prompts disponibles.
-2. Usa `/crear-modulo` para generar el scaffolding completo de un nuevo módulo (ej. `salud`, `reproductivo`).
+2. Usa `/crear-modulo` para generar el scaffolding completo de un nuevo módulo (ej. `ganado`, `salud`).
 3. Usa `/crear-feature` para añadir un caso de uso a un módulo existente.
 4. Siempre revisa y ajusta el código generado antes de hacer commit.
-4. Siempre revisa y ajusta el código generado antes de hacer commit.
-
-## Frontend (Vistas Web)
-
-- **Motor de plantillas**: Thymeleaf — archivos en `src/main/resources/templates/`.
-- **Estilos**: Tailwind CSS vía CDN (en desarrollo); para producción generar el CSS compilado en `src/main/resources/static/css/`.
-- **Estructura de vistas**: Cada vista/página estará compuesta de forma acoplada por su archivo HTML y su CSS, siguiendo estas reglas estrictas:
-  - **JavaScript integrado**: Todo el código JavaScript de una vista debe estar **dentro del mismo archivo HTML** (utilizando la etiqueta `<script>`). **No** se debe crear una carpeta `js/` ni archivos `.js` independientes por cada vista.
-  - **CSS independiente**: El archivo CSS sí puede mantenerse por separado o compilado según las necesidades de producción.
-- **Estructura de templates**:

@@ -9,32 +9,32 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 /**
- * Implementación del puerto {@link UsuarioRepository} usando Spring Data JPA.
+ * Implementación del puerto {@link UsuarioRepository} usando Spring Data JDBC.
  */
 @Repository
 @RequiredArgsConstructor
 public class UsuarioRepositoryImpl implements UsuarioRepository {
 
-    private final UsuarioJpaRepository jpaRepository;
+    private final UsuarioJpaRepository dataJdbcRepository;
     private final UsuarioMapper mapper;
 
     @Override
     @Transactional
     public Usuario guardar(Usuario usuario) {
         UsuarioEntidad entidad = mapper.aEntidad(usuario);
-        UsuarioEntidad guardada = jpaRepository.save(entidad);
+        UsuarioEntidad guardada = dataJdbcRepository.save(entidad);
         return mapper.aDominio(guardada);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<Usuario> buscarPorUsername(String username) {
-        return jpaRepository.findByUsername(username).map(mapper::aDominio);
+        return dataJdbcRepository.findByUsername(username).map(mapper::aDominio);
     }
 
     @Override
     @Transactional(readOnly = true)
     public boolean existePorUsername(String username) {
-        return jpaRepository.existsByUsername(username);
+        return dataJdbcRepository.existsByUsername(username);
     }
 }
