@@ -1,6 +1,6 @@
 package com.vacapp.core.security;
 
-import com.vacapp.usuarios.domain.exceptions.CredencialesInvalidasException;
+import com.vacapp.usuarios.internal.domain.model.CredencialesInvalidasException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;

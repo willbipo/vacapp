@@ -1,7 +1,7 @@
 package com.vacapp.core.security;
 
-import com.vacapp.usuarios.application.ports.GeneradorDeToken;
-import com.vacapp.usuarios.domain.models.Usuario;
+import com.vacapp.usuarios.internal.domain.repository.GeneradorDeToken;
+import com.vacapp.usuarios.internal.domain.model.Usuario;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
