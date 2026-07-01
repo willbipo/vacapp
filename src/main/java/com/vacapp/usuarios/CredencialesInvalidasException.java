@@ -1,4 +1,4 @@
-package com.vacapp.usuarios.internal.domain.model;
+package com.vacapp.usuarios;
 
 /**
  * Se lanza cuando las credenciales de inicio de sesión son inválidas.

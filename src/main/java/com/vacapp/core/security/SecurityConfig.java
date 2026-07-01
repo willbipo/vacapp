@@ -20,7 +20,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Configuración central de Spring Security para Vacapp.
@@ -48,7 +47,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 // Vistas Thymeleaf públicas
-                .requestMatchers("/", "/login", "/salida", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/dashboard/**").permitAll()
+                .requestMatchers("/", "/login", "/salida", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/dashboard/**", "/inventario/**", "/vacunas/**", "/insumos/**").permitAll()
                 .anyRequest().authenticated())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

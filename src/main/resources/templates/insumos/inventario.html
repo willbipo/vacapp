@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vacapp — Inventario de Insumos</title>
+    <link rel="stylesheet" th:href="@{/css/global.css}" />
+    <link rel="stylesheet" th:href="@{/css/navbard.css}" />
+    <link rel="stylesheet" th:href="@{/css/sidebard.css}" />
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
+    <link rel="stylesheet" th:href="@{/css/inventario.css}" />
+  </head>
+  <body>
+    <div class="dashboard-shell">
+      <div th:replace="~{fragments/sidebard :: sidebar}"></div>
+
+      <div class="dashboard-main">
+        <div th:replace="~{fragments/navbard :: navbar}"></div>
+
+        <main class="dashboard-content">
+          <div class="inv-header">
+            <div>
+              <p class="page-overline">Gestión</p>
+              <h1>Inventario de Insumos</h1>
+            </div>
+            <button class="btn-primary" onclick="abrirModal()">
+              + Agregar insumo
+            </button>
+          </div>
+
+          <div class="tabla-wrap">
+            <table class="tabla-ganado">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Categoría</th>
+                  <th>Cantidad</th>
+                  <th>Unidad</th>
+                  <th>Mín.</th>
+                  <th>Proveedor</th>
+                  <th>Precio unit.</th>
+                  <th>Ubicación</th>
+                  <th>Descripción</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:if="${#lists.isEmpty(insumos)}">
+                  <td colspan="10">
+                    <div class="empty-state">
+                      <svg viewBox="0 0 24 24">
+                        <path d="M6 2l2 5h8l2-5" />
+                        <path d="M4 7h16l-1.5 12h-13z" />
+                      </svg>
+                      <p>No hay insumos registrados.</p>
+                    </div>
+                  </td>
+                </tr>
+                <tr th:each="i : ${insumos}">
+                  <td th:text="${i.nombre}">—</td>
+                  <td>
+                    <span
+                      th:class="${'badge ' + (i.categoria.name() == 'HERRAMIENTA' ? 'badge-macho' :
+                                              i.categoria.name() == 'ALIMENTO'    ? 'badge-vigente' :
+                                              i.categoria.name() == 'MEDICAMENTO' ? 'badge-hembra' : 'badge-baja')}"
+                      th:text="${i.categoria}"
+                    ></span>
+                  </td>
+                  <td th:text="${i.cantidad} ?: '—'">—</td>
+                  <td th:text="${i.unidadMedida}">—</td>
+                  <td th:text="${i.cantidadMinima} ?: '—'">—</td>
+                  <td th:text="${i.proveedor} ?: '—'">—</td>
+                  <td
+                    th:text="${i.precioUnitario != null} ? '$' + ${#numbers.formatDecimal(i.precioUnitario, 1, 2)} : '—'"
+                  >
+                    —
+                  </td>
+                  <td th:text="${i.ubicacion} ?: '—'">—</td>
+                  <td>
+                    <span
+                      th:if="${i.descripcion != null and !#strings.isEmpty(i.descripcion)}"
+                      th:text="${#strings.abbreviate(i.descripcion, 25)}"
+                    ></span>
+                    <span
+                      th:unless="${i.descripcion != null and !#strings.isEmpty(i.descripcion)}"
+                      class="text-muted"
+                      >—</span
+                    >
+                  </td>
+                  <td>
+                    <button
+                    <button
+                      class="btn-secondary"
+                      th:data-id="${i.id}"
+                      th:data-nombre="${i.nombre}"
+                      th:data-categoria="${i.categoria}"
+                      th:data-unidad="${i.unidadMedida}"
+                      th:data-cantidad="${i.cantidad}"
+                      th:data-cantmin="${i.cantidadMinima}"
+                      th:data-descripcion="${i.descripcion}"
+                      th:data-proveedor="${i.proveedor}"
+                      th:data-precio="${i.precioUnitario}"
+                      th:data-ubicacion="${i.ubicacion}"
+                      onclick="abrirEditarDesdeBtn(this)"
+                    >
+                      Editar
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div
+      class="modal-backdrop"
+      id="modalBackdrop"
+      onclick="cerrarModalSiAfuera(event)"
+    >
+      <div class="modal-card" role="dialog" aria-modal="true">
+        <p class="modal-title" id="modalTitulo">Agregar insumo</p>
+        <form id="insumoForm" novalidate>
+          <input type="hidden" id="insumoId" />
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Nombre *</label>
+              <input type="text" id="fNombre" required />
+            </div>
+            <div class="form-field">
+              <label>Categoría *</label>
+              <select id="fCategoria">
+                <option value="HERRAMIENTA">Herramienta</option>
+                <option value="ALIMENTO">Alimento</option>
+                <option value="MEDICAMENTO">Medicamento</option>
+                <option value="EQUIPO">Equipo</option>
+                <option value="SEMILLA">Semilla</option>
+                <option value="FERTILIZANTE">Fertilizante</option>
+                <option value="OTRO">Otro</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Unidad de medida *</label>
+              <select id="fUnidad">
+                <option value="UNIDAD">Unidad</option>
+                <option value="KILOGRAMO">Kilogramo (kg)</option>
+                <option value="GRAMO">Gramo (g)</option>
+                <option value="TONELADA">Tonelada</option>
+                <option value="LITRO">Litro (L)</option>
+                <option value="MILILITRO">Mililitro (ml)</option>
+                <option value="SACO">Saco</option>
+                <option value="CAJA">Caja</option>
+                <option value="ROLLO">Rollo</option>
+                <option value="METRO">Metro (m)</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Cantidad actual</label>
+              <input type="number" id="fCantidad" min="0" step="0.01" />
+            </div>
+            <div class="form-field">
+              <label>Cantidad mínima</label>
+              <input type="number" id="fCantidadMin" min="0" step="0.01" />
+            </div>
+            <div class="form-field">
+              <label>Proveedor</label>
+              <input type="text" id="fProveedor" />
+            </div>
+            <div class="form-field">
+              <label>Precio unitario</label>
+              <input
+                type="number"
+                id="fPrecio"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+              />
+            </div>
+            <div class="form-field">
+              <label>Ubicación</label>
+              <input
+                type="text"
+                id="fUbicacion"
+                placeholder="ej. Bodega principal"
+              />
+            </div>
+            <div class="form-field full">
+              <label>Descripción</label>
+              <textarea id="fDescripcion" rows="3"></textarea>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" onclick="cerrarModal()">
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const TOKEN = localStorage.getItem("vacapp_token");
+      const API = "/api/v1/insumos";
+
+      function abrirModal() {
+        document.getElementById("modalTitulo").textContent = "Agregar insumo";
+        document.getElementById("insumoId").value = "";
+        document.getElementById("insumoForm").reset();
+        document.getElementById("modalBackdrop").classList.add("open");
+      }
+
+      function abrirEditarDesdeBtn(btn) {
+        const d = btn.dataset;
+        abrirEditar(
+          d.id, d.nombre, d.categoria, d.unidad,
+          d.cantidad, d.cantmin, d.descripcion,
+          d.proveedor, d.precio, d.ubicacion
+        );
+      }
+
+      function abrirEditar(
+        id,
+        nombre,
+        cat,
+        unidad,
+        cant,
+        cantMin,
+        desc,
+        prov,
+        precio,
+        ubic,
+      ) {
+        document.getElementById("modalTitulo").textContent = "Editar insumo";
+        document.getElementById("insumoId").value = id;
+        document.getElementById("fNombre").value = nombre;
+        document.getElementById("fCategoria").value = cat;
+        document.getElementById("fUnidad").value = unidad;
+        document.getElementById("fCantidad").value =
+          cant === "null" ? "" : cant;
+        document.getElementById("fCantidadMin").value =
+          cantMin === "null" ? "" : cantMin;
+        document.getElementById("fDescripcion").value =
+          desc === "null" ? "" : desc;
+        document.getElementById("fProveedor").value =
+          prov === "null" ? "" : prov;
+        document.getElementById("fPrecio").value =
+          precio === "null" ? "" : precio;
+        document.getElementById("fUbicacion").value =
+          ubic === "null" ? "" : ubic;
+        document.getElementById("modalBackdrop").classList.add("open");
+      }
+
+      function cerrarModal() {
+        document.getElementById("modalBackdrop").classList.remove("open");
+      }
+
+      function cerrarModalSiAfuera(e) {
+        if (e.target === document.getElementById("modalBackdrop"))
+          cerrarModal();
+      }
+
+      document
+        .getElementById("insumoForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const id = document.getElementById("insumoId").value;
+          const body = {
+            nombre: document.getElementById("fNombre").value.trim(),
+            categoria: document.getElementById("fCategoria").value,
+            unidadMedida: document.getElementById("fUnidad").value,
+            cantidad: document.getElementById("fCantidad").value
+              ? parseFloat(document.getElementById("fCantidad").value)
+              : null,
+            cantidadMinima: document.getElementById("fCantidadMin").value
+              ? parseFloat(document.getElementById("fCantidadMin").value)
+              : null,
+            descripcion:
+              document.getElementById("fDescripcion").value.trim() || null,
+            proveedor:
+              document.getElementById("fProveedor").value.trim() || null,
+            precioUnitario: document.getElementById("fPrecio").value
+              ? parseFloat(document.getElementById("fPrecio").value)
+              : null,
+            ubicacion:
+              document.getElementById("fUbicacion").value.trim() || null,
+          };
+
+          const url = id ? `${API}/${id}` : API;
+          const method = id ? "PUT" : "POST";
+
+          try {
+            const resp = await fetch(url, {
+              method,
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${TOKEN}`,
+              },
+              body: JSON.stringify(body),
+            });
+            if (!resp.ok) {
+              const err = await resp.json().catch(() => ({}));
+              alert("Error: " + (err.error || resp.statusText));
+              return;
+            }
+            cerrarModal();
+            location.reload();
+          } catch (err) {
+            alert("Error de red: " + err.message);
+          }
+        });
+
+      function cerrarSesion() {
+        sessionStorage.removeItem("vacapp_token");
+        localStorage.removeItem("vacapp_token");
+        document.cookie = "vacapp_jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        window.location.href = "/auth/login";
+      }
+    </script>
+  </body>
+</html>

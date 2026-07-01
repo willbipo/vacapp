@@ -8,6 +8,8 @@ import com.vacapp.usuarios.internal.infrastructure.controllers.mobile.dtos.Login
 import com.vacapp.usuarios.internal.infrastructure.controllers.mobile.dtos.LoginResponse;
 import com.vacapp.usuarios.internal.infrastructure.controllers.mobile.dtos.RegistroRequest;
 import com.vacapp.usuarios.internal.infrastructure.controllers.mobile.dtos.UsuarioActualResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,10 +41,30 @@ public class AuthRestController {
      * POST /api/v1/auth/login
      */
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request,
+                                               HttpServletResponse response) {
         ResultadoAutenticacion resultado = autenticarUsuarioUseCase.ejecutar(request.username(), request.password());
+
+        // Emitir cookie HttpOnly para que el navegador la envíe en cada petición web
+        Cookie cookie = new Cookie("vacapp_jwt", resultado.token());
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(86400); // 24 horas
+        response.addCookie(cookie);
+
         LoginResponse respuesta = new LoginResponse(resultado.token(), resultado.username(), resultado.role(), resultado.tenantId());
         return ResponseEntity.ok(respuesta);
+    }
+
+    /** Cierra sesión borrando la cookie JWT. POST /api/v1/auth/logout */
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("vacapp_jwt", "");
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return ResponseEntity.ok().build();
     }
 
     /**

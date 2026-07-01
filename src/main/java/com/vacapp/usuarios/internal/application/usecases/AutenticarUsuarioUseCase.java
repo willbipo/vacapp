@@ -1,8 +1,9 @@
 package com.vacapp.usuarios.internal.application.usecases;
 
-import com.vacapp.usuarios.internal.domain.model.CredencialesInvalidasException;
+import com.vacapp.usuarios.CredencialesInvalidasException;
 import com.vacapp.usuarios.internal.domain.model.Usuario;
-import com.vacapp.usuarios.internal.domain.repository.GeneradorDeToken;
+import com.vacapp.usuarios.DatosToken;
+import com.vacapp.usuarios.GeneradorDeToken;
 import com.vacapp.usuarios.internal.domain.repository.UsuarioRepository;
 import com.vacapp.usuarios.internal.domain.repository.VerificadorDeContrasena;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +48,8 @@ public class AutenticarUsuarioUseCase {
             throw new CredencialesInvalidasException();
         }
 
-        String token = generadorDeToken.generar(usuario);
+        DatosToken datosToken = new DatosToken(usuario.getUsername(), usuario.getRole().name(), usuario.getTenantId());
+        String token = generadorDeToken.generar(datosToken);
 
         return new ResultadoAutenticacion(token, usuario.getUsername(), usuario.getRole().name(), usuario.getTenantId());
     }

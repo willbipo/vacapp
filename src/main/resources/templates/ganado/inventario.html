@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vacapp — Inventario de Ganado</title>
+    <link rel="stylesheet" th:href="@{/css/global.css}" />
+    <link rel="stylesheet" th:href="@{/css/navbard.css}" />
+    <link rel="stylesheet" th:href="@{/css/sidebard.css}" />
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
+    <link rel="stylesheet" th:href="@{/css/inventario.css}" />
+  </head>
+  <body>
+    <div class="dashboard-shell">
+      <div th:replace="~{fragments/sidebard :: sidebar}"></div>
+
+      <div class="dashboard-main">
+        <div th:replace="~{fragments/navbard :: navbar}"></div>
+
+        <main class="dashboard-content">
+          <!-- Encabezado -->
+          <div class="inv-header">
+            <div>
+              <p class="page-overline">Gestión</p>
+              <h1>Inventario de Ganado</h1>
+            </div>
+            <button class="btn-primary" onclick="abrirModal()">
+              + Agregar animal
+            </button>
+          </div>
+
+          <!-- Tabla -->
+          <div class="tabla-wrap">
+            <table class="tabla-ganado">
+              <thead>
+                <tr>
+                  <th>No. Identificador</th>
+                  <th>Estatus</th>
+                  <th>Sexo</th>
+                  <th>Raza</th>
+                  <th>Nac.</th>
+                  <th>Meses</th>
+                  <th>Aretado</th>
+                  <th>Tipo</th>
+                  <th>Arete anterior</th>
+                  <th>Folio REEMO</th>
+                  <th>Nota</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Sin datos -->
+                <tr th:if="${#lists.isEmpty(animales)}">
+                  <td colspan="12">
+                    <div class="empty-state">
+                      <svg viewBox="0 0 24 24">
+                        <path
+                          d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 6v4m0 4h.01"
+                        />
+                      </svg>
+                      <p>No hay animales registrados.</p>
+                    </div>
+                  </td>
+                </tr>
+                <!-- Filas -->
+                <tr th:each="a : ${animales}">
+                  <td th:text="${a.numeroIdentificador}">—</td>
+                  <td>
+                    <span
+                      th:class="${a.estatus.name() == 'VIGENTE'} ? 'badge badge-vigente' : 'badge badge-baja'"
+                      th:text="${a.estatus}"
+                    ></span>
+                  </td>
+                  <td>
+                    <span
+                      th:class="${a.sexo.name() == 'HEMBRA'} ? 'badge badge-hembra' : 'badge badge-macho'"
+                      th:text="${a.sexo}"
+                    ></span>
+                  </td>
+                  <td th:text="${a.raza} ?: '—'">—</td>
+                  <td th:text="${a.fechaNacimiento} ?: '—'">—</td>
+                  <td th:text="${a.meses} ?: '—'">—</td>
+                  <td th:text="${a.fechaAretado} ?: '—'">—</td>
+                  <td th:text="${a.tipo} ?: '—'">—</td>
+                  <td th:text="${a.areteAnterior} ?: '—'">—</td>
+                  <td th:text="${a.folioReemo} ?: '—'">—</td>
+                  <td>
+                    <span
+                      th:if="${a.nota != null and !#strings.isEmpty(a.nota)}"
+                      th:text="${#strings.abbreviate(a.nota, 30)}"
+                    ></span>
+                    <span
+                      th:unless="${a.nota != null and !#strings.isEmpty(a.nota)}"
+                      class="text-muted"
+                      >—</span
+                    >
+                  </td>
+                  <td>
+                    <button
+                    <button
+                      class="btn-secondary"
+                      th:data-id="${a.id}"
+                      th:data-numid="${a.numeroIdentificador}"
+                      th:data-estatus="${a.estatus}"
+                      th:data-sexo="${a.sexo}"
+                      th:data-raza="${a.raza}"
+                      th:data-fechanac="${a.fechaNacimiento}"
+                      th:data-meses="${a.meses}"
+                      th:data-fechaaret="${a.fechaAretado}"
+                      th:data-tipo="${a.tipo}"
+                      th:data-areteant="${a.areteAnterior}"
+                      th:data-folio="${a.folioReemo}"
+                      th:data-nota="${a.nota}"
+                      onclick="abrirEditarDesdeBtn(this)"
+                    >
+                      Editar
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- ── Modal Agregar / Editar ──────────────────────────────────────────── -->
+    <div
+      class="modal-backdrop"
+      id="modalBackdrop"
+      onclick="cerrarModalSiAfuera(event)"
+    >
+      <div class="modal-card" role="dialog" aria-modal="true">
+        <p class="modal-title" id="modalTitulo">Agregar animal</p>
+
+        <form id="animalForm" novalidate>
+          <input type="hidden" id="animalId" />
+          <div class="form-grid">
+            <div class="form-field">
+              <label>No. Identificador *</label>
+              <input type="text" id="fNumeroIdentificador" required />
+            </div>
+            <div class="form-field">
+              <label>Estatus *</label>
+              <select id="fEstatus">
+                <option value="VIGENTE">Vigente</option>
+                <option value="BAJA">Baja</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Sexo *</label>
+              <select id="fSexo">
+                <option value="HEMBRA">Hembra</option>
+                <option value="MACHO">Macho</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Raza</label>
+              <input type="text" id="fRaza" />
+            </div>
+            <div class="form-field">
+              <label>Fecha de nacimiento</label>
+              <input type="date" id="fFechaNacimiento" />
+            </div>
+            <div class="form-field">
+              <label>Meses</label>
+              <input type="number" id="fMeses" min="0" />
+            </div>
+            <div class="form-field">
+              <label>Fecha aretado</label>
+              <input type="date" id="fFechaAretado" />
+            </div>
+            <div class="form-field">
+              <label>Tipo</label>
+              <select id="fTipo">
+                <option value="">— Sin tipo —</option>
+                <option value="VENTA">Venta</option>
+                <option value="TRASLADO">Traslado</option>
+                <option value="OTRO">Otro</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Arete anterior</label>
+              <input type="text" id="fAreteAnterior" />
+            </div>
+            <div class="form-field">
+              <label>Folio REEMO</label>
+              <input type="text" id="fFolioReemo" />
+            </div>
+            <div class="form-field full">
+              <label>Nota</label>
+              <textarea id="fNota" rows="3"></textarea>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" onclick="cerrarModal()">
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const TOKEN = localStorage.getItem("vacapp_token");
+      const API = "/api/v1/animales";
+
+      // ── Modal helpers ──────────────────────────────────────────────────────
+      function abrirModal() {
+        document.getElementById("modalTitulo").textContent = "Agregar animal";
+        document.getElementById("animalId").value = "";
+        document.getElementById("animalForm").reset();
+        document.getElementById("modalBackdrop").classList.add("open");
+      }
+
+      function abrirEditarDesdeBtn(btn) {
+        const d = btn.dataset;
+        abrirEditar(
+          d.id, d.numid, d.estatus, d.sexo, d.raza,
+          d.fechanac, d.meses, d.fechaaret, d.tipo,
+          d.areteant, d.folio, d.nota
+        );
+      }
+
+      function abrirEditar(
+        id,
+        numId,
+        estatus,
+        sexo,
+        raza,
+        fechaNac,
+        meses,
+        fechaAret,
+        tipo,
+        areteAnt,
+        folioReemo,
+        nota,
+      ) {
+        document.getElementById("modalTitulo").textContent = "Editar animal";
+        document.getElementById("animalId").value = id;
+        document.getElementById("fNumeroIdentificador").value = numId;
+        document.getElementById("fEstatus").value = estatus;
+        document.getElementById("fSexo").value = sexo;
+        document.getElementById("fRaza").value = raza === "null" ? "" : raza;
+        document.getElementById("fFechaNacimiento").value =
+          fechaNac === "null" ? "" : fechaNac;
+        document.getElementById("fMeses").value = meses === "null" ? "" : meses;
+        document.getElementById("fFechaAretado").value =
+          fechaAret === "null" ? "" : fechaAret;
+        document.getElementById("fTipo").value = tipo === "null" ? "" : tipo;
+        document.getElementById("fAreteAnterior").value =
+          areteAnt === "null" ? "" : areteAnt;
+        document.getElementById("fFolioReemo").value =
+          folioReemo === "null" ? "" : folioReemo;
+        document.getElementById("fNota").value = nota === "null" ? "" : nota;
+        document.getElementById("modalBackdrop").classList.add("open");
+      }
+
+      function cerrarModal() {
+        document.getElementById("modalBackdrop").classList.remove("open");
+      }
+
+      function cerrarModalSiAfuera(e) {
+        if (e.target === document.getElementById("modalBackdrop"))
+          cerrarModal();
+      }
+
+      // ── Envío del formulario ───────────────────────────────────────────────
+      document
+        .getElementById("animalForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const id = document.getElementById("animalId").value;
+          const body = {
+            numeroIdentificador: document
+              .getElementById("fNumeroIdentificador")
+              .value.trim(),
+            estatus: document.getElementById("fEstatus").value,
+            sexo: document.getElementById("fSexo").value,
+            raza: document.getElementById("fRaza").value.trim() || null,
+            fechaNacimiento:
+              document.getElementById("fFechaNacimiento").value || null,
+            meses: document.getElementById("fMeses").value
+              ? parseInt(document.getElementById("fMeses").value)
+              : null,
+            fechaAretado:
+              document.getElementById("fFechaAretado").value || null,
+            tipo: document.getElementById("fTipo").value || null,
+            areteAnterior:
+              document.getElementById("fAreteAnterior").value.trim() || null,
+            folioReemo:
+              document.getElementById("fFolioReemo").value.trim() || null,
+            nota: document.getElementById("fNota").value.trim() || null,
+          };
+
+          const url = id ? `${API}/${id}` : API;
+          const method = id ? "PUT" : "POST";
+
+          try {
+            const resp = await fetch(url, {
+              method,
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${TOKEN}`,
+              },
+              body: JSON.stringify(body),
+            });
+
+            if (!resp.ok) {
+              const err = await resp.json().catch(() => ({}));
+              alert("Error: " + (err.error || resp.statusText));
+              return;
+            }
+
+            cerrarModal();
+            location.reload();
+          } catch (err) {
+            alert("Error de red: " + err.message);
+          }
+        });
+
+      // ── Logout ─────────────────────────────────────────────────────────────
+      function cerrarSesion() {
+        sessionStorage.removeItem("vacapp_token");
+        localStorage.removeItem("vacapp_token");
+        document.cookie = "vacapp_jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        window.location.href = "/auth/login";
+      }
+    </script>
+  </body>
+</html>
