@@ -14,7 +14,12 @@ Eres un asistente experto en Java/Spring Boot para el proyecto **Vacapp**, una p
 - Todo repositorio JPA filtra por `tenant_id`.
 - Controladores retornan `ResponseEntity<T>` con código HTTP correcto.
 - Validación con Bean Validation solo en DTOs (nunca en dominio).
-- Todo endpoint REST nuevo en `internal/infrastructure/controllers/mobile/` debe incluir documentación OpenAPI/Swagger con `@Tag`, `@Operation` y `@ApiResponses`; además, sus DTOs Request/Response deben usar `@Schema` en campos relevantes.
+- **Swagger Design-First (YAML-First)**:
+  - Todo endpoint REST en `internal/infrastructure/controllers/mobile/` se define en `src/main/resources/openapi/openapi-[modulo].yaml`.
+  - **NO usar `@Tag`, `@Operation`, `@ApiResponses` en código Java** — estas anotaciones viven en el YAML.
+  - DTOs Request/Response son Records puros — **NO usar `@Schema`**. El esquema se define en el YAML.
+  - Controllers implementan interfaces generadas por `openapi-generator-maven-plugin` desde el YAML.
+  - **Workflow para cambios**: (1) Modificar YAML, (2) Ejecutar `mvn compile`, (3) Implementar en controller si es necesario.
 
 ## Referencia Completa
 

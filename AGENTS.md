@@ -26,7 +26,13 @@
 8. **Multi-tenancy**: Todo repositorio JPA debe filtrar por `tenant_id` extraído del contexto de seguridad.
 9. **Respuestas HTTP**: Los controladores retornan `ResponseEntity<T>` con código HTTP semánticamente correcto.
 10. **Validación**: Anotaciones Bean Validation (`@NotNull`, `@Size`, etc.) solo en DTOs de Request (en `infrastructure/controllers/*/dtos/`), nunca en entidades de dominio.
-11. **Swagger obligatorio en Mobile REST**: Todo endpoint nuevo en `internal/infrastructure/controllers/mobile/` debe documentarse con OpenAPI (`@Tag`, `@Operation`, `@ApiResponses`) y sus DTOs con `@Schema`.
+11. **Swagger Design-First (YAML-First)**:
+    - Todo endpoint REST en `internal/infrastructure/controllers/mobile/` se define en un YAML en `src/main/resources/openapi/openapi-[modulo].yaml` (NO anotaciones Swagger en código Java).
+    - DTOs Request/Response son Records sin `@Schema`. Las definiciones viven en los YAMLs.
+    - Los controllers implementan interfaces generadas por `openapi-generator-maven-plugin` a partir de los YAMLs.
+    - **Workflow**: (1) Modificar YAML, (2) Ejecutar `mvn compile` para regenerar interfaces, (3) Implementar cambios en el controller.
+    - No hay `@GetMapping`, `@PostMapping`, `@PutMapping` en controllers. Las rutas están en el YAML.
+    - El Swagger UI en `/swagger-ui/index.html` se actualiza automáticamente al compilar.
 12. **No sobre-ingeniería**: Solo implementar lo que se solicita explícitamente. No añadir features no pedidas.
 
 ---

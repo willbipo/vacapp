@@ -64,7 +64,30 @@ El proyecto es un **monolito modular**. Cada módulo de negocio (ej. `ganado`, `
 
 6. **Constructor injection**: Prohibido `@Autowired` en campos. Toda inyección por constructor con Lombok `@RequiredArgsConstructor` + campos `final`.
 
-7. **Documentación OpenAPI obligatoria (API móvil)**: Todo endpoint REST en `internal/infrastructure/controllers/mobile/` debe incluir anotaciones Swagger (`@Tag`, `@Operation`, `@ApiResponses`) y los DTOs Request/Response deben incluir `@Schema` para describir campos y ejemplos.
+7. **Documentación OpenAPI (Design-First / YAML-First)**: 
+   - Todo endpoint REST en `internal/infrastructure/controllers/mobile/` se define en un YAML en `src/main/resources/openapi/openapi-[modulo].yaml`.
+   - **NO usar anotaciones Swagger** (`@Tag`, `@Operation`, `@ApiResponses`) en código Java — éstas viven en el YAML.
+   - **DTOs como Records puros** — NO usar `@Schema` en DTOs. Las definiciones de esquema viven en los YAMLs.
+   - Controllers implementan interfaces generadas por `openapi-generator-maven-plugin` a partir de los YAMLs.
+   - **Workflow**: (1) Modificar YAML, (2) Ejecutar `mvn compile` para regenerar interfaces, (3) Implementar cambios en controller si es necesario.
+
+### Procedimiento: Agregar/Modificar un Endpoint
+
+1. **Editar el YAML** en `src/main/resources/openapi/openapi-[modulo].yaml`:
+   - Agregar/modificar el `path` con `operationId`, `summary`, `description`, `requestBody`, `responses`, etc.
+   - Asegurarse de que los nombres de schemas (`$ref`) coincidan con los Records existentes o nuevos.
+
+2. **Ejecutar compilación** para regenerar la interfaz:
+   ```bash
+   ./mvnw compile
+   ```
+   Esto ejecuta el plugin `openapi-generator-maven-plugin` y regenera las interfaces en `target/generated-sources/openapi/`.
+
+3. **Actualizar el controller** en `src/main/java/com/vacapp/[module]/internal/infrastructure/controllers/mobile/[Module]RestController.java`:
+   - Revisar la firma generada en la interfaz.
+   - Implementar o actualizar el método `@Override` con la lógica correcta.
+
+4. **Swagger UI se actualiza automáticamente** en `http://localhost:8080/swagger-ui/index.html` al ejecutar la aplicación.
 
 ---
 
