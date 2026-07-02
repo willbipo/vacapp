@@ -115,10 +115,146 @@
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.8.9</version>
 		</dependency>
+
+		<!-- Parser de YAML OpenAPI para merge Design-First en tiempo de ejecución -->
+		<dependency>
+			<groupId>io.swagger.parser.v3</groupId>
+			<artifactId>swagger-parser</artifactId>
+			<version>2.1.25</version>
+		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
+
+			<!-- ══════════════════════════════════════════════════════════
+			     Generador de interfaces API desde especificaciones OpenAPI.
+			     Produce solo interfaces (interfaceOnly=true) en target/generated-sources/openapi/.
+			     Los controladores implementan las interfaces; los Records existentes
+			     se mapean con importMappings para no generar modelos duplicados.
+			     ══════════════════════════════════════════════════════════ -->
+			<plugin>
+				<groupId>org.openapitools</groupId>
+				<artifactId>openapi-generator-maven-plugin</artifactId>
+				<version>7.12.0</version>
+				<executions>
+
+					<!-- ── Módulo: Autenticación ── -->
+					<execution>
+						<id>generate-auth</id>
+						<goals><goal>generate</goal></goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/openapi/openapi-auth.yaml</inputSpec>
+							<generatorName>spring</generatorName>
+							<output>${project.build.directory}/generated-sources/openapi</output>
+							<apiPackage>com.vacapp.usuarios.internal.infrastructure.controllers.mobile</apiPackage>
+							<modelPackage>com.vacapp.usuarios.internal.infrastructure.controllers.mobile.dtos</modelPackage>
+							<configOptions>
+								<interfaceOnly>true</interfaceOnly>
+								<useSpringBoot3>true</useSpringBoot3>
+								<useTags>true</useTags>
+								<openApiNullable>false</openApiNullable>
+								<skipDefaultInterface>true</skipDefaultInterface>
+								<generateSupportingFiles>false</generateSupportingFiles>
+							</configOptions>
+							<generateModels>false</generateModels>
+							<importMappings>
+								<importMapping>LoginRequest=com.vacapp.usuarios.internal.infrastructure.controllers.mobile.dtos.LoginRequest</importMapping>
+								<importMapping>LoginResponse=com.vacapp.usuarios.internal.infrastructure.controllers.mobile.dtos.LoginResponse</importMapping>
+								<importMapping>RegistroRequest=com.vacapp.usuarios.internal.infrastructure.controllers.mobile.dtos.RegistroRequest</importMapping>
+								<importMapping>UsuarioActualResponse=com.vacapp.usuarios.internal.infrastructure.controllers.mobile.dtos.UsuarioActualResponse</importMapping>
+							</importMappings>
+						</configuration>
+					</execution>
+
+					<!-- ── Módulo: Ganado ── -->
+					<execution>
+						<id>generate-ganado</id>
+						<goals><goal>generate</goal></goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/openapi/openapi-ganado.yaml</inputSpec>
+							<generatorName>spring</generatorName>
+							<output>${project.build.directory}/generated-sources/openapi</output>
+							<apiPackage>com.vacapp.ganado.internal.infrastructure.controllers.mobile</apiPackage>
+							<modelPackage>com.vacapp.ganado.internal.infrastructure.controllers.mobile.dtos</modelPackage>
+							<configOptions>
+								<interfaceOnly>true</interfaceOnly>
+								<useSpringBoot3>true</useSpringBoot3>
+								<useTags>true</useTags>
+								<openApiNullable>false</openApiNullable>
+								<skipDefaultInterface>true</skipDefaultInterface>
+								<generateSupportingFiles>false</generateSupportingFiles>
+							</configOptions>
+							<generateModels>false</generateModels>
+							<importMappings>
+								<importMapping>AnimalRequest=com.vacapp.ganado.internal.infrastructure.controllers.mobile.dtos.AnimalRequest</importMapping>
+								<importMapping>AnimalResponse=com.vacapp.ganado.internal.infrastructure.controllers.mobile.dtos.AnimalResponse</importMapping>
+								<importMapping>Estatus=com.vacapp.ganado.internal.domain.model.Estatus</importMapping>
+								<importMapping>Sexo=com.vacapp.ganado.internal.domain.model.Sexo</importMapping>
+								<importMapping>Tipo=com.vacapp.ganado.internal.domain.model.Tipo</importMapping>
+							</importMappings>
+						</configuration>
+					</execution>
+
+					<!-- ── Módulo: Insumos ── -->
+					<execution>
+						<id>generate-insumos</id>
+						<goals><goal>generate</goal></goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/openapi/openapi-insumos.yaml</inputSpec>
+							<generatorName>spring</generatorName>
+							<output>${project.build.directory}/generated-sources/openapi</output>
+							<apiPackage>com.vacapp.insumos.internal.infrastructure.controllers.mobile</apiPackage>
+							<modelPackage>com.vacapp.insumos.internal.infrastructure.controllers.mobile.dtos</modelPackage>
+							<configOptions>
+								<interfaceOnly>true</interfaceOnly>
+								<useSpringBoot3>true</useSpringBoot3>
+								<useTags>true</useTags>
+								<openApiNullable>false</openApiNullable>
+								<skipDefaultInterface>true</skipDefaultInterface>
+								<generateSupportingFiles>false</generateSupportingFiles>
+							</configOptions>
+							<generateModels>false</generateModels>
+							<importMappings>
+								<importMapping>InsumoRequest=com.vacapp.insumos.internal.infrastructure.controllers.mobile.dtos.InsumoRequest</importMapping>
+								<importMapping>InsumoResponse=com.vacapp.insumos.internal.infrastructure.controllers.mobile.dtos.InsumoResponse</importMapping>
+								<importMapping>CategoriaInsumo=com.vacapp.insumos.internal.domain.model.CategoriaInsumo</importMapping>
+								<importMapping>UnidadMedida=com.vacapp.insumos.internal.domain.model.UnidadMedida</importMapping>
+							</importMappings>
+						</configuration>
+					</execution>
+
+					<!-- ── Módulo: Vacunas ── -->
+					<execution>
+						<id>generate-vacunas</id>
+						<goals><goal>generate</goal></goals>
+						<configuration>
+							<inputSpec>${project.basedir}/src/main/resources/openapi/openapi-vacunas.yaml</inputSpec>
+							<generatorName>spring</generatorName>
+							<output>${project.build.directory}/generated-sources/openapi</output>
+							<apiPackage>com.vacapp.vacunas.internal.infrastructure.controllers.mobile</apiPackage>
+							<modelPackage>com.vacapp.vacunas.internal.infrastructure.controllers.mobile.dtos</modelPackage>
+							<configOptions>
+								<interfaceOnly>true</interfaceOnly>
+								<useSpringBoot3>true</useSpringBoot3>
+								<useTags>true</useTags>
+								<openApiNullable>false</openApiNullable>
+								<skipDefaultInterface>true</skipDefaultInterface>
+								<generateSupportingFiles>false</generateSupportingFiles>
+							</configOptions>
+							<generateModels>false</generateModels>
+							<importMappings>
+								<importMapping>VacunaRequest=com.vacapp.vacunas.internal.infrastructure.controllers.mobile.dtos.VacunaRequest</importMapping>
+								<importMapping>VacunaResponse=com.vacapp.vacunas.internal.infrastructure.controllers.mobile.dtos.VacunaResponse</importMapping>
+								<importMapping>TipoVacuna=com.vacapp.vacunas.internal.domain.model.TipoVacuna</importMapping>
+								<importMapping>ViaAdministracion=com.vacapp.vacunas.internal.domain.model.ViaAdministracion</importMapping>
+							</importMappings>
+						</configuration>
+					</execution>
+
+				</executions>
+			</plugin>
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

@@ -1,0 +1,222 @@
+openapi: 3.0.3
+info:
+  title: Vacapp — Ganado
+  version: v1
+  description: Operaciones del inventario de animales
+
+tags:
+  - name: Ganado
+    description: Operaciones del inventario de animales
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/v1/animales:
+    post:
+      tags:
+        - Ganado
+      operationId: registrarAnimal
+      summary: Registrar animal
+      description: Registra un nuevo animal para el tenant autenticado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnimalRequest'
+      responses:
+        '201':
+          description: Animal registrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnimalResponse'
+        '400':
+          description: Datos inválidos
+        '401':
+          description: No autenticado
+
+    get:
+      tags:
+        - Ganado
+      operationId: listarAnimales
+      summary: Listar animales
+      description: Obtiene todos los animales del tenant autenticado
+      responses:
+        '200':
+          description: Listado de animales
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnimalResponse'
+        '401':
+          description: No autenticado
+
+  /api/v1/animales/{id}:
+    put:
+      tags:
+        - Ganado
+      operationId: actualizarAnimal
+      summary: Actualizar animal
+      description: Actualiza un animal existente del tenant autenticado
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Identificador único del animal
+          example: 1f5644fb-7ae1-4f87-8b07-8a2036e28cd1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnimalRequest'
+      responses:
+        '200':
+          description: Animal actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnimalResponse'
+        '400':
+          description: Datos inválidos
+        '401':
+          description: No autenticado
+        '404':
+          description: Animal no encontrado
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    AnimalRequest:
+      type: object
+      required:
+        - numeroIdentificador
+        - estatus
+        - sexo
+      properties:
+        numeroIdentificador:
+          type: string
+          description: Número identificador del animal
+          example: MX-0001
+        estatus:
+          $ref: '#/components/schemas/Estatus'
+        sexo:
+          $ref: '#/components/schemas/Sexo'
+        raza:
+          type: string
+          description: Raza del animal
+          example: Holstein
+        fechaNacimiento:
+          type: string
+          format: date
+          description: Fecha de nacimiento
+          example: "2024-01-15"
+        meses:
+          type: integer
+          description: Edad en meses
+          example: 18
+        fechaAretado:
+          type: string
+          format: date
+          description: Fecha de aretado
+          example: "2024-02-01"
+        tipo:
+          $ref: '#/components/schemas/Tipo'
+        areteAnterior:
+          type: string
+          description: Arete anterior
+          example: AR-900
+        folioReemo:
+          type: string
+          description: Folio de reemplacado
+          example: FR-2026-001
+        nota:
+          type: string
+          description: Notas adicionales
+          example: Animal en buen estado
+
+    AnimalResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Identificador único del animal
+          example: 1f5644fb-7ae1-4f87-8b07-8a2036e28cd1
+        numeroIdentificador:
+          type: string
+          description: Número identificador del animal
+          example: MX-0001
+        estatus:
+          $ref: '#/components/schemas/Estatus'
+        sexo:
+          $ref: '#/components/schemas/Sexo'
+        raza:
+          type: string
+          description: Raza del animal
+          example: Holstein
+        fechaNacimiento:
+          type: string
+          format: date
+          description: Fecha de nacimiento
+          example: "2024-01-15"
+        meses:
+          type: integer
+          description: Edad en meses
+          example: 18
+        fechaAretado:
+          type: string
+          format: date
+          description: Fecha de aretado
+          example: "2024-02-01"
+        tipo:
+          $ref: '#/components/schemas/Tipo'
+        areteAnterior:
+          type: string
+          description: Arete anterior
+          example: AR-900
+        folioReemo:
+          type: string
+          description: Folio de reemplacado
+          example: FR-2026-001
+        nota:
+          type: string
+          description: Notas adicionales
+          example: Animal en buen estado
+
+    Estatus:
+      type: string
+      description: Estatus del animal en el inventario
+      enum:
+        - VIGENTE
+        - BAJA
+      example: VIGENTE
+
+    Sexo:
+      type: string
+      description: Sexo del animal
+      enum:
+        - HEMBRA
+        - MACHO
+      example: HEMBRA
+
+    Tipo:
+      type: string
+      description: Tipo de movimiento o destino del animal
+      enum:
+        - VENTA
+        - TRASLADO
+        - OTRO
+      example: VENTA

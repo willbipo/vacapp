@@ -1,0 +1,227 @@
+openapi: 3.0.3
+info:
+  title: Vacapp — Vacunas
+  version: v1
+  description: Operaciones del inventario de vacunas
+
+tags:
+  - name: Vacunas
+    description: Operaciones del inventario de vacunas
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/v1/vacunas:
+    post:
+      tags:
+        - Vacunas
+      operationId: registrarVacuna
+      summary: Registrar vacuna
+      description: Registra una nueva vacuna para el tenant autenticado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VacunaRequest'
+      responses:
+        '201':
+          description: Vacuna registrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VacunaResponse'
+        '400':
+          description: Datos inválidos
+        '401':
+          description: No autenticado
+
+    get:
+      tags:
+        - Vacunas
+      operationId: listarVacunas
+      summary: Listar vacunas
+      description: Obtiene todas las vacunas del tenant autenticado
+      responses:
+        '200':
+          description: Listado de vacunas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/VacunaResponse'
+        '401':
+          description: No autenticado
+
+  /api/v1/vacunas/{id}:
+    put:
+      tags:
+        - Vacunas
+      operationId: actualizarVacuna
+      summary: Actualizar vacuna
+      description: Actualiza una vacuna existente del tenant autenticado
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Identificador único de la vacuna
+          example: f49ad91d-08b9-4208-ae70-a85119f37089
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VacunaRequest'
+      responses:
+        '200':
+          description: Vacuna actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VacunaResponse'
+        '400':
+          description: Datos inválidos
+        '401':
+          description: No autenticado
+        '404':
+          description: Vacuna no encontrada
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    VacunaRequest:
+      type: object
+      required:
+        - nombre
+        - tipo
+      properties:
+        nombre:
+          type: string
+          description: Nombre de la vacuna
+          example: Brucelosis B19
+        tipo:
+          $ref: '#/components/schemas/TipoVacuna'
+        laboratorio:
+          type: string
+          description: Laboratorio fabricante
+          example: Lab Vet
+        descripcion:
+          type: string
+          description: Descripción de la vacuna
+          example: Aplicación anual
+        dosis:
+          type: string
+          description: Dosis recomendada
+          example: 2 ml
+        viaAdministracion:
+          $ref: '#/components/schemas/ViaAdministracion'
+        lote:
+          type: string
+          description: Número de lote
+          example: LT-2026-09
+        fechaCaducidad:
+          type: string
+          format: date
+          description: Fecha de caducidad
+          example: "2027-12-31"
+        stock:
+          type: integer
+          description: Stock disponible
+          example: 200
+        unidadMedida:
+          type: string
+          description: Unidad de medida
+          example: FRASCO
+        temperaturaAlmacenamiento:
+          type: string
+          description: Temperatura de almacenamiento
+          example: 2-8 C
+        intervaloDias:
+          type: integer
+          description: Intervalo entre dosis en días
+          example: 30
+
+    VacunaResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Identificador único de la vacuna
+          example: f49ad91d-08b9-4208-ae70-a85119f37089
+        nombre:
+          type: string
+          description: Nombre de la vacuna
+          example: Brucelosis B19
+        tipo:
+          $ref: '#/components/schemas/TipoVacuna'
+        laboratorio:
+          type: string
+          description: Laboratorio fabricante
+          example: Lab Vet
+        descripcion:
+          type: string
+          description: Descripción de la vacuna
+          example: Aplicación anual
+        dosis:
+          type: string
+          description: Dosis recomendada
+          example: 2 ml
+        viaAdministracion:
+          $ref: '#/components/schemas/ViaAdministracion'
+        lote:
+          type: string
+          description: Número de lote
+          example: LT-2026-09
+        fechaCaducidad:
+          type: string
+          format: date
+          description: Fecha de caducidad
+          example: "2027-12-31"
+        stock:
+          type: integer
+          description: Stock disponible
+          example: 200
+        unidadMedida:
+          type: string
+          description: Unidad de medida
+          example: FRASCO
+        temperaturaAlmacenamiento:
+          type: string
+          description: Temperatura de almacenamiento
+          example: 2-8 C
+        intervaloDias:
+          type: integer
+          description: Intervalo entre dosis en días
+          example: 30
+
+    TipoVacuna:
+      type: string
+      description: Tipo de vacuna según el agente biológico que combate
+      enum:
+        - VIRAL
+        - BACTERIANA
+        - PARASITARIA
+        - COMBINADA
+        - TOXOIDE
+      example: BACTERIANA
+
+    ViaAdministracion:
+      type: string
+      description: Vía de administración de la vacuna
+      enum:
+        - SUBCUTANEA
+        - INTRAMUSCULAR
+        - ORAL
+        - INTRANASAL
+      example: INTRAMUSCULAR

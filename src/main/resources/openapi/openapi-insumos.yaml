@@ -1,0 +1,216 @@
+openapi: 3.0.3
+info:
+  title: Vacapp — Insumos
+  version: v1
+  description: Operaciones del inventario de insumos
+
+tags:
+  - name: Insumos
+    description: Operaciones del inventario de insumos
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/v1/insumos:
+    post:
+      tags:
+        - Insumos
+      operationId: registrarInsumo
+      summary: Registrar insumo
+      description: Registra un nuevo insumo para el tenant autenticado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InsumoRequest'
+      responses:
+        '201':
+          description: Insumo registrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsumoResponse'
+        '400':
+          description: Datos inválidos
+        '401':
+          description: No autenticado
+
+    get:
+      tags:
+        - Insumos
+      operationId: listarInsumos
+      summary: Listar insumos
+      description: Obtiene todos los insumos del tenant autenticado
+      responses:
+        '200':
+          description: Listado de insumos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InsumoResponse'
+        '401':
+          description: No autenticado
+
+  /api/v1/insumos/{id}:
+    put:
+      tags:
+        - Insumos
+      operationId: actualizarInsumo
+      summary: Actualizar insumo
+      description: Actualiza un insumo existente del tenant autenticado
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Identificador único del insumo
+          example: 6aa2b11e-66c2-4f21-a57e-a65014d6f6da
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InsumoRequest'
+      responses:
+        '200':
+          description: Insumo actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsumoResponse'
+        '400':
+          description: Datos inválidos
+        '401':
+          description: No autenticado
+        '404':
+          description: Insumo no encontrado
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    InsumoRequest:
+      type: object
+      required:
+        - nombre
+        - categoria
+        - unidadMedida
+      properties:
+        nombre:
+          type: string
+          description: Nombre del insumo
+          example: Alimento balanceado
+        categoria:
+          $ref: '#/components/schemas/CategoriaInsumo'
+        unidadMedida:
+          $ref: '#/components/schemas/UnidadMedida'
+        cantidad:
+          type: number
+          format: double
+          description: Cantidad disponible
+          example: 120.5
+        cantidadMinima:
+          type: number
+          format: double
+          description: Cantidad mínima para alerta
+          example: 20.0
+        descripcion:
+          type: string
+          description: Descripción del insumo
+          example: Saco para bovinos
+        proveedor:
+          type: string
+          description: Proveedor del insumo
+          example: Proveedor Norte
+        precioUnitario:
+          type: number
+          format: double
+          description: Precio unitario
+          example: 450.00
+        ubicacion:
+          type: string
+          description: Ubicación física del insumo
+          example: Bodega A
+
+    InsumoResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Identificador único del insumo
+          example: 6aa2b11e-66c2-4f21-a57e-a65014d6f6da
+        nombre:
+          type: string
+          description: Nombre del insumo
+          example: Alimento balanceado
+        categoria:
+          $ref: '#/components/schemas/CategoriaInsumo'
+        unidadMedida:
+          $ref: '#/components/schemas/UnidadMedida'
+        cantidad:
+          type: number
+          format: double
+          description: Cantidad disponible
+          example: 120.5
+        cantidadMinima:
+          type: number
+          format: double
+          description: Cantidad mínima para alerta
+          example: 20.0
+        descripcion:
+          type: string
+          description: Descripción del insumo
+          example: Saco para bovinos
+        proveedor:
+          type: string
+          description: Proveedor del insumo
+          example: Proveedor Norte
+        precioUnitario:
+          type: number
+          format: double
+          description: Precio unitario
+          example: 450.00
+        ubicacion:
+          type: string
+          description: Ubicación física del insumo
+          example: Bodega A
+
+    CategoriaInsumo:
+      type: string
+      description: Categoría del insumo según su naturaleza
+      enum:
+        - HERRAMIENTA
+        - ALIMENTO
+        - MEDICAMENTO
+        - EQUIPO
+        - SEMILLA
+        - FERTILIZANTE
+        - OTRO
+      example: ALIMENTO
+
+    UnidadMedida:
+      type: string
+      description: Unidad de medida del insumo
+      enum:
+        - UNIDAD
+        - KILOGRAMO
+        - GRAMO
+        - TONELADA
+        - LITRO
+        - MILILITRO
+        - SACO
+        - CAJA
+        - ROLLO
+        - METRO
+      example: KILOGRAMO

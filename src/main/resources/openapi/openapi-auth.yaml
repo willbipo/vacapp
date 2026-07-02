@@ -1,0 +1,180 @@
+openapi: 3.0.3
+info:
+  title: Vacapp — Autenticación
+  version: v1
+  description: Endpoints de login, logout y registro de usuarios
+
+tags:
+  - name: Autenticación
+    description: Endpoints de login, logout y registro de usuarios
+
+paths:
+  /api/v1/auth/login:
+    post:
+      tags:
+        - Autenticación
+      operationId: login
+      summary: Iniciar sesión
+      description: Autentica usuario y retorna JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Autenticación exitosa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Datos inválidos
+        '401':
+          description: Credenciales inválidas
+
+  /api/v1/auth/logout:
+    post:
+      tags:
+        - Autenticación
+      operationId: logout
+      summary: Cerrar sesión
+      description: Elimina la cookie JWT de sesión
+      responses:
+        '200':
+          description: Sesión cerrada
+        '401':
+          description: No autenticado
+
+  /api/v1/auth/me:
+    get:
+      tags:
+        - Autenticación
+      operationId: obtenerUsuarioActual
+      summary: Obtener usuario actual
+      description: Retorna el usuario autenticado actual
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Usuario autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsuarioActualResponse'
+        '401':
+          description: No autenticado
+
+  /api/v1/auth/registro:
+    post:
+      tags:
+        - Autenticación
+      operationId: registro
+      summary: Registrar usuario
+      description: Registra un usuario nuevo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistroRequest'
+      responses:
+        '201':
+          description: Usuario registrado
+        '400':
+          description: Datos inválidos
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: Nombre de usuario
+          example: admin
+        password:
+          type: string
+          description: Contraseña del usuario
+          example: Password123*
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT emitido para la sesión
+          example: eyJhbGciOiJIUzI1NiJ9...
+        username:
+          type: string
+          description: Nombre de usuario autenticado
+          example: admin
+        role:
+          type: string
+          description: Rol del usuario autenticado
+          example: ADMIN
+        tenantId:
+          type: string
+          description: Tenant del usuario autenticado
+          example: tenant-default
+
+    RegistroRequest:
+      type: object
+      required:
+        - username
+        - email
+        - password
+        - role
+        - tenantId
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+          description: Nombre de usuario
+          example: nuevo.usuario
+        email:
+          type: string
+          format: email
+          description: Correo electrónico del usuario
+          example: usuario@vacapp.com
+        password:
+          type: string
+          minLength: 8
+          description: Contraseña del usuario
+          example: Password123*
+        role:
+          $ref: '#/components/schemas/Rol'
+        tenantId:
+          type: string
+          description: Tenant al que pertenece el usuario
+          example: tenant-default
+
+    UsuarioActualResponse:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Nombre de usuario autenticado
+          example: admin
+
+    Rol:
+      type: string
+      description: |
+        Rol del usuario en la plataforma. Jerarquía: ADMIN > FARMER > DOCTOR > WORKER.
+      enum:
+        - ADMIN
+        - FARMER
+        - DOCTOR
+        - WORKER
+      example: FARMER
