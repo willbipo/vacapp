@@ -7,6 +7,14 @@ import com.vacapp.vacunas.internal.application.usecases.RegistrarVacunaUseCase;
 import com.vacapp.vacunas.internal.domain.model.Vacuna;
 import com.vacapp.vacunas.internal.infrastructure.controllers.mobile.dtos.VacunaRequest;
 import com.vacapp.vacunas.internal.infrastructure.controllers.mobile.dtos.VacunaResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +34,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/vacunas")
 @RequiredArgsConstructor
+@Tag(name = "Vacunas", description = "Operaciones del inventario de vacunas")
+@SecurityRequirement(name = "bearerAuth")
 public class VacunasRestController {
 
     private final RegistrarVacunaUseCase registrarVacunaUseCase;
@@ -33,6 +43,12 @@ public class VacunasRestController {
     private final ActualizarVacunaUseCase actualizarVacunaUseCase;
 
     @PostMapping
+        @Operation(summary = "Registrar vacuna", description = "Registra una nueva vacuna para el tenant autenticado")
+        @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Vacuna registrada", content = @Content(schema = @Schema(implementation = VacunaResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content),
+            @ApiResponse(responseCode = "401", description = "No autenticado", content = @Content)
+        })
     public ResponseEntity<VacunaResponse> registrar(@Valid @RequestBody VacunaRequest req) {
         String tenantId = TenantContext.obtenerTenant();
         Vacuna vacuna = registrarVacunaUseCase.ejecutar(new RegistrarVacunaUseCase.Comando(
@@ -44,6 +60,11 @@ public class VacunasRestController {
     }
 
     @GetMapping
+        @Operation(summary = "Listar vacunas", description = "Obtiene todas las vacunas del tenant autenticado")
+        @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Listado de vacunas", content = @Content(array = @ArraySchema(schema = @Schema(implementation = VacunaResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "No autenticado", content = @Content)
+        })
     public ResponseEntity<List<VacunaResponse>> listar() {
         String tenantId = TenantContext.obtenerTenant();
         List<VacunaResponse> lista = listarVacunasUseCase.ejecutar(tenantId)
@@ -52,6 +73,13 @@ public class VacunasRestController {
     }
 
     @PutMapping("/{id}")
+        @Operation(summary = "Actualizar vacuna", description = "Actualiza una vacuna existente del tenant autenticado")
+        @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Vacuna actualizada", content = @Content(schema = @Schema(implementation = VacunaResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content),
+            @ApiResponse(responseCode = "401", description = "No autenticado", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Vacuna no encontrada", content = @Content)
+        })
     public ResponseEntity<VacunaResponse> actualizar(
             @PathVariable UUID id,
             @Valid @RequestBody VacunaRequest req) {

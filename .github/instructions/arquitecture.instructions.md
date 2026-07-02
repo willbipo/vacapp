@@ -64,6 +64,8 @@ El proyecto es un **monolito modular**. Cada módulo de negocio (ej. `ganado`, `
 
 6. **Constructor injection**: Prohibido `@Autowired` en campos. Toda inyección por constructor con Lombok `@RequiredArgsConstructor` + campos `final`.
 
+7. **Documentación OpenAPI obligatoria (API móvil)**: Todo endpoint REST en `internal/infrastructure/controllers/mobile/` debe incluir anotaciones Swagger (`@Tag`, `@Operation`, `@ApiResponses`) y los DTOs Request/Response deben incluir `@Schema` para describir campos y ejemplos.
+
 ---
 
 ## 4. Estructura de un Módulo Spring Modulith

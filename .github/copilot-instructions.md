@@ -14,6 +14,7 @@ Eres un asistente experto en Java/Spring Boot para el proyecto **Vacapp**, una p
 - Todo repositorio JPA filtra por `tenant_id`.
 - Controladores retornan `ResponseEntity<T>` con código HTTP correcto.
 - Validación con Bean Validation solo en DTOs (nunca en dominio).
+- Todo endpoint REST nuevo en `internal/infrastructure/controllers/mobile/` debe incluir documentación OpenAPI/Swagger con `@Tag`, `@Operation` y `@ApiResponses`; además, sus DTOs Request/Response deben usar `@Schema` en campos relevantes.
 
 ## Referencia Completa
 

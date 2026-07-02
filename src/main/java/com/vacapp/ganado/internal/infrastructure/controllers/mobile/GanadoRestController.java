@@ -7,6 +7,14 @@ import com.vacapp.ganado.internal.application.usecases.RegistrarAnimalUseCase;
 import com.vacapp.ganado.internal.domain.model.Animal;
 import com.vacapp.ganado.internal.infrastructure.controllers.mobile.dtos.AnimalRequest;
 import com.vacapp.ganado.internal.infrastructure.controllers.mobile.dtos.AnimalResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +34,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/animales")
 @RequiredArgsConstructor
+@Tag(name = "Ganado", description = "Operaciones del inventario de animales")
+@SecurityRequirement(name = "bearerAuth")
 public class GanadoRestController {
 
     private final RegistrarAnimalUseCase registrarAnimalUseCase;
@@ -33,6 +43,12 @@ public class GanadoRestController {
     private final ActualizarAnimalUseCase actualizarAnimalUseCase;
 
     @PostMapping
+        @Operation(summary = "Registrar animal", description = "Registra un nuevo animal para el tenant autenticado")
+        @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Animal registrado", content = @Content(schema = @Schema(implementation = AnimalResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content),
+            @ApiResponse(responseCode = "401", description = "No autenticado", content = @Content)
+        })
     public ResponseEntity<AnimalResponse> registrar(@Valid @RequestBody AnimalRequest req) {
         String tenantId = TenantContext.obtenerTenant();
         Animal animal = registrarAnimalUseCase.ejecutar(new RegistrarAnimalUseCase.Comando(
@@ -44,6 +60,11 @@ public class GanadoRestController {
     }
 
     @GetMapping
+        @Operation(summary = "Listar animales", description = "Obtiene todos los animales del tenant autenticado")
+        @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Listado de animales", content = @Content(array = @ArraySchema(schema = @Schema(implementation = AnimalResponse.class)))),
+            @ApiResponse(responseCode = "401", description = "No autenticado", content = @Content)
+        })
     public ResponseEntity<List<AnimalResponse>> listar() {
         String tenantId = TenantContext.obtenerTenant();
         List<AnimalResponse> lista = listarAnimalesUseCase.ejecutar(tenantId)
@@ -52,6 +73,13 @@ public class GanadoRestController {
     }
 
     @PutMapping("/{id}")
+        @Operation(summary = "Actualizar animal", description = "Actualiza un animal existente del tenant autenticado")
+        @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Animal actualizado", content = @Content(schema = @Schema(implementation = AnimalResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content),
+            @ApiResponse(responseCode = "401", description = "No autenticado", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Animal no encontrado", content = @Content)
+        })
     public ResponseEntity<AnimalResponse> actualizar(
             @PathVariable UUID id,
             @Valid @RequestBody AnimalRequest req) {

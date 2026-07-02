@@ -8,6 +8,13 @@ import com.vacapp.usuarios.internal.infrastructure.controllers.mobile.dtos.Login
 import com.vacapp.usuarios.internal.infrastructure.controllers.mobile.dtos.LoginResponse;
 import com.vacapp.usuarios.internal.infrastructure.controllers.mobile.dtos.RegistroRequest;
 import com.vacapp.usuarios.internal.infrastructure.controllers.mobile.dtos.UsuarioActualResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -31,6 +38,7 @@ import java.security.Principal;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Autenticación", description = "Endpoints de login, logout y registro de usuarios")
 public class AuthRestController {
 
     private final AutenticarUsuarioUseCase autenticarUsuarioUseCase;
@@ -41,6 +49,12 @@ public class AuthRestController {
      * POST /api/v1/auth/login
      */
     @PostMapping("/login")
+        @Operation(summary = "Iniciar sesión", description = "Autentica usuario y retorna JWT")
+        @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Autenticación exitosa", content = @Content(schema = @Schema(implementation = LoginResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content),
+            @ApiResponse(responseCode = "401", description = "Credenciales inválidas", content = @Content)
+        })
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request,
                                                HttpServletResponse response) {
         ResultadoAutenticacion resultado = autenticarUsuarioUseCase.ejecutar(request.username(), request.password());
@@ -58,6 +72,11 @@ public class AuthRestController {
 
     /** Cierra sesión borrando la cookie JWT. POST /api/v1/auth/logout */
     @PostMapping("/logout")
+    @Operation(summary = "Cerrar sesión", description = "Elimina la cookie JWT de sesión")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Sesión cerrada"),
+            @ApiResponse(responseCode = "401", description = "No autenticado", content = @Content)
+    })
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("vacapp_jwt", "");
         cookie.setHttpOnly(true);
@@ -72,6 +91,12 @@ public class AuthRestController {
      * GET /api/v1/auth/me
      */
     @GetMapping("/me")
+    @Operation(summary = "Obtener usuario actual", description = "Retorna el usuario autenticado actual")
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Usuario autenticado", content = @Content(schema = @Schema(implementation = UsuarioActualResponse.class))),
+            @ApiResponse(responseCode = "401", description = "No autenticado", content = @Content)
+    })
     public ResponseEntity<UsuarioActualResponse> obtenerUsuarioActual(Principal principal) {
         if (principal == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -84,6 +109,11 @@ public class AuthRestController {
      * POST /api/v1/auth/registro
      */
     @PostMapping("/registro")
+        @Operation(summary = "Registrar usuario", description = "Registra un usuario nuevo")
+        @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Usuario registrado"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos", content = @Content)
+        })
     public ResponseEntity<Void> registro(@Valid @RequestBody RegistroRequest request) {
         log.info("Registrando usuario");
         ComandoRegistroUsuario comando = new ComandoRegistroUsuario(

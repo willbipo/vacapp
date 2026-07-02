@@ -26,7 +26,8 @@
 8. **Multi-tenancy**: Todo repositorio JPA debe filtrar por `tenant_id` extraído del contexto de seguridad.
 9. **Respuestas HTTP**: Los controladores retornan `ResponseEntity<T>` con código HTTP semánticamente correcto.
 10. **Validación**: Anotaciones Bean Validation (`@NotNull`, `@Size`, etc.) solo en DTOs de Request (en `infrastructure/controllers/*/dtos/`), nunca en entidades de dominio.
-11. **No sobre-ingeniería**: Solo implementar lo que se solicita explícitamente. No añadir features no pedidas.
+11. **Swagger obligatorio en Mobile REST**: Todo endpoint nuevo en `internal/infrastructure/controllers/mobile/` debe documentarse con OpenAPI (`@Tag`, `@Operation`, `@ApiResponses`) y sus DTOs con `@Schema`.
+12. **No sobre-ingeniería**: Solo implementar lo que se solicita explícitamente. No añadir features no pedidas.
 
 ---
 

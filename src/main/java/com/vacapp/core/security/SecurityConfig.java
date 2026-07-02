@@ -46,6 +46,8 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
+                // Documentación OpenAPI/Swagger
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 // Vistas Thymeleaf públicas
                 .requestMatchers("/", "/login", "/salida", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/dashboard/**", "/inventario/**", "/vacunas/**", "/insumos/**").permitAll()
                 .anyRequest().authenticated())
