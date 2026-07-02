@@ -1,0 +1,1001 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ciclo Reproductivo — Vacapp</title>
+
+    <link rel="stylesheet" th:href="@{/css/global.css}" />
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
+    <link rel="stylesheet" th:href="@{/css/navbard.css}" />
+    <link rel="stylesheet" th:href="@{/css/sidebard.css}" />
+    <link rel="stylesheet" th:href="@{/css/cicloReproductivo.css}" />
+  </head>
+  <body>
+    <div class="dashboard-shell">
+      <div th:replace="~{fragments/sidebard :: sidebar}"></div>
+
+      <div class="dashboard-main">
+        <div th:replace="~{fragments/navbard :: navbar}"></div>
+
+        <main class="dashboard-content">
+          <!-- Encabezado -->
+          <div class="cr-header">
+            <div class="cr-header-title">
+              <span class="cr-header-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M12 20s-7-4.35-9.3-8.9C1.2 8 2 5 5 4.2c2.1-.6 4 .4 5 2.1.9-1.7 2.9-2.7 5-2.1 3 .8 3.8 3.8 2.3 6.9C15 15.65 12 20 12 20z"
+                  />
+                  <path d="M4 12.5h3l1.3-2.6L10.5 15l1.7-5 1.3 2.5H20" />
+                </svg>
+              </span>
+              <div>
+                <p class="page-overline">Seguimiento</p>
+                <h1>Ciclo Reproductivo</h1>
+              </div>
+            </div>
+            <div class="cr-header-actions">
+              <button
+                class="btn-primary"
+                id="btn-nueva-gestacion"
+                type="button"
+              >
+                <svg viewBox="0 0 24 24">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+                Nueva gestación
+              </button>
+            </div>
+          </div>
+
+          <!-- Tarjetas informativas -->
+          <div class="stats-grid">
+            <div class="stat-card stat-card--activas">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M12 20s-7-4.35-9.3-8.9C1.2 8 2 5 5 4.2c2.1-.6 4 .4 5 2.1.9-1.7 2.9-2.7 5-2.1 3 .8 3.8 3.8 2.3 6.9C15 15.65 12 20 12 20z"
+                  />
+                  <path d="M4 12.5h3l1.3-2.6L10.5 15l1.7-5 1.3 2.5H20" />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p class="stat-value" id="statActivas">0</p>
+                <p class="stat-label">Gestaciones activas</p>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card--proximos">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <rect x="3" y="5" width="18" height="16" rx="2.4" />
+                  <path d="M3 10h18M8 3v4M16 3v4" />
+                  <circle
+                    cx="16.5"
+                    cy="15"
+                    r="1"
+                    fill="currentColor"
+                    stroke="none"
+                  />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p class="stat-value" id="statProximos">0</p>
+                <p class="stat-label">Partos próximos</p>
+                <p class="stat-hint">En los próximos 30 días</p>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card--becerros">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <circle
+                    cx="7.3"
+                    cy="8.3"
+                    r="1.5"
+                    fill="currentColor"
+                    stroke="none"
+                  />
+                  <circle
+                    cx="11.6"
+                    cy="6.4"
+                    r="1.5"
+                    fill="currentColor"
+                    stroke="none"
+                  />
+                  <circle
+                    cx="16"
+                    cy="8.3"
+                    r="1.5"
+                    fill="currentColor"
+                    stroke="none"
+                  />
+                  <circle
+                    cx="18.2"
+                    cy="12.6"
+                    r="1.5"
+                    fill="currentColor"
+                    stroke="none"
+                  />
+                  <path
+                    d="M12.2 12c-2.9 0-5.4 2-5.4 4.6 0 1.8 1.6 2.9 3.3 2.2.9-.3 1.9-.3 2.8 0 1.7.7 3.3-.4 3.3-2.2 0-2.6-2.5-4.6-6-4.6z"
+                  />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p class="stat-value" id="statBecerros">0</p>
+                <p class="stat-label">Becerros registrados</p>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card--historial">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M8.2 12.3l2.4 2.4 5.2-5.2" />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p class="stat-value" id="statHistorial">0</p>
+                <p class="stat-label">Ciclos en historial</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabs -->
+          <div class="cr-tabs" role="tablist">
+            <button class="cr-tab active" data-tab="activas">
+              <svg viewBox="0 0 24 24">
+                <rect x="3" y="5" width="18" height="16" rx="2.4" />
+                <path d="M3 10h18M8 3v4M16 3v4" />
+              </svg>
+              Gestaciones activas
+            </button>
+            <button class="cr-tab" data-tab="historial">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7v5l3.2 1.9" />
+              </svg>
+              Historial
+            </button>
+            <button class="cr-tab" data-tab="becerros">
+              <svg viewBox="0 0 24 24">
+                <circle
+                  cx="7.3"
+                  cy="8.3"
+                  r="1.4"
+                  fill="currentColor"
+                  stroke="none"
+                />
+                <circle
+                  cx="11.6"
+                  cy="6.4"
+                  r="1.4"
+                  fill="currentColor"
+                  stroke="none"
+                />
+                <circle
+                  cx="16"
+                  cy="8.3"
+                  r="1.4"
+                  fill="currentColor"
+                  stroke="none"
+                />
+                <circle
+                  cx="18.2"
+                  cy="12.6"
+                  r="1.4"
+                  fill="currentColor"
+                  stroke="none"
+                />
+                <path
+                  d="M12.2 12c-2.9 0-5.4 2-5.4 4.6 0 1.8 1.6 2.9 3.3 2.2.9-.3 1.9-.3 2.8 0 1.7.7 3.3-.4 3.3-2.2 0-2.6-2.5-4.6-6-4.6z"
+                />
+              </svg>
+              Becerros
+            </button>
+          </div>
+
+          <!-- Filtros de búsqueda -->
+          <div class="filter-bar">
+            <div class="filter-field filter-search">
+              <label for="filtroBusqueda">Buscar</label>
+              <svg viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M21 21l-4.3-4.3" />
+              </svg>
+              <input
+                type="text"
+                id="filtroBusqueda"
+                placeholder="Buscar por identificador de vaca…"
+                oninput="aplicarFiltrosCR()"
+              />
+            </div>
+            <div class="filter-field" id="campoFiltroEstatus">
+              <label for="filtroEstatus">Estatus</label>
+              <select id="filtroEstatus" onchange="aplicarFiltrosCR()">
+                <option value="">Todos</option>
+                <option value="EN_CURSO">En curso</option>
+                <option value="COMPLETADO">Completado</option>
+                <option value="GESTACION">Gestación</option>
+                <option value="REPOSO">Reposo</option>
+                <option value="VIGENTE">Vigente</option>
+              </select>
+            </div>
+            <div
+              class="filter-field"
+              id="campoFiltroSexo"
+              style="display: none"
+            >
+              <label for="filtroSexo">Sexo</label>
+              <select id="filtroSexo" onchange="aplicarFiltrosCR()">
+                <option value="">Todos</option>
+                <option value="MACHO">Macho</option>
+                <option value="HEMBRA">Hembra</option>
+              </select>
+            </div>
+            <div class="filter-actions">
+              <button
+                class="btn-ghost"
+                type="button"
+                onclick="limpiarFiltrosCR()"
+              >
+                <svg viewBox="0 0 24 24">
+                  <path d="M3 12a9 9 0 1 0 3-6.7" />
+                  <path d="M3 4v5h5" />
+                </svg>
+                Limpiar filtros
+              </button>
+            </div>
+          </div>
+
+          <!-- Panel: Gestaciones activas -->
+          <div id="panel-activas" class="cr-card">
+            <div class="cr-table-wrap">
+              <table class="cr-table">
+                <thead>
+                  <tr>
+                    <th>Vaca</th>
+                    <th>Inicio gestación</th>
+                    <th>Parto estimado</th>
+                    <th>Progreso</th>
+                    <th>Estatus</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-activas">
+                  <tr>
+                    <td colspan="6">
+                      <div class="cr-empty">
+                        <svg class="icon-spin" viewBox="0 0 24 24">
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="9"
+                            stroke-dasharray="42 100"
+                          />
+                        </svg>
+                        <div class="cr-empty-msg">Cargando…</div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Panel: Historial -->
+          <div id="panel-historial" class="cr-card" style="display: none">
+            <div class="cr-table-wrap">
+              <table class="cr-table">
+                <thead>
+                  <tr>
+                    <th>Vaca</th>
+                    <th>Inicio</th>
+                    <th>Parto estimado</th>
+                    <th>Parto real</th>
+                    <th>Estatus</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-historial">
+                  <tr>
+                    <td colspan="6">
+                      <div class="cr-empty">
+                        <svg class="icon-spin" viewBox="0 0 24 24">
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="9"
+                            stroke-dasharray="42 100"
+                          />
+                        </svg>
+                        <div class="cr-empty-msg">Cargando…</div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Panel: Becerros -->
+          <div id="panel-becerros" class="cr-card" style="display: none">
+            <div class="cr-panel-toolbar">
+              <span class="cr-panel-toolbar-label">Becerros registrados</span>
+              <button
+                id="btn-ver-todos"
+                class="btn-action"
+                onclick="cargarBecerros(null)"
+                type="button"
+              >
+                <svg viewBox="0 0 24 24">
+                  <path d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                Ver todos
+              </button>
+            </div>
+            <div class="cr-table-wrap">
+              <table class="cr-table">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Nacimiento</th>
+                    <th>Sexo</th>
+                    <th>Madre</th>
+                    <th>Padre</th>
+                    <th>Raza padre</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-becerros">
+                  <tr>
+                    <td colspan="6">
+                      <div class="cr-empty">
+                        <svg class="icon-spin" viewBox="0 0 24 24">
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="9"
+                            stroke-dasharray="42 100"
+                          />
+                        </svg>
+                        <div class="cr-empty-msg">Cargando…</div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Sin resultados por filtro -->
+          <div class="no-results" id="sinResultadosCR">
+            <svg viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.3-4.3" />
+            </svg>
+            <p>Ningún registro coincide con los filtros seleccionados.</p>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- ══════════ Modal: Nueva gestación ══════════ -->
+    <div
+      class="modal-overlay"
+      id="modal-gestacion"
+      onclick="cerrarModalSiAfuera(event, 'modal-gestacion')"
+    >
+      <div class="modal-box" role="dialog" aria-modal="true">
+        <p class="modal-title">
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            stroke="currentColor"
+            stroke-width="1.6"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          Nueva gestación
+        </p>
+        <form id="form-gestacion" novalidate>
+          <div class="modal-grid">
+            <div class="form-field full">
+              <label>Vaca (VIGENTE)</label>
+              <select id="sel-vaca" required></select>
+            </div>
+            <div class="form-field">
+              <label>Fecha inicio</label>
+              <input type="date" id="gest-fecha-inicio" required />
+            </div>
+            <div class="form-field full">
+              <label>Notas</label>
+              <textarea
+                id="gest-notas"
+                placeholder="Observaciones opcionales…"
+              ></textarea>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn-secondary"
+              onclick="cerrarModal('modal-gestacion')"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primary">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 12l5 5L20 6" />
+              </svg>
+              Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ══════════ Modal: Registrar parto ══════════ -->
+    <div
+      class="modal-overlay"
+      id="modal-parto"
+      onclick="cerrarModalSiAfuera(event, 'modal-parto')"
+    >
+      <div class="modal-box" role="dialog" aria-modal="true">
+        <p class="modal-title">
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            stroke="currentColor"
+            stroke-width="1.6"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M4 12l5 5L20 6" />
+          </svg>
+          Registrar parto
+        </p>
+        <form id="form-parto" novalidate>
+          <input type="hidden" id="parto-ciclo-id" />
+          <div class="modal-grid">
+            <div class="form-field">
+              <label>Fecha parto real</label>
+              <input type="date" id="parto-fecha-real" required />
+            </div>
+            <div class="form-field">
+              <label>Días de reposo</label>
+              <input
+                type="number"
+                id="parto-dias-reposo"
+                value="45"
+                min="1"
+                required
+              />
+            </div>
+            <div class="form-field">
+              <label>Nombre del becerro</label>
+              <input type="text" id="becerro-nombre" required />
+            </div>
+            <div class="form-field">
+              <label>Nacimiento becerro</label>
+              <input type="date" id="becerro-fecha-nac" required />
+            </div>
+            <div class="form-field">
+              <label>Sexo</label>
+              <select id="becerro-sexo" required>
+                <option value="">Seleccionar…</option>
+                <option value="MACHO" selected>Macho</option>
+                <option value="HEMBRA">Hembra</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Nombre del padre</label>
+              <input type="text" id="becerro-padre-nombre" />
+            </div>
+            <div class="form-field">
+              <label>Raza del padre</label>
+              <input type="text" id="becerro-padre-raza" />
+            </div>
+            <div class="form-field full">
+              <label>Notas</label>
+              <textarea
+                id="becerro-notas"
+                placeholder="Observaciones del parto…"
+              ></textarea>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn-secondary"
+              onclick="cerrarModal('modal-parto')"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primary">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 12l5 5L20 6" />
+              </svg>
+              Registrar parto
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ══════════ Script ══════════ -->
+    <script>
+      const TOKEN_KEY = "vacapp_token";
+      const BASE = "/api/v1";
+
+      function headers() {
+        const t =
+          localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY);
+        return {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${t}`,
+        };
+      }
+
+      /* ── Iconos auxiliares (badges / género) ─────────────────────────── */
+      const ICONS = {
+        check:
+          '<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>',
+        pulse:
+          '<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h3l2-5 3 10 2-7 2 4h6"/></svg>',
+        pause:
+          '<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>',
+        male: '<svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="14" r="6"/><path d="M14.5 9.5L20 4M20 4h-4.5M20 4v4.5"/></svg>',
+        female:
+          '<svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="6"/><path d="M12 15v6M9 19h6"/></svg>',
+        cow: '<svg viewBox="0 0 24 24" width="42" height="42" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 8c-1.3-.9-2-2.5-1-3.8C6.3 2.9 7.7 3.6 8.3 5"/><path d="M17.5 8c1.3-.9 2-2.5 1-3.8-.8-1.3-2.2-.6-2.8.8"/><rect x="5.5" y="7" width="13" height="10.5" rx="5.2"/><circle cx="9.3" cy="12" r=".7" fill="currentColor" stroke="none"/><circle cx="14.7" cy="12" r=".7" fill="currentColor" stroke="none"/><path d="M10 15.3c.7.6 1.3.6 2 0"/></svg>',
+        calf: '<svg viewBox="0 0 24 24" width="42" height="42" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.3" cy="8.3" r="1.4" fill="currentColor" stroke="none"/><circle cx="11.6" cy="6.4" r="1.4" fill="currentColor" stroke="none"/><circle cx="16" cy="8.3" r="1.4" fill="currentColor" stroke="none"/><circle cx="18.2" cy="12.6" r="1.4" fill="currentColor" stroke="none"/><path d="M12.2 12c-2.9 0-5.4 2-5.4 4.6 0 1.8 1.6 2.9 3.3 2.2.9-.3 1.9-.3 2.8 0 1.7.7 3.3-.4 3.3-2.2 0-2.6-2.5-4.6-6-4.6z"/></svg>',
+        users:
+          '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.3"/><path d="M15 20c0-2.5 1.8-4.6 4.2-5.3"/></svg>',
+      };
+
+      // ── Mapa animales ──
+      let mapaAnimales = {}; // id → { numeroIdentificador, raza, categoria, sexo }
+
+      async function cargarAnimales() {
+        try {
+          const r = await fetch(`${BASE}/animales`, { headers: headers() });
+          if (!r.ok) return;
+          const lista = await r.json();
+          lista.forEach((a) => {
+            mapaAnimales[a.id] = a;
+          });
+        } catch {}
+      }
+
+      function nombreVaca(vacaId) {
+        const a = mapaAnimales[vacaId];
+        if (!a) return vacaId;
+        return `${a.numeroIdentificador} · ${a.raza ?? ""}`;
+      }
+
+      /* ── Estadísticas (tarjetas informativas) ─────────────────────────── */
+      async function cargarEstadisticas() {
+        try {
+          const [rActivas, rHistorial, rBecerros] = await Promise.all([
+            fetch(`${BASE}/ciclo-reproductivo?activos=true`, {
+              headers: headers(),
+            }),
+            fetch(`${BASE}/ciclo-reproductivo?activos=false`, {
+              headers: headers(),
+            }),
+            fetch(`${BASE}/ciclo-reproductivo/becerros`, {
+              headers: headers(),
+            }),
+          ]);
+          const activas = rActivas.ok ? await rActivas.json() : [];
+          const historial = rHistorial.ok ? await rHistorial.json() : [];
+          const becerros = rBecerros.ok ? await rBecerros.json() : [];
+
+          const hoy = new Date();
+          const proximos = activas.filter((c) => {
+            const est = new Date(c.fechaEstimadaParto);
+            const dias = Math.round((est - hoy) / 86400000);
+            return dias >= 0 && dias <= 30;
+          }).length;
+
+          document.getElementById("statActivas").textContent = activas.length;
+          document.getElementById("statProximos").textContent = proximos;
+          document.getElementById("statBecerros").textContent = becerros.length;
+          document.getElementById("statHistorial").textContent =
+            historial.length;
+        } catch {}
+      }
+
+      // ── Tabs ──
+      const tabs = document.querySelectorAll(".cr-tab");
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          tabs.forEach((t) => t.classList.remove("active"));
+          tab.classList.add("active");
+          document.getElementById("panel-activas").style.display = "none";
+          document.getElementById("panel-historial").style.display = "none";
+          document.getElementById("panel-becerros").style.display = "none";
+          const panel = tab.dataset.tab;
+          document.getElementById(`panel-${panel}`).style.display = "block";
+          if (panel === "historial") cargarHistorial();
+          if (panel === "becerros") cargarBecerros(null);
+          document.getElementById("filtroBusqueda").value = "";
+          document.getElementById("filtroEstatus").value = "";
+          document.getElementById("filtroSexo").value = "";
+          actualizarFiltrosUI();
+        });
+      });
+
+      function tabActivo() {
+        return document.querySelector(".cr-tab.active").dataset.tab;
+      }
+
+      function actualizarFiltrosUI() {
+        const tab = tabActivo();
+        const campoEstatus = document.getElementById("campoFiltroEstatus");
+        const campoSexo = document.getElementById("campoFiltroSexo");
+        const busqueda = document.getElementById("filtroBusqueda");
+        if (tab === "becerros") {
+          campoEstatus.style.display = "none";
+          campoSexo.style.display = "";
+          busqueda.placeholder = "Nombre del becerro, madre o padre…";
+        } else {
+          campoEstatus.style.display = "";
+          campoSexo.style.display = "none";
+          busqueda.placeholder = "Buscar por identificador de vaca…";
+        }
+        aplicarFiltrosCR();
+      }
+
+      /* ── Filtros de búsqueda ───────────────────────────────────────────── */
+      function aplicarFiltrosCR() {
+        const tab = tabActivo();
+        const texto = document
+          .getElementById("filtroBusqueda")
+          .value.trim()
+          .toLowerCase();
+        const estatus = document.getElementById("filtroEstatus").value;
+        const sexo = document.getElementById("filtroSexo").value;
+        const tbodyId =
+          tab === "activas"
+            ? "tbody-activas"
+            : tab === "historial"
+              ? "tbody-historial"
+              : "tbody-becerros";
+        const filas = document.querySelectorAll(`#${tbodyId} tr.fila-datos`);
+        let visibles = 0;
+
+        filas.forEach((tr) => {
+          let coincideTexto = true;
+          let coincideEstatus = true;
+          let coincideSexo = true;
+
+          if (tab === "becerros") {
+            coincideTexto =
+              !texto ||
+              (tr.dataset.nombre || "").toLowerCase().includes(texto) ||
+              (tr.dataset.madre || "").toLowerCase().includes(texto) ||
+              (tr.dataset.padre || "").toLowerCase().includes(texto);
+            coincideSexo = !sexo || tr.dataset.sexo === sexo;
+          } else {
+            coincideTexto =
+              !texto || (tr.dataset.vaca || "").toLowerCase().includes(texto);
+            coincideEstatus = !estatus || tr.dataset.estatus === estatus;
+          }
+
+          const visible = coincideTexto && coincideEstatus && coincideSexo;
+          tr.classList.toggle("fila-oculta", !visible);
+          if (visible) visibles++;
+        });
+
+        document
+          .getElementById("sinResultadosCR")
+          .classList.toggle("visible", filas.length > 0 && visibles === 0);
+      }
+
+      function limpiarFiltrosCR() {
+        document.getElementById("filtroBusqueda").value = "";
+        document.getElementById("filtroEstatus").value = "";
+        document.getElementById("filtroSexo").value = "";
+        aplicarFiltrosCR();
+      }
+
+      // ── Ciclos activos ──
+      async function cargarActivos() {
+        const tbody = document.getElementById("tbody-activas");
+        try {
+          const r = await fetch(`${BASE}/ciclo-reproductivo?activos=true`, {
+            headers: headers(),
+          });
+          if (!r.ok) throw new Error();
+          const lista = await r.json();
+          if (!lista.length) {
+            tbody.innerHTML = `<tr><td colspan="6"><div class="cr-empty">${ICONS.cow}<div class="cr-empty-msg">Sin gestaciones activas.</div></div></td></tr>`;
+            aplicarFiltrosCR();
+            return;
+          }
+          const hoy = new Date();
+          tbody.innerHTML = lista
+            .map((c) => {
+              const inicio = new Date(c.fechaInicio);
+              const estimado = new Date(c.fechaEstimadaParto);
+              const totalDias = 280;
+              const diasTranscurridos = Math.round((hoy - inicio) / 86400000);
+              const pct = Math.min(
+                100,
+                Math.round((diasTranscurridos / totalDias) * 100),
+              );
+              const diasRestantes = Math.max(
+                0,
+                Math.round((estimado - hoy) / 86400000),
+              );
+              const badge = estatusBadge(c.estatus);
+              let accion = "";
+              if (c.estatus === "EN_CURSO") {
+                accion = `<button class="btn-action btn-parto" onclick="abrirModalParto('${c.id}')">${ICONS.check} Ya parió</button>
+                      <button class="btn-action btn-hijos" onclick="verHijos('${c.vacaId}')">${ICONS.users} Hijos</button>`;
+              } else {
+                accion = `<button class="btn-action btn-hijos" onclick="verHijos('${c.vacaId}')">${ICONS.users} Hijos</button>`;
+              }
+              return `<tr class="fila-datos" data-vaca="${nombreVaca(c.vacaId)}" data-estatus="${c.estatus}">
+            <td data-label="Vaca">${nombreVaca(c.vacaId)}</td>
+            <td data-label="Inicio gestación">${c.fechaInicio}</td>
+            <td data-label="Parto estimado">${c.fechaEstimadaParto}</td>
+            <td data-label="Progreso">
+              <div class="progress-wrap">
+                <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+                <span class="progress-label">${diasRestantes} días restantes</span>
+              </div>
+            </td>
+            <td data-label="Estatus">${badge}</td>
+            <td data-label="Acciones" class="td-acciones">${accion}</td>
+          </tr>`;
+            })
+            .join("");
+          aplicarFiltrosCR();
+        } catch {
+          tbody.innerHTML = `<tr><td colspan="6"><div class="cr-empty cr-empty-msg">Error al cargar.</div></td></tr>`;
+        }
+      }
+
+      // ── Historial ──
+      async function cargarHistorial() {
+        const tbody = document.getElementById("tbody-historial");
+        try {
+          const r = await fetch(`${BASE}/ciclo-reproductivo?activos=false`, {
+            headers: headers(),
+          });
+          const lista = await r.json();
+          if (!lista.length) {
+            tbody.innerHTML = `<tr><td colspan="6"><div class="cr-empty">${ICONS.cow}<div class="cr-empty-msg">Sin historial todavía.</div></div></td></tr>`;
+            aplicarFiltrosCR();
+            return;
+          }
+          tbody.innerHTML = lista
+            .map(
+              (
+                c,
+              ) => `<tr class="fila-datos" data-vaca="${nombreVaca(c.vacaId)}" data-estatus="${c.estatus}">
+          <td data-label="Vaca">${nombreVaca(c.vacaId)}</td>
+          <td data-label="Inicio">${c.fechaInicio}</td>
+          <td data-label="Parto estimado">${c.fechaEstimadaParto}</td>
+          <td data-label="Parto real">${c.fechaPartoReal ?? "—"}</td>
+          <td data-label="Estatus">${estatusBadge(c.estatus)}</td>
+          <td data-label="Acciones" class="td-acciones"><button class="btn-action btn-hijos" onclick="verHijos('${c.vacaId}')">${ICONS.users} Hijos</button></td>
+        </tr>`,
+            )
+            .join("");
+          aplicarFiltrosCR();
+        } catch {
+          tbody.innerHTML = `<tr><td colspan="6"><div class="cr-empty cr-empty-msg">Error al cargar.</div></td></tr>`;
+        }
+      }
+
+      // ── Becerros ──
+      async function cargarBecerros(madreId) {
+        const tbody = document.getElementById("tbody-becerros");
+        const url = madreId
+          ? `${BASE}/ciclo-reproductivo/becerros?madreId=${madreId}`
+          : `${BASE}/ciclo-reproductivo/becerros`;
+        try {
+          const r = await fetch(url, { headers: headers() });
+          const lista = await r.json();
+          if (!lista.length) {
+            tbody.innerHTML = `<tr><td colspan="6"><div class="cr-empty">${ICONS.calf}<div class="cr-empty-msg">Sin becerros registrados.</div></div></td></tr>`;
+            aplicarFiltrosCR();
+            return;
+          }
+          tbody.innerHTML = lista
+            .map((b) => {
+              const generoIcon = b.sexo === "MACHO" ? ICONS.male : ICONS.female;
+              const generoTexto = b.sexo === "MACHO" ? "Macho" : "Hembra";
+              return `<tr class="fila-datos" data-nombre="${b.nombre}" data-sexo="${b.sexo}" data-madre="${nombreVaca(b.madreId)}" data-padre="${b.nombrePadre ?? ""}">
+          <td data-label="Nombre"><strong>${b.nombre}</strong></td>
+          <td data-label="Nacimiento">${b.fechaNacimiento}</td>
+          <td data-label="Sexo"><span class="genero-tag genero-${b.sexo.toLowerCase()}">${generoIcon} ${generoTexto}</span></td>
+          <td data-label="Madre">${nombreVaca(b.madreId)}</td>
+          <td data-label="Padre">${b.nombrePadre ?? "—"}</td>
+          <td data-label="Raza padre">${b.razaPadre ?? "—"}</td>
+        </tr>`;
+            })
+            .join("");
+          aplicarFiltrosCR();
+        } catch {
+          tbody.innerHTML = `<tr><td colspan="6"><div class="cr-empty cr-empty-msg">Error al cargar.</div></td></tr>`;
+        }
+      }
+
+      function verHijos(madreId) {
+        tabs.forEach((t) => t.classList.remove("active"));
+        document.querySelectorAll(".cr-tab")[2].classList.add("active");
+        document.getElementById("panel-activas").style.display = "none";
+        document.getElementById("panel-historial").style.display = "none";
+        document.getElementById("panel-becerros").style.display = "block";
+        actualizarFiltrosUI();
+        cargarBecerros(madreId);
+      }
+
+      // ── Badge ──
+      function estatusBadge(estatus) {
+        const map = {
+          EN_CURSO: `<span class="badge badge-gestacion">${ICONS.pulse} En curso</span>`,
+          COMPLETADO: `<span class="badge badge-completado">${ICONS.check} Completado</span>`,
+          GESTACION: `<span class="badge badge-gestacion">${ICONS.pulse} Gestación</span>`,
+          REPOSO: `<span class="badge badge-reposo">${ICONS.pause} Reposo</span>`,
+          VIGENTE: `<span class="badge badge-vigente">${ICONS.check} Vigente</span>`,
+        };
+        return map[estatus] ?? `<span class="badge">${estatus}</span>`;
+      }
+
+      // ── Modal gestación ──
+      document
+        .getElementById("btn-nueva-gestacion")
+        .addEventListener("click", async () => {
+          const sel = document.getElementById("sel-vaca");
+          sel.innerHTML = '<option value="">Cargando…</option>';
+          try {
+            const r = await fetch(`${BASE}/animales`, { headers: headers() });
+            const lista = await r.json();
+            const vigentes = lista.filter(
+              (a) => a.estatus === "VIGENTE" && a.sexo === "HEMBRA",
+            );
+            sel.innerHTML = vigentes.length
+              ? vigentes
+                  .map(
+                    (a) =>
+                      `<option value="${a.id}">${a.numeroIdentificador} · ${a.raza ?? ""}</option>`,
+                  )
+                  .join("")
+              : '<option value="">Sin hembras vigentes disponibles</option>';
+          } catch {
+            sel.innerHTML = '<option value="">Error al cargar</option>';
+          }
+          abrirModal("modal-gestacion");
+        });
+
+      document
+        .getElementById("form-gestacion")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const body = {
+            vacaId: document.getElementById("sel-vaca").value,
+            fechaInicio: document.getElementById("gest-fecha-inicio").value,
+            notas: document.getElementById("gest-notas").value || null,
+          };
+          try {
+            const r = await fetch(`${BASE}/ciclo-reproductivo`, {
+              method: "POST",
+              headers: headers(),
+              body: JSON.stringify(body),
+            });
+            if (!r.ok) {
+              alert("Error al guardar gestación.");
+              return;
+            }
+            cerrarModal("modal-gestacion");
+            document.getElementById("form-gestacion").reset();
+            await cargarAnimales();
+            cargarActivos();
+            cargarEstadisticas();
+          } catch {
+            alert("Error de conexión.");
+          }
+        });
+
+      // ── Modal parto ──
+      function abrirModalParto(cicloId) {
+        document.getElementById("parto-ciclo-id").value = cicloId;
+        document.getElementById("parto-fecha-real").value = new Date()
+          .toISOString()
+          .slice(0, 10);
+        document.getElementById("becerro-fecha-nac").value = new Date()
+          .toISOString()
+          .slice(0, 10);
+        abrirModal("modal-parto");
+      }
+
+      document
+        .getElementById("form-parto")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const cicloId = document.getElementById("parto-ciclo-id").value;
+          const sexoBecerro = document.getElementById("becerro-sexo").value;
+          if (!sexoBecerro) {
+            alert("Selecciona el sexo del becerro.");
+            return;
+          }
+          const body = {
+            fechaPartoReal: document.getElementById("parto-fecha-real").value,
+            diasReposo: parseInt(
+              document.getElementById("parto-dias-reposo").value,
+            ),
+            nombreBecerro: document.getElementById("becerro-nombre").value,
+            fechaNacimientoBecerro:
+              document.getElementById("becerro-fecha-nac").value,
+            sexoBecerro: sexoBecerro,
+            nombrePadre:
+              document.getElementById("becerro-padre-nombre").value || null,
+            razaPadre:
+              document.getElementById("becerro-padre-raza").value || null,
+            notasBecerro:
+              document.getElementById("becerro-notas").value || null,
+          };
+          try {
+            const r = await fetch(
+              `${BASE}/ciclo-reproductivo/${cicloId}/parto`,
+              {
+                method: "POST",
+                headers: headers(),
+                body: JSON.stringify(body),
+              },
+            );
+            if (!r.ok) {
+              alert("Error al registrar parto.");
+              return;
+            }
+            cerrarModal("modal-parto");
+            document.getElementById("form-parto").reset();
+            await cargarAnimales();
+            cargarActivos();
+            cargarEstadisticas();
+          } catch {
+            alert("Error de conexión.");
+          }
+        });
+
+      // ── Helpers modal ──
+      function abrirModal(id) {
+        document.getElementById(id).classList.add("open");
+      }
+      function cerrarModal(id) {
+        document.getElementById(id).classList.remove("open");
+      }
+      function cerrarModalSiAfuera(e, id) {
+        if (e.target === document.getElementById(id)) cerrarModal(id);
+      }
+
+      // ── Init ──
+      (async () => {
+        await cargarAnimales();
+        cargarActivos();
+        cargarEstadisticas();
+        actualizarFiltrosUI();
+      })();
+    </script>
+  </body>
+</html>

@@ -1,6 +1,5 @@
 package com.vacapp.insumos.internal.application.usecases;
 
-import com.vacapp.insumos.internal.domain.model.CategoriaInsumo;
 import com.vacapp.insumos.internal.domain.model.Insumo;
 import com.vacapp.insumos.internal.domain.model.UnidadMedida;
 import com.vacapp.insumos.internal.domain.repository.InsumoRepository;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 /** Caso de uso: registrar un nuevo insumo. */
 @Service
@@ -19,7 +19,7 @@ public class RegistrarInsumoUseCase {
 
     public record Comando(
         String nombre,
-        CategoriaInsumo categoria,
+        String categoria,
         UnidadMedida unidadMedida,
         Double cantidad,
         Double cantidadMinima,
@@ -33,6 +33,7 @@ public class RegistrarInsumoUseCase {
     @Transactional
     public Insumo ejecutar(Comando cmd) {
         Insumo insumo = Insumo.builder()
+                .id(UUID.randomUUID())
                 .nombre(cmd.nombre())
                 .categoria(cmd.categoria())
                 .unidadMedida(cmd.unidadMedida())

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 /** Caso de uso: registrar un nuevo animal en el inventario. */
 @Service
@@ -30,12 +31,14 @@ public class RegistrarAnimalUseCase {
         String areteAnterior,
         String folioReemo,
         String nota,
+        String categoria,
         String tenantId
     ) {}
 
     @Transactional
     public Animal ejecutar(Comando cmd) {
         Animal animal = Animal.builder()
+                .id(UUID.randomUUID())
                 .numeroIdentificador(cmd.numeroIdentificador())
                 .estatus(cmd.estatus())
                 .sexo(cmd.sexo())
@@ -47,6 +50,7 @@ public class RegistrarAnimalUseCase {
                 .areteAnterior(cmd.areteAnterior())
                 .folioReemo(cmd.folioReemo())
                 .nota(cmd.nota())
+                .categoria(cmd.categoria())
                 .tenantId(cmd.tenantId())
                 .build();
 

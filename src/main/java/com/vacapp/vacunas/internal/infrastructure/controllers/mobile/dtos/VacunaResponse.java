@@ -1,6 +1,5 @@
 package com.vacapp.vacunas.internal.infrastructure.controllers.mobile.dtos;
 
-import com.vacapp.vacunas.internal.domain.model.TipoVacuna;
 import com.vacapp.vacunas.internal.domain.model.Vacuna;
 import com.vacapp.vacunas.internal.domain.model.ViaAdministracion;
 
@@ -11,7 +10,7 @@ import java.util.UUID;
 public record VacunaResponse(
         UUID id,
         String nombre,
-        TipoVacuna tipo,
+        String tipo,
         String laboratorio,
         String descripcion,
         String dosis,

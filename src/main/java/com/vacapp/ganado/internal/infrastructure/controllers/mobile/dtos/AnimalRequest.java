@@ -20,5 +20,6 @@ public record AnimalRequest(
         Tipo tipo,
         String areteAnterior,
         String folioReemo,
-        String nota
+        String nota,
+        String categoria
 ) {}

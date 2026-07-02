@@ -1,6 +1,5 @@
 package com.vacapp.vacunas.internal.application.usecases;
 
-import com.vacapp.vacunas.internal.domain.model.TipoVacuna;
 import com.vacapp.vacunas.internal.domain.model.Vacuna;
 import com.vacapp.vacunas.internal.domain.model.ViaAdministracion;
 import com.vacapp.vacunas.internal.domain.repository.VacunaRepository;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 /** Caso de uso: registrar una nueva vacuna en el inventario. */
 @Service
@@ -19,7 +19,7 @@ public class RegistrarVacunaUseCase {
 
     public record Comando(
         String nombre,
-        TipoVacuna tipo,
+        String tipo,
         String laboratorio,
         String descripcion,
         String dosis,
@@ -36,6 +36,7 @@ public class RegistrarVacunaUseCase {
     @Transactional
     public Vacuna ejecutar(Comando cmd) {
         Vacuna vacuna = Vacuna.builder()
+                .id(UUID.randomUUID())
                 .nombre(cmd.nombre())
                 .tipo(cmd.tipo())
                 .laboratorio(cmd.laboratorio())

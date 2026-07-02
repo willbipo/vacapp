@@ -25,8 +25,8 @@ public class Vacuna {
     /** Nombre comercial o genérico de la vacuna. */
     private String nombre;
 
-    /** Tipo de vacuna según agente biológico. */
-    private TipoVacuna tipo;
+    /** Tipo/categoría de vacuna (dinámico, definido por el usuario). */
+    private String tipo;
 
     /** Laboratorio o fabricante. */
     private String laboratorio;

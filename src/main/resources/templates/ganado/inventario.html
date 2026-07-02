@@ -8,7 +8,7 @@
     <link rel="stylesheet" th:href="@{/css/navbard.css}" />
     <link rel="stylesheet" th:href="@{/css/sidebard.css}" />
     <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
-    <link rel="stylesheet" th:href="@{/css/inventario.css}" />
+    <link rel="stylesheet" th:href="@{/css/ganado.css}" />
   </head>
   <body>
     <div class="dashboard-shell">
@@ -20,22 +20,218 @@
         <main class="dashboard-content">
           <!-- Encabezado -->
           <div class="inv-header">
-            <div>
-              <p class="page-overline">Gestión</p>
-              <h1>Inventario de Ganado</h1>
+            <div class="inv-header-title">
+              <span class="inv-header-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M7 8c-1.5-1-2-3-1-4.5C7 2 8.5 3 9 4.5" />
+                  <path d="M17 8c1.5-1 2-3 1-4.5C16.5 2 15 3 14.5 4.5" />
+                  <rect x="6" y="7" width="12" height="10" rx="5" />
+                  <circle
+                    cx="9.5"
+                    cy="12"
+                    r=".6"
+                    fill="currentColor"
+                    stroke="none"
+                  />
+                  <circle
+                    cx="14.5"
+                    cy="12"
+                    r=".6"
+                    fill="currentColor"
+                    stroke="none"
+                  />
+                  <path d="M10 15.5c.7.6 1.3.6 2 0" />
+                </svg>
+              </span>
+              <div>
+                <p class="page-overline">Gestión</p>
+                <h1>Inventario de Ganado</h1>
+              </div>
             </div>
-            <button class="btn-primary" onclick="abrirModal()">
-              + Agregar animal
-            </button>
+            <div class="inv-header-actions">
+              <button class="btn-secondary" onclick="abrirModalCategoria()">
+                <svg viewBox="0 0 24 24">
+                  <path d="M4 6h16M4 12h10M4 18h6" />
+                </svg>
+                Crear categoría
+              </button>
+              <button class="btn-primary" onclick="abrirModal()">
+                <svg viewBox="0 0 24 24">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+                Agregar animal
+              </button>
+            </div>
+          </div>
+
+          <!-- Tarjetas informativas -->
+          <div class="stats-grid">
+            <div class="stat-card stat-card--total">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M7 8c-1.5-1-2-3-1-4.5C7 2 8.5 3 9 4.5" />
+                  <path d="M17 8c1.5-1 2-3 1-4.5C16.5 2 15 3 14.5 4.5" />
+                  <rect x="6" y="7" width="12" height="10" rx="5" />
+                  <circle
+                    cx="9.5"
+                    cy="12"
+                    r=".6"
+                    fill="currentColor"
+                    stroke="none"
+                  />
+                  <circle
+                    cx="14.5"
+                    cy="12"
+                    r=".6"
+                    fill="currentColor"
+                    stroke="none"
+                  />
+                  <path d="M10 15.5c.7.6 1.3.6 2 0" />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p class="stat-value" th:text="${#lists.size(animales)}">0</p>
+                <p class="stat-label">Total de animales</p>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card--vigente">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M8 12.5l2.6 2.6L16.5 9" />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p
+                  class="stat-value"
+                  th:text="${#lists.size(animales.?[estatus.name() == 'VIGENTE'])}"
+                >
+                  0
+                </p>
+                <p class="stat-label">Vigentes</p>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card--reposo">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M10 9v6M14 9v6" />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p
+                  class="stat-value"
+                  th:text="${#lists.size(animales.?[estatus.name() == 'REPOSO'])}"
+                >
+                  0
+                </p>
+                <p class="stat-label">En reposo</p>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card--gestacion">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M12 21s-6.5-4.2-9-8.4C1.2 9 2.7 5.5 6 5c2-.3 4 .8 5 2 1-1.2 3-2.3 5-2 3.3.5 4.8 4 3 7.6-2.5 4.2-9 8.4-9 8.4z"
+                  />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p
+                  class="stat-value"
+                  th:text="${#lists.size(animales.?[estatus.name() == 'GESTACION'])}"
+                >
+                  0
+                </p>
+                <p class="stat-label">Gestación</p>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card--baja">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M9 9l6 6M15 9l-6 6" />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p
+                  class="stat-value"
+                  th:text="${#lists.size(animales.?[estatus.name() == 'BAJA'])}"
+                >
+                  0
+                </p>
+                <p class="stat-label">Bajas</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filtros de búsqueda -->
+          <div class="filter-bar">
+            <div class="filter-field filter-search">
+              <label for="filtroBusqueda">Buscar</label>
+              <svg viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M21 21l-4.3-4.3" />
+              </svg>
+              <input
+                type="text"
+                id="filtroBusqueda"
+                placeholder="No. identificador, raza, folio…"
+                oninput="aplicarFiltros()"
+              />
+            </div>
+            <div class="filter-field">
+              <label for="filtroEstatus">Estatus</label>
+              <select id="filtroEstatus" onchange="aplicarFiltros()">
+                <option value="">Todos</option>
+                <option value="VIGENTE">Vigente</option>
+                <option value="REPOSO">Reposo</option>
+                <option value="GESTACION">Gestación</option>
+                <option value="BAJA">Baja</option>
+              </select>
+            </div>
+            <div class="filter-field">
+              <label for="filtroSexo">Sexo</label>
+              <select id="filtroSexo" onchange="aplicarFiltros()">
+                <option value="">Todos</option>
+                <option value="HEMBRA">Hembra</option>
+                <option value="MACHO">Macho</option>
+              </select>
+            </div>
+            <div class="filter-field">
+              <label for="filtroCategoria">Categoría</label>
+              <select id="filtroCategoria" onchange="aplicarFiltros()">
+                <option value="">Todas</option>
+              </select>
+            </div>
+            <div class="filter-actions">
+              <button
+                class="btn-ghost"
+                type="button"
+                onclick="limpiarFiltros()"
+              >
+                <svg viewBox="0 0 24 24">
+                  <path d="M3 12a9 9 0 1 0 3-6.7" />
+                  <path d="M3 4v5h5" />
+                </svg>
+                Limpiar filtros
+              </button>
+            </div>
           </div>
 
           <!-- Tabla -->
           <div class="tabla-wrap">
-            <table class="tabla-ganado">
+            <table class="tabla-ganado" id="tablaGanado">
               <thead>
                 <tr>
                   <th>No. Identificador</th>
+                  <th>Categoría</th>
                   <th>Estatus</th>
+                  <th>Reposo</th>
                   <th>Sexo</th>
                   <th>Raza</th>
                   <th>Nac.</th>
@@ -50,8 +246,8 @@
               </thead>
               <tbody>
                 <!-- Sin datos -->
-                <tr th:if="${#lists.isEmpty(animales)}">
-                  <td colspan="12">
+                <tr th:if="${#lists.isEmpty(animales)}" class="fila-vacia">
+                  <td colspan="14">
                     <div class="empty-state">
                       <svg viewBox="0 0 24 24">
                         <path
@@ -63,28 +259,77 @@
                   </td>
                 </tr>
                 <!-- Filas -->
-                <tr th:each="a : ${animales}">
-                  <td th:text="${a.numeroIdentificador}">—</td>
-                  <td>
+                <tr
+                  th:each="a : ${animales}"
+                  class="fila-animal"
+                  th:data-numid="${a.numeroIdentificador}"
+                  th:data-estatus="${a.estatus}"
+                  th:data-sexo="${a.sexo}"
+                  th:data-categoria="${a.categoria != null ? a.categoria : ''}"
+                  th:data-raza="${a.raza != null ? a.raza : ''}"
+                  th:data-folio="${a.folioReemo != null ? a.folioReemo : ''}"
+                >
+                  <td data-label="No. ID" th:text="${a.numeroIdentificador}">
+                    —
+                  </td>
+                  <td data-label="Categoría">
                     <span
-                      th:class="${a.estatus.name() == 'VIGENTE'} ? 'badge badge-vigente' : 'badge badge-baja'"
+                      th:if="${a.categoria != null and !#strings.isEmpty(a.categoria)}"
+                      class="badge badge-vigente"
+                      th:text="${a.categoria}"
+                    ></span>
+                    <span
+                      th:unless="${a.categoria != null and !#strings.isEmpty(a.categoria)}"
+                      class="text-muted"
+                      >—</span
+                    >
+                  </td>
+                  <td data-label="Estatus">
+                    <span
+                      th:class="${a.estatus.name() == 'VIGENTE'} ? 'badge badge-vigente' :
+                                (${a.estatus.name() == 'REPOSO'} ? 'badge badge-reposo' :
+                                (${a.estatus.name() == 'GESTACION'} ? 'badge badge-gestacion' : 'badge badge-baja'))"
                       th:text="${a.estatus}"
                     ></span>
                   </td>
-                  <td>
+                  <td data-label="Reposo">
+                    <span
+                      th:if="${a.estatus.name() == 'REPOSO' and a.diasRestantesReposo != null}"
+                      class="badge badge-reposo"
+                    >
+                      <span th:text="${a.diasRestantesReposo}"></span> días
+                    </span>
+                    <span
+                      th:unless="${a.estatus.name() == 'REPOSO' and a.diasRestantesReposo != null}"
+                      class="text-muted"
+                      >—</span
+                    >
+                  </td>
+                  <td data-label="Sexo">
                     <span
                       th:class="${a.sexo.name() == 'HEMBRA'} ? 'badge badge-hembra' : 'badge badge-macho'"
                       th:text="${a.sexo}"
                     ></span>
                   </td>
-                  <td th:text="${a.raza} ?: '—'">—</td>
-                  <td th:text="${a.fechaNacimiento} ?: '—'">—</td>
-                  <td th:text="${a.meses} ?: '—'">—</td>
-                  <td th:text="${a.fechaAretado} ?: '—'">—</td>
-                  <td th:text="${a.tipo} ?: '—'">—</td>
-                  <td th:text="${a.areteAnterior} ?: '—'">—</td>
-                  <td th:text="${a.folioReemo} ?: '—'">—</td>
-                  <td>
+                  <td data-label="Raza" th:text="${a.raza} ?: '—'">—</td>
+                  <td data-label="Nac." th:text="${a.fechaNacimiento} ?: '—'">
+                    —
+                  </td>
+                  <td data-label="Meses" th:text="${a.meses} ?: '—'">—</td>
+                  <td data-label="Aretado" th:text="${a.fechaAretado} ?: '—'">
+                    —
+                  </td>
+                  <td data-label="Tipo" th:text="${a.tipo} ?: '—'">—</td>
+                  <td
+                    data-label="Arete ant."
+                    th:text="${a.areteAnterior} ?: '—'"
+                  >
+                    —
+                  </td>
+                  <td data-label="Folio REEMO" th:text="${a.folioReemo} ?: '—'">
+                    —
+                  </td>
+                  <td data-label="Nota">
                     <span
                       th:if="${a.nota != null and !#strings.isEmpty(a.nota)}"
                       th:text="${#strings.abbreviate(a.nota, 30)}"
@@ -95,10 +340,9 @@
                       >—</span
                     >
                   </td>
-                  <td>
+                  <td data-label="Acciones">
                     <button
-                    <button
-                      class="btn-secondary"
+                      class="btn-secondary icon-btn"
                       th:data-id="${a.id}"
                       th:data-numid="${a.numeroIdentificador}"
                       th:data-estatus="${a.estatus}"
@@ -111,14 +355,27 @@
                       th:data-areteant="${a.areteAnterior}"
                       th:data-folio="${a.folioReemo}"
                       th:data-nota="${a.nota}"
+                      th:data-categoria="${a.categoria}"
                       onclick="abrirEditarDesdeBtn(this)"
                     >
+                      <svg viewBox="0 0 24 24">
+                        <path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z" />
+                      </svg>
                       Editar
                     </button>
                   </td>
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          <!-- Sin resultados por filtro -->
+          <div class="no-results" id="sinResultados">
+            <svg viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.3-4.3" />
+            </svg>
+            <p>Ningún animal coincide con los filtros seleccionados.</p>
           </div>
         </main>
       </div>
@@ -131,7 +388,23 @@
       onclick="cerrarModalSiAfuera(event)"
     >
       <div class="modal-card" role="dialog" aria-modal="true">
-        <p class="modal-title" id="modalTitulo">Agregar animal</p>
+        <p class="modal-title" id="modalTitulo">
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            stroke="currentColor"
+            stroke-width="1.6"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M7 8c-1.5-1-2-3-1-4.5C7 2 8.5 3 9 4.5" />
+            <path d="M17 8c1.5-1 2-3 1-4.5C16.5 2 15 3 14.5 4.5" />
+            <rect x="6" y="7" width="12" height="10" rx="5" />
+          </svg>
+          Agregar animal
+        </p>
 
         <form id="animalForm" novalidate>
           <input type="hidden" id="animalId" />
@@ -139,6 +412,12 @@
             <div class="form-field">
               <label>No. Identificador *</label>
               <input type="text" id="fNumeroIdentificador" required />
+            </div>
+            <div class="form-field">
+              <label>Categoría</label>
+              <select id="fCategoria">
+                <option value="">Cargando...</option>
+              </select>
             </div>
             <div class="form-field">
               <label>Estatus *</label>
@@ -203,24 +482,182 @@
       </div>
     </div>
 
+    <!-- Modal Crear Categoría -->
+    <div
+      class="modal-backdrop"
+      id="modalCategoriaBackdrop"
+      onclick="cerrarModalCategoriaSiAfuera(event)"
+    >
+      <div class="modal-card" role="dialog" aria-modal="true">
+        <p class="modal-title">
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            stroke="currentColor"
+            stroke-width="1.8"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M4 6h16M4 12h10M4 18h6" />
+          </svg>
+          Nueva categoría de ganado
+        </p>
+        <form id="categoriaForm" novalidate>
+          <div class="form-grid">
+            <div class="form-field full">
+              <label>Nombre de la categoría *</label>
+              <input
+                type="text"
+                id="fCategoriaNombre"
+                placeholder="ej. Bovino, Caprino, Porcino"
+                required
+              />
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn-secondary"
+              onclick="cerrarModalCategoria()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primary">Guardar categoría</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <script>
       const TOKEN = localStorage.getItem("vacapp_token");
       const API = "/api/v1/animales";
+      const API_CATEGORIAS = "/api/v1/animales/categorias";
 
-      // ── Modal helpers ──────────────────────────────────────────────────────
+      /* ── Carga de categorías (formulario) ─────────────────────────────── */
+      async function cargarCategorias(valorSeleccionado = "") {
+        try {
+          const hdrs = {};
+          if (TOKEN) hdrs["Authorization"] = `Bearer ${TOKEN}`;
+          const resp = await fetch(API_CATEGORIAS, {
+            headers: hdrs,
+            credentials: "include",
+          });
+          if (!resp.ok) return;
+          const cats = await resp.json();
+          const sel = document.getElementById("fCategoria");
+          sel.innerHTML =
+            '<option value="">— Sin categoría —</option>' +
+            cats
+              .map(
+                (c) =>
+                  `<option value="${c.nombre}" ${c.nombre === valorSeleccionado ? "selected" : ""}>${c.nombre}</option>`,
+              )
+              .join("");
+        } catch (_) {}
+      }
+
+      /* ── Filtro de categoría: opciones a partir de lo que hay en la tabla ── */
+      function poblarFiltroCategoria() {
+        const sel = document.getElementById("filtroCategoria");
+        const valorActual = sel.value;
+        const categorias = new Set();
+        document
+          .querySelectorAll("#tablaGanado tbody tr.fila-animal")
+          .forEach((tr) => {
+            const cat = tr.dataset.categoria;
+            if (cat) categorias.add(cat);
+          });
+        sel.innerHTML =
+          '<option value="">Todas</option>' +
+          Array.from(categorias)
+            .sort((a, b) => a.localeCompare(b))
+            .map((c) => `<option value="${c}">${c}</option>`)
+            .join("");
+        if (categorias.has(valorActual)) sel.value = valorActual;
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        cargarCategorias();
+        poblarFiltroCategoria();
+      });
+
+      /* ── Filtros de búsqueda ───────────────────────────────────────────── */
+      function aplicarFiltros() {
+        const texto = document
+          .getElementById("filtroBusqueda")
+          .value.trim()
+          .toLowerCase();
+        const estatus = document.getElementById("filtroEstatus").value;
+        const sexo = document.getElementById("filtroSexo").value;
+        const categoria = document.getElementById("filtroCategoria").value;
+
+        const filas = document.querySelectorAll(
+          "#tablaGanado tbody tr.fila-animal",
+        );
+        let visibles = 0;
+
+        filas.forEach((tr) => {
+          const coincideTexto =
+            !texto ||
+            tr.dataset.numid.toLowerCase().includes(texto) ||
+            tr.dataset.raza.toLowerCase().includes(texto) ||
+            tr.dataset.folio.toLowerCase().includes(texto);
+          const coincideEstatus = !estatus || tr.dataset.estatus === estatus;
+          const coincideSexo = !sexo || tr.dataset.sexo === sexo;
+          const coincideCategoria =
+            !categoria || tr.dataset.categoria === categoria;
+
+          const visible =
+            coincideTexto &&
+            coincideEstatus &&
+            coincideSexo &&
+            coincideCategoria;
+          tr.classList.toggle("fila-oculta", !visible);
+          if (visible) visibles++;
+        });
+
+        const hayFilasReales = filas.length > 0;
+        document
+          .getElementById("sinResultados")
+          .classList.toggle("visible", hayFilasReales && visibles === 0);
+      }
+
+      function limpiarFiltros() {
+        document.getElementById("filtroBusqueda").value = "";
+        document.getElementById("filtroEstatus").value = "";
+        document.getElementById("filtroSexo").value = "";
+        document.getElementById("filtroCategoria").value = "";
+        aplicarFiltros();
+      }
+
+      /* ── Modal helpers ──────────────────────────────────────────────────── */
       function abrirModal() {
-        document.getElementById("modalTitulo").textContent = "Agregar animal";
+        document.getElementById("modalTitulo").lastChild.textContent =
+          " Agregar animal";
         document.getElementById("animalId").value = "";
         document.getElementById("animalForm").reset();
+        cargarCategorias();
         document.getElementById("modalBackdrop").classList.add("open");
       }
 
       function abrirEditarDesdeBtn(btn) {
         const d = btn.dataset;
         abrirEditar(
-          d.id, d.numid, d.estatus, d.sexo, d.raza,
-          d.fechanac, d.meses, d.fechaaret, d.tipo,
-          d.areteant, d.folio, d.nota
+          d.id,
+          d.numid,
+          d.estatus,
+          d.sexo,
+          d.raza,
+          d.fechanac,
+          d.meses,
+          d.fechaaret,
+          d.tipo,
+          d.areteant,
+          d.folio,
+          d.nota,
+          d.categoria,
         );
       }
 
@@ -237,8 +674,10 @@
         areteAnt,
         folioReemo,
         nota,
+        categoria,
       ) {
-        document.getElementById("modalTitulo").textContent = "Editar animal";
+        document.getElementById("modalTitulo").lastChild.textContent =
+          " Editar animal";
         document.getElementById("animalId").value = id;
         document.getElementById("fNumeroIdentificador").value = numId;
         document.getElementById("fEstatus").value = estatus;
@@ -255,6 +694,7 @@
         document.getElementById("fFolioReemo").value =
           folioReemo === "null" ? "" : folioReemo;
         document.getElementById("fNota").value = nota === "null" ? "" : nota;
+        cargarCategorias(categoria === "null" ? "" : categoria || "");
         document.getElementById("modalBackdrop").classList.add("open");
       }
 
@@ -267,7 +707,7 @@
           cerrarModal();
       }
 
-      // ── Envío del formulario ───────────────────────────────────────────────
+      /* ── Envío del formulario ─────────────────────────────────────────── */
       document
         .getElementById("animalForm")
         .addEventListener("submit", async function (e) {
@@ -294,39 +734,101 @@
             folioReemo:
               document.getElementById("fFolioReemo").value.trim() || null,
             nota: document.getElementById("fNota").value.trim() || null,
+            categoria: document.getElementById("fCategoria").value || null,
           };
 
           const url = id ? `${API}/${id}` : API;
           const method = id ? "PUT" : "POST";
 
           try {
+            const hdrs = { "Content-Type": "application/json" };
+            if (TOKEN) hdrs["Authorization"] = `Bearer ${TOKEN}`;
+            console.log("[Vacapp] Enviando", method, url, body);
             const resp = await fetch(url, {
               method,
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${TOKEN}`,
-              },
+              headers: hdrs,
+              credentials: "include",
               body: JSON.stringify(body),
             });
 
+            console.log("[Vacapp] Respuesta HTTP", resp.status);
+
             if (!resp.ok) {
-              const err = await resp.json().catch(() => ({}));
-              alert("Error: " + (err.error || resp.statusText));
+              const texto = await resp.text();
+              console.error("[Vacapp] Error respuesta:", texto);
+              let mensaje = resp.statusText;
+              try {
+                const json = JSON.parse(texto);
+                mensaje = json.error || json.message || mensaje;
+              } catch (_) {}
+              alert("Error al guardar (" + resp.status + "): " + mensaje);
               return;
             }
 
             cerrarModal();
             location.reload();
           } catch (err) {
+            console.error("[Vacapp] Error de red:", err);
+            alert(
+              "No se pudo conectar con el servidor. Verifica que la aplicación esté corriendo.\n\nDetalle: " +
+                err.message,
+            );
+          }
+        });
+
+      /* ── Modal categoría ──────────────────────────────────────────────── */
+      function abrirModalCategoria() {
+        document.getElementById("categoriaForm").reset();
+        document.getElementById("modalCategoriaBackdrop").classList.add("open");
+      }
+
+      function cerrarModalCategoria() {
+        document
+          .getElementById("modalCategoriaBackdrop")
+          .classList.remove("open");
+      }
+
+      function cerrarModalCategoriaSiAfuera(e) {
+        if (e.target === document.getElementById("modalCategoriaBackdrop"))
+          cerrarModalCategoria();
+      }
+
+      document
+        .getElementById("categoriaForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const nombre = document
+            .getElementById("fCategoriaNombre")
+            .value.trim();
+          if (!nombre) return;
+
+          try {
+            const hdrs = { "Content-Type": "application/json" };
+            if (TOKEN) hdrs["Authorization"] = `Bearer ${TOKEN}`;
+            const resp = await fetch(API_CATEGORIAS, {
+              method: "POST",
+              headers: hdrs,
+              credentials: "include",
+              body: JSON.stringify({ nombre }),
+            });
+            if (!resp.ok) {
+              const err = await resp.json().catch(() => ({}));
+              alert("Error: " + (err.error || resp.statusText));
+              return;
+            }
+            cerrarModalCategoria();
+            await cargarCategorias();
+          } catch (err) {
             alert("Error de red: " + err.message);
           }
         });
 
-      // ── Logout ─────────────────────────────────────────────────────────────
+      /* ── Logout ─────────────────────────────────────────────────────────── */
       function cerrarSesion() {
         sessionStorage.removeItem("vacapp_token");
         localStorage.removeItem("vacapp_token");
-        document.cookie = "vacapp_jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        document.cookie =
+          "vacapp_jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         window.location.href = "/auth/login";
       }
     </script>

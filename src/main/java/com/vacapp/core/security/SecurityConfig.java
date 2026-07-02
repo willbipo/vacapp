@@ -46,8 +46,10 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
+                // APIs REST — autenticadas vía JWT en el filtro
+                .requestMatchers("/api/v1/**").permitAll()
                 // Vistas Thymeleaf públicas
-                .requestMatchers("/", "/login", "/salida", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/dashboard/**", "/inventario/**", "/vacunas/**", "/insumos/**").permitAll()
+                .requestMatchers("/", "/login", "/salida", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/dashboard/**", "/inventario/**", "/vacunas/**", "/insumos/**", "/ventas/**", "/historial-clinico/**", "/calendario/**", "/ciclo-reproductivo/**").permitAll()
                 .anyRequest().authenticated())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

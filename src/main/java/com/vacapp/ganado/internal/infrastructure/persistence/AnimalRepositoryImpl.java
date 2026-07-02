@@ -22,6 +22,15 @@ public class AnimalRepositoryImpl implements AnimalRepository {
     @Transactional
     public Animal guardar(Animal animal) {
         AnimalEntidad entidad = mapper.aEntidad(animal);
+        entidad.setEsNueva(true); // siempre INSERT para animales nuevos
+        return mapper.aDominio(jpaRepository.save(entidad));
+    }
+
+    @Override
+    @Transactional
+    public Animal actualizar(Animal animal) {
+        AnimalEntidad entidad = mapper.aEntidad(animal);
+        entidad.setEsNueva(false); // siempre UPDATE para animales existentes
         return mapper.aDominio(jpaRepository.save(entidad));
     }
 
@@ -40,8 +49,27 @@ public class AnimalRepositoryImpl implements AnimalRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Optional<Animal> buscarPorNumeroIdentificador(String numeroIdentificador, String tenantId) {
+        return jpaRepository.findByNumeroIdentificadorAndTenantId(numeroIdentificador, tenantId)
+                .map(mapper::aDominio);
+    }
+
+    @Override
     @Transactional
     public void eliminar(UUID id, String tenantId) {
         jpaRepository.deleteByIdAndTenantId(id, tenantId);
+    }
+
+    @Override
+    @Transactional
+    public void actualizarEstatus(UUID id, String estatus, String tenantId) {
+        jpaRepository.updateEstatus(id, estatus, tenantId);
+    }
+
+    @Override
+    @Transactional
+    public void actualizarReposo(UUID id, java.time.LocalDate fechaInicio, java.time.LocalDate fechaFin, String tenantId) {
+        jpaRepository.updateReposo(id, fechaInicio, fechaFin, tenantId);
     }
 }

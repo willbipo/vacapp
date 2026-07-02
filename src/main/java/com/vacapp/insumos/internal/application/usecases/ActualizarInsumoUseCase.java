@@ -1,6 +1,5 @@
 package com.vacapp.insumos.internal.application.usecases;
 
-import com.vacapp.insumos.internal.domain.model.CategoriaInsumo;
 import com.vacapp.insumos.internal.domain.model.Insumo;
 import com.vacapp.insumos.internal.domain.model.InsumoNoEncontradoException;
 import com.vacapp.insumos.internal.domain.model.UnidadMedida;
@@ -22,7 +21,7 @@ public class ActualizarInsumoUseCase {
     public record Comando(
         UUID id,
         String nombre,
-        CategoriaInsumo categoria,
+        String categoria,
         UnidadMedida unidadMedida,
         Double cantidad,
         Double cantidadMinima,

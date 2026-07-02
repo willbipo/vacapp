@@ -33,6 +33,7 @@ public class ActualizarAnimalUseCase {
         String areteAnterior,
         String folioReemo,
         String nota,
+        String categoria,
         String tenantId
     ) {}
 
@@ -52,7 +53,8 @@ public class ActualizarAnimalUseCase {
         animal.setAreteAnterior(cmd.areteAnterior());
         animal.setFolioReemo(cmd.folioReemo());
         animal.setNota(cmd.nota());
+        animal.setCategoria(cmd.categoria());
 
-        return animalRepository.guardar(animal);
+        return animalRepository.actualizar(animal);
     }
 }

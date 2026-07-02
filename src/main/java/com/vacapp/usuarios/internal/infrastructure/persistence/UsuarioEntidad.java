@@ -6,6 +6,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.domain.Persistable;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.UUID;
 
@@ -18,12 +22,24 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UsuarioEntidad {
+@Table("usuarios")
+public class UsuarioEntidad implements Persistable<UUID> {
 
+    @Id
     private UUID id;
     private String username;
     private String email;
     private String password;
     private Rol role;
     private String tenantId;
+
+    /** Siempre es nueva: el id se genera en la capa de aplicación. */
+    @Transient
+    @Builder.Default
+    private boolean esNueva = true;
+
+    @Override
+    public boolean isNew() {
+        return esNueva;
+    }
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class AnimalMapper {
 
     public AnimalEntidad aEntidad(Animal animal) {
-        return AnimalEntidad.builder()
+        AnimalEntidad entidad = AnimalEntidad.builder()
                 .id(animal.getId())
                 .numeroIdentificador(animal.getNumeroIdentificador())
                 .estatus(animal.getEstatus())
@@ -21,8 +21,14 @@ public class AnimalMapper {
                 .areteAnterior(animal.getAreteAnterior())
                 .folioReemo(animal.getFolioReemo())
                 .nota(animal.getNota())
+                .categoria(animal.getCategoria())
+                .fechaInicioReposo(animal.getFechaInicioReposo())
+                .fechaFinReposo(animal.getFechaFinReposo())
                 .tenantId(animal.getTenantId())
                 .build();
+        // Si el animal ya tiene ID es una actualización, no una inserción nueva
+        entidad.setEsNueva(animal.getId() == null);
+        return entidad;
     }
 
     public Animal aDominio(AnimalEntidad entidad) {
@@ -39,6 +45,9 @@ public class AnimalMapper {
                 .areteAnterior(entidad.getAreteAnterior())
                 .folioReemo(entidad.getFolioReemo())
                 .nota(entidad.getNota())
+                .categoria(entidad.getCategoria())
+                .fechaInicioReposo(entidad.getFechaInicioReposo())
+                .fechaFinReposo(entidad.getFechaFinReposo())
                 .tenantId(entidad.getTenantId())
                 .build();
     }

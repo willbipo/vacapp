@@ -8,6 +8,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.domain.Persistable;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -21,8 +25,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AnimalEntidad {
+@Table("animales")
+public class AnimalEntidad implements Persistable<UUID> {
 
+    @Id
     private UUID id;
     private String numeroIdentificador;
     private Estatus estatus;
@@ -35,5 +41,18 @@ public class AnimalEntidad {
     private String areteAnterior;
     private String folioReemo;
     private String nota;
+    private String categoria;
+    private LocalDate fechaInicioReposo;
+    private LocalDate fechaFinReposo;
     private String tenantId;
+
+    /** Siempre es nueva: el id se genera en la capa de aplicación. */
+    @Transient
+    @Builder.Default
+    private boolean esNueva = true;
+
+    @Override
+    public boolean isNew() {
+        return esNueva;
+    }
 }

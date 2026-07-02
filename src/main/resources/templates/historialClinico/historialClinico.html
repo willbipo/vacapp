@@ -1,0 +1,904 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vacapp — Historial Clínico</title>
+    <link rel="stylesheet" th:href="@{/css/global.css}" />
+    <link rel="stylesheet" th:href="@{/css/navbard.css}" />
+    <link rel="stylesheet" th:href="@{/css/sidebard.css}" />
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
+    <link rel="stylesheet" th:href="@{/css/historialclinico.css}" />
+  </head>
+  <body>
+    <div class="dashboard-shell">
+      <div th:replace="~{fragments/sidebard :: sidebar}"></div>
+
+      <div class="dashboard-main">
+        <div th:replace="~{fragments/navbard :: navbar}"></div>
+
+        <main class="dashboard-content">
+          <!-- Encabezado -->
+          <div class="hc-header">
+            <div class="hc-header-title">
+              <span class="hc-header-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="6" y="3" width="12" height="18" rx="2.2" />
+                  <path d="M9 3V2.4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V3" />
+                  <path d="M8 12.5h2l1.4-2.8 1.6 4.6 1.4-2.8H16" />
+                </svg>
+              </span>
+              <div>
+                <p class="page-overline">Salud Animal</p>
+                <h1>Historial Clínico</h1>
+              </div>
+            </div>
+            <button
+              class="btn-primary"
+              id="btn-nueva-aplicacion"
+              disabled
+              onclick="abrirModal()"
+              type="button"
+            >
+              <svg viewBox="0 0 24 24">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Registrar aplicación
+            </button>
+          </div>
+
+          <!-- Selector de animal -->
+          <div class="hc-selector-card">
+            <span class="hc-selector-label">Selecciona un animal:</span>
+            <select
+              id="selector-animal"
+              class="hc-selector-select"
+              onchange="seleccionarAnimal(this.value)"
+            >
+              <option value="">— Elige un animal —</option>
+            </select>
+            <span id="info-animal" class="hc-animal-info"></span>
+          </div>
+
+          <!-- Tarjetas informativas -->
+          <div class="stats-grid">
+            <div class="stat-card stat-card--total">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M4 6h16M4 12h16M4 18h10" />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p class="stat-value" id="statTotalAplicaciones">0</p>
+                <p class="stat-label">Aplicaciones registradas</p>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card--proximas">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <rect x="3" y="5" width="18" height="16" rx="2.4" />
+                  <path d="M3 10h18M8 3v4M16 3v4" />
+                  <circle
+                    cx="16.5"
+                    cy="15"
+                    r="1"
+                    fill="currentColor"
+                    stroke="none"
+                  />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p class="stat-value" id="statProximasDosis">0</p>
+                <p class="stat-label">Dosis próximas</p>
+                <p class="stat-hint">En los próximos 30 días</p>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card--catalogo">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M12 3l7 3v5c0 5-3.4 7.9-7 9-3.6-1.1-7-4-7-9V6z" />
+                  <path d="M9 12l2 2 4-4" />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p class="stat-value" id="statCatalogo">0</p>
+                <p class="stat-label">Del catálogo</p>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card--manual">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z" />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p class="stat-value" id="statManual">0</p>
+                <p class="stat-label">Registradas manualmente</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filtros de búsqueda -->
+          <div class="filter-bar">
+            <div class="filter-field filter-search">
+              <label for="filtroHistBusqueda">Buscar</label>
+              <svg viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M21 21l-4.3-4.3" />
+              </svg>
+              <input
+                type="text"
+                id="filtroHistBusqueda"
+                placeholder="Vacuna, lote, aplicado por…"
+                oninput="aplicarFiltrosHC()"
+              />
+            </div>
+            <div class="filter-field">
+              <label for="filtroHistTipo">Tipo</label>
+              <select id="filtroHistTipo" onchange="aplicarFiltrosHC()">
+                <option value="">Todos</option>
+                <option value="catalogo">Del catálogo</option>
+                <option value="manual">Manual</option>
+              </select>
+            </div>
+            <div class="filter-actions">
+              <button
+                class="btn-ghost"
+                type="button"
+                onclick="limpiarFiltrosHC()"
+              >
+                <svg viewBox="0 0 24 24">
+                  <path d="M3 12a9 9 0 1 0 3-6.7" />
+                  <path d="M3 4v5h5" />
+                </svg>
+                Limpiar filtros
+              </button>
+            </div>
+          </div>
+
+          <!-- Indicador de carga -->
+          <div id="hc-loading" class="hc-loading">
+            <svg class="icon-spin" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" stroke-dasharray="42 100" />
+            </svg>
+            <span>Cargando historial…</span>
+          </div>
+
+          <!-- Tabla de historial -->
+          <div class="tabla-wrap">
+            <table class="tabla-historial">
+              <thead>
+                <tr>
+                  <th>Vacuna / Tratamiento</th>
+                  <th>Fecha</th>
+                  <th>Próx. dosis</th>
+                  <th>Dosis</th>
+                  <th>Vía</th>
+                  <th>Lote</th>
+                  <th>Aplicado por</th>
+                  <th>Tipo</th>
+                  <th>Notas</th>
+                </tr>
+              </thead>
+              <tbody id="tabla-cuerpo">
+                <tr id="fila-vacia">
+                  <td colspan="9">
+                    <div class="empty-state">
+                      <svg viewBox="0 0 24 24">
+                        <path d="M9 3H5a2 2 0 0 0-2 2v4" />
+                        <path d="M15 3h4a2 2 0 0 1 2 2v4" />
+                        <path d="M3 15v4a2 2 0 0 0 2 2h4" />
+                        <path d="M15 21h4a2 2 0 0 0 2-2v-4" />
+                        <line x1="12" y1="8" x2="12" y2="16" />
+                        <line x1="8" y1="12" x2="16" y2="12" />
+                      </svg>
+                      <p>Selecciona un animal para ver su historial clínico.</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Sin resultados por filtro -->
+          <div class="no-results" id="sinResultadosHC">
+            <svg viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.3-4.3" />
+            </svg>
+            <p>Ningún registro coincide con los filtros seleccionados.</p>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- ─── MODAL: Registrar aplicación ─── -->
+    <div
+      class="modal-backdrop"
+      id="modal-backdrop"
+      onclick="cerrarModalSiFondo(event)"
+    >
+      <div
+        class="modal-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-titulo"
+      >
+        <div class="modal-header">
+          <h2 id="modal-titulo">
+            <svg
+              viewBox="0 0 24 24"
+              width="19"
+              height="19"
+              stroke="currentColor"
+              stroke-width="1.7"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="6" y="3" width="12" height="18" rx="2.2" />
+              <path d="M9 3V2.4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V3" />
+              <path d="M8 12.5h2l1.4-2.8 1.6 4.6 1.4-2.8H16" />
+            </svg>
+            Registrar aplicación clínica
+          </h2>
+          <button
+            class="modal-close"
+            onclick="cerrarModal()"
+            aria-label="Cerrar"
+            type="button"
+          >
+            <svg viewBox="0 0 24 24">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Alerta de error -->
+        <div id="alerta-error" class="alerta-error"></div>
+
+        <form id="form-historial" novalidate onsubmit="enviarFormulario(event)">
+          <!-- Animal (pre-seleccionado) -->
+          <div class="form-grid">
+            <div class="full-width">
+              <label class="field-label">Animal</label>
+              <select id="modal-animal" class="field-select" required>
+                <option value="">— Selecciona un animal —</option>
+              </select>
+            </div>
+
+            <!-- Toggle: vacuna del catálogo o manual -->
+            <div class="full-width">
+              <label class="field-label">Vacuna / Tratamiento</label>
+              <div class="vacuna-toggle">
+                <button
+                  type="button"
+                  class="vacuna-toggle-btn active"
+                  id="btn-modo-catalogo"
+                  onclick="cambiarModoVacuna('catalogo')"
+                >
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 3l7 3v5c0 5-3.4 7.9-7 9-3.6-1.1-7-4-7-9V6z" />
+                    <path d="M9 12l2 2 4-4" />
+                  </svg>
+                  Del catálogo
+                </button>
+                <button
+                  type="button"
+                  class="vacuna-toggle-btn"
+                  id="btn-modo-manual"
+                  onclick="cambiarModoVacuna('manual')"
+                >
+                  <svg viewBox="0 0 24 24">
+                    <path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z" />
+                  </svg>
+                  Escribir nuevo
+                </button>
+              </div>
+
+              <!-- Selector de vacuna del catálogo -->
+              <div id="bloque-catalogo">
+                <select
+                  id="modal-vacuna-select"
+                  class="field-select"
+                  onchange="autoRellenarVacuna(this.value)"
+                >
+                  <option value="">— Elige una vacuna —</option>
+                </select>
+              </div>
+
+              <!-- Campo manual -->
+              <div id="bloque-manual" style="display: none">
+                <input
+                  id="modal-vacuna-manual"
+                  type="text"
+                  class="field-input"
+                  placeholder="Nombre del tratamiento"
+                />
+              </div>
+            </div>
+
+            <!-- Fecha de aplicación -->
+            <div>
+              <label class="field-label" for="modal-fecha"
+                >Fecha de aplicación *</label
+              >
+              <input
+                id="modal-fecha"
+                type="date"
+                class="field-input"
+                required
+                onchange="recalcularProximaDosis()"
+              />
+            </div>
+
+            <!-- Próxima dosis -->
+            <div>
+              <label class="field-label" for="modal-proxima-dosis"
+                >Próxima dosis</label
+              >
+              <input
+                id="modal-proxima-dosis"
+                type="date"
+                class="field-input"
+                title="Se calcula automáticamente según el intervalo de la vacuna. Puedes editarla."
+              />
+            </div>
+
+            <!-- Dosis -->
+            <div>
+              <label class="field-label" for="modal-dosis">Dosis</label>
+              <input
+                id="modal-dosis"
+                type="text"
+                class="field-input"
+                placeholder="ej. 5 ml"
+              />
+            </div>
+
+            <!-- Vía de administración -->
+            <div>
+              <label class="field-label" for="modal-via"
+                >Vía de administración</label
+              >
+              <input
+                id="modal-via"
+                type="text"
+                class="field-input"
+                placeholder="ej. Subcutánea"
+              />
+            </div>
+
+            <!-- Lote -->
+            <div>
+              <label class="field-label" for="modal-lote">Lote</label>
+              <input
+                id="modal-lote"
+                type="text"
+                class="field-input"
+                placeholder="Número de lote"
+              />
+            </div>
+
+            <!-- Aplicado por -->
+            <div>
+              <label class="field-label" for="modal-aplicado-por"
+                >Aplicado por</label
+              >
+              <input
+                id="modal-aplicado-por"
+                type="text"
+                class="field-input"
+                placeholder="Nombre del aplicador"
+              />
+            </div>
+
+            <!-- Notas -->
+            <div class="full-width">
+              <label class="field-label" for="modal-notas"
+                >Notas / Observaciones</label
+              >
+              <textarea
+                id="modal-notas"
+                class="field-textarea"
+                placeholder="Reacciones, observaciones post-aplicación..."
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" onclick="cerrarModal()">
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primary" id="btn-guardar">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 12l5 5L20 6" />
+              </svg>
+              Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // ── Estado global ──
+      let animales = [];
+      let vacunas = [];
+      let modoVacuna = "catalogo"; // 'catalogo' | 'manual'
+      let animalSeleccionadoId = null;
+      let historialActual = [];
+
+      // ── Iconos auxiliares ──
+      const ICON_COW =
+        '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 8c-1.3-.9-2-2.5-1-3.8C6.3 2.9 7.7 3.6 8.3 5"/><path d="M17.5 8c1.3-.9 2-2.5 1-3.8-.8-1.3-2.2-.6-2.8.8"/><rect x="5.5" y="7" width="13" height="10.5" rx="5.2"/><circle cx="9.3" cy="12" r=".7" fill="currentColor" stroke="none"/><circle cx="14.7" cy="12" r=".7" fill="currentColor" stroke="none"/><path d="M10 15.3c.7.6 1.3.6 2 0"/></svg>';
+      const ICON_CHECK_SHIELD =
+        '<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.4 7.9-7 9-3.6-1.1-7-4-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg>';
+      const ICON_PENCIL =
+        '<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z"/></svg>';
+
+      // ── Helpers de autenticación ──
+      function obtenerToken() {
+        return (
+          localStorage.getItem("vacapp_token") ||
+          sessionStorage.getItem("vacapp_token") ||
+          ""
+        );
+      }
+
+      function hdrs() {
+        const token = obtenerToken();
+        const h = { "Content-Type": "application/json" };
+        if (token) h["Authorization"] = "Bearer " + token;
+        return h;
+      }
+
+      // ── Inicialización ──
+      document.addEventListener("DOMContentLoaded", () => {
+        aplicarTema();
+        cargarAnimales();
+        cargarVacunas();
+        // Fecha por defecto = hoy
+        document.getElementById("modal-fecha").valueAsDate = new Date();
+      });
+
+      function aplicarTema() {
+        const saved =
+          localStorage.getItem("vacapp_theme") ||
+          localStorage.getItem("vacapp_tema");
+        if (
+          saved === "dark" ||
+          (!saved && matchMedia("(prefers-color-scheme: dark)").matches)
+        ) {
+          document.documentElement.classList.add("dark");
+        }
+      }
+
+      // ── Cargar animales ──
+      async function cargarAnimales() {
+        try {
+          const res = await fetch("/api/v1/animales", {
+            headers: hdrs(),
+            credentials: "include",
+          });
+          if (!res.ok) return;
+          animales = await res.json();
+          poblarSelectorAnimal(document.getElementById("selector-animal"));
+          poblarSelectorAnimal(document.getElementById("modal-animal"));
+        } catch (e) {
+          console.error("Error cargando animales", e);
+        }
+      }
+
+      function poblarSelectorAnimal(select) {
+        const valorActual = select.value;
+        // Conservar sólo la primera opción (placeholder)
+        while (select.options.length > 1) select.remove(1);
+        animales.forEach((a) => {
+          const opt = document.createElement("option");
+          opt.value = a.id;
+          opt.textContent =
+            a.numeroIdentificador + (a.raza ? " — " + a.raza : "");
+          select.appendChild(opt);
+        });
+        if (valorActual) select.value = valorActual;
+      }
+
+      // ── Cargar vacunas del catálogo ──
+      async function cargarVacunas() {
+        try {
+          const res = await fetch("/api/v1/vacunas", {
+            headers: hdrs(),
+            credentials: "include",
+          });
+          if (!res.ok) return;
+          vacunas = await res.json();
+          const sel = document.getElementById("modal-vacuna-select");
+          vacunas.forEach((v) => {
+            const opt = document.createElement("option");
+            opt.value = v.id;
+            opt.dataset.nombre = v.nombre;
+            opt.dataset.dosis = v.dosis || "";
+            opt.dataset.via = v.viaAdministracion || "";
+            opt.dataset.lote = v.lote || "";
+            opt.dataset.intervaloDias = v.intervaloDias || "";
+            opt.textContent =
+              v.nombre + (v.laboratorio ? " (" + v.laboratorio + ")" : "");
+            sel.appendChild(opt);
+          });
+        } catch (e) {
+          console.error("Error cargando vacunas", e);
+        }
+      }
+
+      // ── Seleccionar animal en la vista principal ──
+      async function seleccionarAnimal(animalId) {
+        animalSeleccionadoId = animalId || null;
+        const btnNueva = document.getElementById("btn-nueva-aplicacion");
+        const infoEl = document.getElementById("info-animal");
+
+        if (!animalId) {
+          btnNueva.disabled = true;
+          infoEl.classList.remove("visible");
+          limpiarTabla("Selecciona un animal para ver su historial clínico.");
+          calcularEstadisticasHC([]);
+          return;
+        }
+
+        // Mostrar nombre del animal seleccionado
+        const animal = animales.find((a) => a.id === animalId);
+        if (animal) {
+          infoEl.innerHTML = ICON_COW + " " + esc(animal.numeroIdentificador);
+          infoEl.classList.add("visible");
+        }
+
+        btnNueva.disabled = false;
+
+        // Sincronizar dropdown del modal
+        const modalSelect = document.getElementById("modal-animal");
+        modalSelect.value = animalId;
+
+        // Cargar historial
+        await cargarHistorial(animalId);
+      }
+
+      // ── Cargar historial del animal ──
+      async function cargarHistorial(animalId) {
+        const loading = document.getElementById("hc-loading");
+        loading.classList.add("visible");
+        limpiarTabla("");
+
+        try {
+          const res = await fetch(
+            "/api/v1/historial-clinico/animal/" + animalId,
+            {
+              headers: hdrs(),
+              credentials: "include",
+            },
+          );
+
+          if (!res.ok) {
+            limpiarTabla("Error al cargar el historial.");
+            calcularEstadisticasHC([]);
+            return;
+          }
+
+          const lista = await res.json();
+          historialActual = lista || [];
+          renderizarTabla(historialActual);
+          calcularEstadisticasHC(historialActual);
+          aplicarFiltrosHC();
+        } catch (e) {
+          console.error("Error cargando historial", e);
+          limpiarTabla("Error de conexión.");
+          calcularEstadisticasHC([]);
+        } finally {
+          loading.classList.remove("visible");
+        }
+      }
+
+      // ── Tarjetas informativas ──
+      function calcularEstadisticasHC(lista) {
+        const hoy = new Date();
+        const proximas = lista.filter((h) => {
+          if (!h.proximaDosis) return false;
+          const dias = Math.round((new Date(h.proximaDosis) - hoy) / 86400000);
+          return dias >= 0 && dias <= 30;
+        }).length;
+        const catalogo = lista.filter((h) => !!h.vacunaId).length;
+        const manual = lista.length - catalogo;
+
+        document.getElementById("statTotalAplicaciones").textContent =
+          lista.length;
+        document.getElementById("statProximasDosis").textContent = proximas;
+        document.getElementById("statCatalogo").textContent = catalogo;
+        document.getElementById("statManual").textContent = manual;
+      }
+
+      function renderizarTabla(lista) {
+        const tbody = document.getElementById("tabla-cuerpo");
+        tbody.innerHTML = "";
+
+        if (!lista || lista.length === 0) {
+          tbody.innerHTML = `
+            <tr><td colspan="9">
+              <div class="empty-state">
+                <svg viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 0 0-2 2v4"/><path d="M15 3h4a2 2 0 0 1 2 2v4"/><path d="M3 15v4a2 2 0 0 0 2 2h4"/><path d="M15 21h4a2 2 0 0 0 2-2v-4"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                <p>Este animal no tiene historial clínico registrado aún.</p>
+              </div>
+            </td></tr>`;
+          return;
+        }
+
+        lista.forEach((h) => {
+          const esCatalogo = !!h.vacunaId;
+          const badgeClass = esCatalogo ? "badge-catalogo" : "badge-manual";
+          const badgeIcon = esCatalogo ? ICON_CHECK_SHIELD : ICON_PENCIL;
+          const badgeText = esCatalogo ? "Catálogo" : "Manual";
+          const tr = document.createElement("tr");
+          tr.className = "fila-datos";
+          tr.dataset.nombre = h.nombreVacuna || "";
+          tr.dataset.tipo = esCatalogo ? "catalogo" : "manual";
+          tr.dataset.aplicadopor = h.aplicadoPor || "";
+          tr.dataset.lote = h.lote || "";
+          tr.innerHTML = `
+            <td data-label="Vacuna"><strong>${esc(h.nombreVacuna)}</strong></td>
+            <td data-label="Fecha">${formatearFecha(h.fechaAplicacion)}</td>
+            <td data-label="Próx. dosis">${formatearFecha(h.proximaDosis)}</td>
+            <td data-label="Dosis">${esc(h.dosis) || "—"}</td>
+            <td data-label="Vía">${esc(h.viaAdministracion) || "—"}</td>
+            <td data-label="Lote">${esc(h.lote) || "—"}</td>
+            <td data-label="Aplicado por">${esc(h.aplicadoPor) || "—"}</td>
+            <td data-label="Tipo"><span class="badge ${badgeClass}">${badgeIcon} ${badgeText}</span></td>
+            <td data-label="Notas">${esc(h.notas) || "—"}</td>`;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function limpiarTabla(mensaje) {
+        const tbody = document.getElementById("tabla-cuerpo");
+        document.getElementById("sinResultadosHC").classList.remove("visible");
+        if (!mensaje) {
+          tbody.innerHTML = "";
+          return;
+        }
+        tbody.innerHTML = `<tr id="fila-vacia"><td colspan="9">
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 6v4m0 4h.01"/></svg>
+            <p>${esc(mensaje)}</p>
+          </div>
+        </td></tr>`;
+      }
+
+      // ── Filtros de búsqueda ───────────────────────────────────────────
+      function aplicarFiltrosHC() {
+        const texto = document
+          .getElementById("filtroHistBusqueda")
+          .value.trim()
+          .toLowerCase();
+        const tipo = document.getElementById("filtroHistTipo").value;
+
+        const filas = document.querySelectorAll("#tabla-cuerpo tr.fila-datos");
+        let visibles = 0;
+
+        filas.forEach((tr) => {
+          const coincideTexto =
+            !texto ||
+            tr.dataset.nombre.toLowerCase().includes(texto) ||
+            tr.dataset.aplicadopor.toLowerCase().includes(texto) ||
+            tr.dataset.lote.toLowerCase().includes(texto);
+          const coincideTipo = !tipo || tr.dataset.tipo === tipo;
+          const visible = coincideTexto && coincideTipo;
+          tr.classList.toggle("fila-oculta", !visible);
+          if (visible) visibles++;
+        });
+
+        document
+          .getElementById("sinResultadosHC")
+          .classList.toggle("visible", filas.length > 0 && visibles === 0);
+      }
+
+      function limpiarFiltrosHC() {
+        document.getElementById("filtroHistBusqueda").value = "";
+        document.getElementById("filtroHistTipo").value = "";
+        aplicarFiltrosHC();
+      }
+
+      // ── Modal ──
+      function abrirModal() {
+        document.getElementById("alerta-error").classList.remove("visible");
+        document.getElementById("form-historial").reset();
+        document.getElementById("modal-fecha").valueAsDate = new Date();
+        document.getElementById("modal-proxima-dosis").value = "";
+
+        // Sincronizar animal seleccionado
+        if (animalSeleccionadoId) {
+          document.getElementById("modal-animal").value = animalSeleccionadoId;
+        }
+
+        cambiarModoVacuna("catalogo");
+        document.getElementById("modal-backdrop").classList.add("open");
+      }
+
+      function cerrarModal() {
+        document.getElementById("modal-backdrop").classList.remove("open");
+      }
+
+      function cerrarModalSiFondo(e) {
+        if (e.target === document.getElementById("modal-backdrop"))
+          cerrarModal();
+      }
+
+      // ── Toggle vacuna catálogo / manual ──
+      function cambiarModoVacuna(modo) {
+        modoVacuna = modo;
+        document.getElementById("bloque-catalogo").style.display =
+          modo === "catalogo" ? "" : "none";
+        document.getElementById("bloque-manual").style.display =
+          modo === "manual" ? "" : "none";
+        document
+          .getElementById("btn-modo-catalogo")
+          .classList.toggle("active", modo === "catalogo");
+        document
+          .getElementById("btn-modo-manual")
+          .classList.toggle("active", modo === "manual");
+      }
+
+      // ── Recalcular próxima dosis cuando cambia la fecha de aplicación ──
+      function recalcularProximaDosis() {
+        const selV = document.getElementById("modal-vacuna-select");
+        if (selV && selV.value) autoRellenarVacuna(selV.value);
+      }
+
+      // ── Auto-rellenar campos desde vacuna del catálogo ──
+      function autoRellenarVacuna(vacunaId) {
+        if (!vacunaId) return;
+        const sel = document.getElementById("modal-vacuna-select");
+        const opt = sel.querySelector(`option[value="${vacunaId}"]`);
+        if (!opt) return;
+        document.getElementById("modal-dosis").value = opt.dataset.dosis || "";
+        document.getElementById("modal-via").value = opt.dataset.via || "";
+        document.getElementById("modal-lote").value = opt.dataset.lote || "";
+        // Calcular próxima dosis
+        const intervaloDias = parseInt(opt.dataset.intervaloDias, 10);
+        const fechaAplicacion = document.getElementById("modal-fecha").value;
+        if (intervaloDias > 0 && fechaAplicacion) {
+          const fecha = new Date(fechaAplicacion);
+          fecha.setDate(fecha.getDate() + intervaloDias);
+          document.getElementById("modal-proxima-dosis").value = fecha
+            .toISOString()
+            .split("T")[0];
+        } else {
+          document.getElementById("modal-proxima-dosis").value = "";
+        }
+      }
+
+      // ── Enviar formulario ──
+      async function enviarFormulario(e) {
+        e.preventDefault();
+        const errorEl = document.getElementById("alerta-error");
+        errorEl.classList.remove("visible");
+
+        const animalId = document.getElementById("modal-animal").value;
+        if (!animalId) return mostrarError("Selecciona un animal.");
+
+        const fecha = document.getElementById("modal-fecha").value;
+        if (!fecha)
+          return mostrarError("La fecha de aplicación es obligatoria.");
+
+        let vacunaId = null;
+        let nombreVacuna = "";
+
+        if (modoVacuna === "catalogo") {
+          const selV = document.getElementById("modal-vacuna-select");
+          vacunaId = selV.value || null;
+          const opt = selV.querySelector(`option[value="${vacunaId}"]`);
+          nombreVacuna = opt ? opt.dataset.nombre : "";
+          if (!vacunaId)
+            return mostrarError("Selecciona una vacuna del catálogo.");
+        } else {
+          nombreVacuna = document
+            .getElementById("modal-vacuna-manual")
+            .value.trim();
+          if (!nombreVacuna)
+            return mostrarError("Escribe el nombre del tratamiento.");
+        }
+
+        const payload = {
+          animalId,
+          vacunaId,
+          nombreVacuna,
+          dosis: document.getElementById("modal-dosis").value.trim() || null,
+          viaAdministracion:
+            document.getElementById("modal-via").value.trim() || null,
+          lote: document.getElementById("modal-lote").value.trim() || null,
+          fechaAplicacion: fecha,
+          proximaDosis:
+            document.getElementById("modal-proxima-dosis").value || null,
+          notas: document.getElementById("modal-notas").value.trim() || null,
+          aplicadoPor:
+            document.getElementById("modal-aplicado-por").value.trim() || null,
+        };
+
+        const btnGuardar = document.getElementById("btn-guardar");
+        btnGuardar.disabled = true;
+        const textoOriginalBtn = btnGuardar.innerHTML;
+        btnGuardar.textContent = "Guardando...";
+
+        try {
+          const res = await fetch("/api/v1/historial-clinico", {
+            method: "POST",
+            headers: hdrs(),
+            credentials: "include",
+            body: JSON.stringify(payload),
+          });
+
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            mostrarError(data.mensaje || "Error al guardar el registro.");
+            return;
+          }
+
+          cerrarModal();
+          // Recargar historial del animal actual
+          if (animalSeleccionadoId) await cargarHistorial(animalSeleccionadoId);
+          else {
+            animalSeleccionadoId = animalId;
+            document.getElementById("selector-animal").value = animalId;
+            await seleccionarAnimal(animalId);
+          }
+        } catch (err) {
+          console.error(err);
+          mostrarError("No se pudo conectar con el servidor.");
+        } finally {
+          btnGuardar.disabled = false;
+          btnGuardar.innerHTML = textoOriginalBtn;
+        }
+      }
+
+      function mostrarError(msg) {
+        const el = document.getElementById("alerta-error");
+        el.textContent = msg;
+        el.classList.add("visible");
+      }
+
+      // ── Cerrar sesión ──
+      function cerrarSesion() {
+        fetch("/api/v1/auth/logout", {
+          method: "POST",
+          credentials: "include",
+        }).finally(() => {
+          localStorage.removeItem("vacapp_token");
+          sessionStorage.removeItem("vacapp_token");
+          window.location.href = "/login";
+        });
+      }
+
+      // ── Utilidades ──
+      function esc(str) {
+        if (!str) return "";
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function formatearFecha(fecha) {
+        if (!fecha) return "—";
+        const [y, m, d] = fecha.split("-");
+        return `${d}/${m}/${y}`;
+      }
+    </script>
+  </body>
+</html>

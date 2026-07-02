@@ -55,6 +55,15 @@ public class Animal {
     /** Nota u observación adicional. */
     private String nota;
 
+    /** Categoría del animal (ej. "Bovino", "Caprino"). */
+    private String categoria;
+
+    /** Fecha en que inició el período de reposo post-parto. */
+    private java.time.LocalDate fechaInicioReposo;
+
+    /** Fecha estimada de fin del reposo post-parto. */
+    private java.time.LocalDate fechaFinReposo;
+
     /** Identificador del tenant al que pertenece este animal. */
     private String tenantId;
 }

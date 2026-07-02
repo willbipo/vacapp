@@ -1,12 +1,15 @@
 package com.vacapp.insumos.internal.infrastructure.persistence;
 
-import com.vacapp.insumos.internal.domain.model.CategoriaInsumo;
 import com.vacapp.insumos.internal.domain.model.UnidadMedida;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.domain.Persistable;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -18,11 +21,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class InsumoEntidad {
+@Table("insumos")
+public class InsumoEntidad implements Persistable<UUID> {
 
+    @Id
     private UUID id;
     private String nombre;
-    private CategoriaInsumo categoria;
+    private String categoria;
     private UnidadMedida unidadMedida;
     private Double cantidad;
     private Double cantidadMinima;
@@ -31,4 +36,14 @@ public class InsumoEntidad {
     private BigDecimal precioUnitario;
     private String ubicacion;
     private String tenantId;
+
+    /** Siempre es nueva: el id se genera en la capa de aplicación. */
+    @Transient
+    @Builder.Default
+    private boolean esNueva = true;
+
+    @Override
+    public boolean isNew() {
+        return esNueva;
+    }
 }

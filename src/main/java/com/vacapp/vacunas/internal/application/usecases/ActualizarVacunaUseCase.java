@@ -1,6 +1,5 @@
 package com.vacapp.vacunas.internal.application.usecases;
 
-import com.vacapp.vacunas.internal.domain.model.TipoVacuna;
 import com.vacapp.vacunas.internal.domain.model.Vacuna;
 import com.vacapp.vacunas.internal.domain.model.VacunaNoEncontradaException;
 import com.vacapp.vacunas.internal.domain.model.ViaAdministracion;
@@ -22,7 +21,7 @@ public class ActualizarVacunaUseCase {
     public record Comando(
         UUID id,
         String nombre,
-        TipoVacuna tipo,
+        String tipo,
         String laboratorio,
         String descripcion,
         String dosis,

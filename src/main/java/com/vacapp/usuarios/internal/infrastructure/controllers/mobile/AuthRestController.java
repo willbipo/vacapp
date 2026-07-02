@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.util.Map;
 
 /**
  * Controlador REST para autenticación y registro de usuarios.
@@ -90,5 +92,19 @@ public class AuthRestController {
                 request.username(), request.email(), request.password(), request.role(), request.tenantId());
         registrarUsuarioUseCase.ejecutar(comando);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    /** Credenciales incorrectas → 401 con mensaje JSON. */
+    @ExceptionHandler(com.vacapp.usuarios.CredencialesInvalidasException.class)
+    public ResponseEntity<Map<String, String>> handleCredencialesInvalidas(com.vacapp.usuarios.CredencialesInvalidasException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("mensaje", ex.getMessage()));
+    }
+
+    /** Username duplicado en registro → 409 con mensaje JSON. */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("mensaje", ex.getMessage()));
     }
 }

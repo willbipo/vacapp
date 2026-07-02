@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vacapp — Ventas de Ganado</title>
+    <link rel="stylesheet" th:href="@{/css/global.css}" />
+    <link rel="stylesheet" th:href="@{/css/navbard.css}" />
+    <link rel="stylesheet" th:href="@{/css/sidebard.css}" />
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
+    <link rel="stylesheet" th:href="@{/css/ventas.css}" />
+  </head>
+  <body>
+    <div class="dashboard-shell">
+      <div th:replace="~{fragments/sidebard :: sidebar}"></div>
+
+      <div class="dashboard-main">
+        <div th:replace="~{fragments/navbard :: navbar}"></div>
+
+        <main class="dashboard-content">
+          <!-- Encabezado -->
+          <div class="vt-header">
+            <div class="vt-header-title">
+              <span class="vt-header-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="2.5" y="6" width="19" height="13" rx="2.4" />
+                  <circle cx="12" cy="12.5" r="2.6" />
+                  <path
+                    d="M5.5 6v-.6A1.9 1.9 0 0 1 7.4 3.5h9.2a1.9 1.9 0 0 1 1.9 1.9V6"
+                  />
+                </svg>
+              </span>
+              <div>
+                <p class="page-overline">Gestión</p>
+                <h1>Ventas de Ganado</h1>
+              </div>
+            </div>
+            <button class="btn-primary" type="button" onclick="abrirModal()">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Registrar venta
+            </button>
+          </div>
+
+          <!-- Tarjetas informativas -->
+          <div class="stats-grid">
+            <div class="stat-card stat-card--total">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M4 6h16M4 12h16M4 18h10" />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p class="stat-value" th:text="${totalVentas}">0</p>
+                <p class="stat-label">Total de ventas</p>
+                <p class="stat-hint">Registros totales</p>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card--mes">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <rect x="3" y="5" width="18" height="16" rx="2.4" />
+                  <path d="M3 10h18M8 3v4M16 3v4" />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p class="stat-value" th:text="${ventasEsteMes}">0</p>
+                <p class="stat-label">Ventas este mes</p>
+                <p class="stat-hint">Mes en curso</p>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card--compradores">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <circle cx="9" cy="8" r="3.2" />
+                  <path d="M3.5 19c.6-3.4 3-5.2 5.5-5.2s4.9 1.8 5.5 5.2" />
+                  <path d="M16 8.5a2.7 2.7 0 1 0 0-5" />
+                  <path d="M15 13.6c2.2.4 3.8 2 4.3 5" />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p class="stat-value" th:text="${compradoresUnicos}">0</p>
+                <p class="stat-label">Compradores únicos</p>
+                <p class="stat-hint">Distintos registrados</p>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card--ultimo">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <circle cx="12" cy="8.2" r="3.4" />
+                  <path d="M5 19.5c.8-4 3.4-6 7-6s6.2 2 7 6" />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p
+                  class="stat-value"
+                  style="font-size: 1.15rem; white-space: normal"
+                  th:text="${ultimoComprador}"
+                >
+                  —
+                </p>
+                <p class="stat-label">Último comprador</p>
+                <p class="stat-hint">Venta más reciente</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filtros de búsqueda -->
+          <div class="filter-bar">
+            <div class="filter-field filter-search">
+              <label for="buscar-arete">Arete</label>
+              <svg viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M21 21l-4.3-4.3" />
+              </svg>
+              <input
+                type="text"
+                id="buscar-arete"
+                placeholder="Buscar por arete…"
+                oninput="filtrarTabla()"
+              />
+            </div>
+            <div class="filter-field filter-search">
+              <label for="buscar-comprador">Comprador</label>
+              <svg viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M21 21l-4.3-4.3" />
+              </svg>
+              <input
+                type="text"
+                id="buscar-comprador"
+                placeholder="Buscar por comprador…"
+                oninput="filtrarTabla()"
+              />
+            </div>
+            <div class="filter-field">
+              <label for="filtro-fecha-desde">Desde</label>
+              <input
+                type="date"
+                id="filtro-fecha-desde"
+                onchange="filtrarTabla()"
+              />
+            </div>
+            <div class="filter-field">
+              <label for="filtro-fecha-hasta">Hasta</label>
+              <input
+                type="date"
+                id="filtro-fecha-hasta"
+                onchange="filtrarTabla()"
+              />
+            </div>
+            <div class="filter-actions">
+              <button
+                class="btn-ghost"
+                type="button"
+                onclick="limpiarFiltros()"
+              >
+                <svg viewBox="0 0 24 24">
+                  <path d="M3 12a9 9 0 1 0 3-6.7" />
+                  <path d="M3 4v5h5" />
+                </svg>
+                Limpiar filtros
+              </button>
+            </div>
+          </div>
+
+          <!-- Tabla de ventas -->
+          <div class="tabla-wrap">
+            <div class="tabla-scroll">
+              <table class="tabla-ventas" id="tabla-ventas">
+                <thead>
+                  <tr>
+                    <th>ID Arete</th>
+                    <th>Comprador</th>
+                    <th>INE</th>
+                    <th>Cred. CEDAFOD</th>
+                    <th>Guía PDF</th>
+                    <th>Fecha venta</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-ventas">
+                  <!-- Sin datos -->
+                  <tr th:if="${#lists.isEmpty(ventas)}">
+                    <td colspan="6">
+                      <div class="empty-state">
+                        <svg viewBox="0 0 24 24">
+                          <path d="M9 3H5a2 2 0 0 0-2 2v4" />
+                          <path d="M15 3h4a2 2 0 0 1 2 2v4" />
+                          <path d="M3 15v4a2 2 0 0 0 2 2h4" />
+                          <path d="M15 21h4a2 2 0 0 0 2-2v-4" />
+                          <line x1="12" y1="8" x2="12" y2="16" />
+                          <line x1="8" y1="12" x2="16" y2="12" />
+                        </svg>
+                        <p>Sin ventas registradas.</p>
+                      </div>
+                    </td>
+                  </tr>
+                  <!-- Filas de datos -->
+                  <tr
+                    class="fila-datos"
+                    th:each="v : ${ventas}"
+                    th:data-arete="${v.areteId}"
+                    th:data-comprador="${v.nombreComprador}"
+                    th:data-fecha="${v.fechaVenta}"
+                  >
+                    <td data-label="ID Arete">
+                      <span
+                        class="badge badge-arete"
+                        th:text="${v.areteId}"
+                      ></span>
+                    </td>
+                    <td
+                      data-label="Comprador"
+                      th:text="${v.nombreComprador}"
+                    ></td>
+                    <td data-label="INE" th:text="${v.ine}"></td>
+                    <td data-label="Cred. CEDAFOD">
+                      <span
+                        th:if="${v.credencialCedafod != null and !v.credencialCedafod.isEmpty()}"
+                      >
+                        <a
+                          th:href="@{'/uploads/' + ${v.credencialCedafod}}"
+                          target="_blank"
+                          class="badge badge-pdf"
+                        >
+                          <svg viewBox="0 0 24 24">
+                            <path
+                              d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9l-6-6z"
+                            />
+                            <path d="M13 3v6h6" />
+                          </svg>
+                          Ver PDF
+                        </a>
+                      </span>
+                      <span
+                        th:unless="${v.credencialCedafod != null and !v.credencialCedafod.isEmpty()}"
+                        class="text-muted"
+                        >—</span
+                      >
+                    </td>
+                    <td data-label="Guía PDF">
+                      <span
+                        th:if="${v.guiaPdf != null and !v.guiaPdf.isEmpty()}"
+                      >
+                        <a
+                          th:href="@{'/uploads/' + ${v.guiaPdf}}"
+                          target="_blank"
+                          class="badge badge-pdf"
+                        >
+                          <svg viewBox="0 0 24 24">
+                            <path
+                              d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9l-6-6z"
+                            />
+                            <path d="M13 3v6h6" />
+                          </svg>
+                          Ver PDF
+                        </a>
+                      </span>
+                      <span
+                        th:unless="${v.guiaPdf != null and !v.guiaPdf.isEmpty()}"
+                        class="text-muted"
+                        >—</span
+                      >
+                    </td>
+                    <td data-label="Fecha" th:text="${v.fechaVenta}"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Sin resultados por filtro -->
+          <div class="no-results" id="sinResultadosVt">
+            <svg viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.3-4.3" />
+            </svg>
+            <p>Ninguna venta coincide con los filtros seleccionados.</p>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- ─── MODAL: Registrar venta ─── -->
+    <div
+      class="modal-backdrop"
+      id="modal-overlay"
+      onclick="cerrarModalSiFondo(event)"
+    >
+      <div
+        class="modal-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-titulo"
+      >
+        <div class="modal-header">
+          <h2 id="modal-titulo">
+            <svg viewBox="0 0 24 24">
+              <rect x="2.5" y="6" width="19" height="13" rx="2.4" />
+              <circle cx="12" cy="12.5" r="2.6" />
+              <path
+                d="M5.5 6v-.6A1.9 1.9 0 0 1 7.4 3.5h9.2a1.9 1.9 0 0 1 1.9 1.9V6"
+              />
+            </svg>
+            Registrar venta de ganado
+          </h2>
+          <button
+            class="modal-close"
+            onclick="cerrarModal()"
+            aria-label="Cerrar"
+            type="button"
+          >
+            <svg viewBox="0 0 24 24">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Alerta de error -->
+        <div id="modal-error" class="alerta-error"></div>
+
+        <div class="form-grid">
+          <div class="full-width">
+            <label class="field-label" for="m-arete"
+              >Buscar animal por arete *</label
+            >
+            <div class="animal-search-row">
+              <input
+                type="text"
+                id="m-arete"
+                class="field-input"
+                placeholder="Ej. MX-001234"
+              />
+              <button
+                type="button"
+                class="btn-secondary"
+                onclick="buscarAnimal()"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  width="15"
+                  height="15"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  style="margin-right: 4px; vertical-align: -2px"
+                >
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="M21 21l-4.3-4.3" />
+                </svg>
+                Buscar
+              </button>
+            </div>
+            <div id="animal-info" class="animal-info-card">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 3l7 3v5c0 5-3.4 7.9-7 9-3.6-1.1-7-4-7-9V6z" />
+                <path d="M9 12l2 2 4-4" />
+              </svg>
+              <span>
+                <strong id="ai-arete"></strong><br />
+                <span id="ai-raza"></span> &bull;
+                <span id="ai-sexo"></span> &bull; Estatus:
+                <span id="ai-estatus"></span>
+              </span>
+            </div>
+            <input type="hidden" id="m-arete-id" />
+          </div>
+
+          <div class="full-width">
+            <label class="field-label" for="m-comprador"
+              >Nombre del comprador *</label
+            >
+            <input
+              type="text"
+              id="m-comprador"
+              class="field-input"
+              placeholder="Nombre completo"
+            />
+          </div>
+
+          <div class="full-width">
+            <label class="field-label" for="m-ine">INE del comprador *</label>
+            <input
+              type="text"
+              id="m-ine"
+              class="field-input"
+              placeholder="Número de INE"
+            />
+          </div>
+
+          <div>
+            <label class="field-label" for="m-cedafod"
+              >Credencial CEDAFOD (PDF)</label
+            >
+            <input
+              type="file"
+              id="m-cedafod"
+              class="field-file"
+              accept=".pdf"
+            />
+          </div>
+
+          <div>
+            <label class="field-label" for="m-guia">Guía de venta (PDF)</label>
+            <input type="file" id="m-guia" class="field-file" accept=".pdf" />
+          </div>
+
+          <div class="full-width">
+            <label class="field-label" for="m-fecha">Fecha de venta</label>
+            <input type="date" id="m-fecha" class="field-input" />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" onclick="cerrarModal()">
+            Cancelar
+          </button>
+          <button type="button" class="btn-primary" onclick="guardarVenta()">
+            <svg viewBox="0 0 24 24">
+              <path d="M4 12l5 5L20 6" />
+            </svg>
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ── Modo claro / oscuro ──
+      (function () {
+        const guardado =
+          localStorage.getItem("vacapp_theme") ||
+          localStorage.getItem("vacapp_tema");
+        if (
+          guardado === "dark" ||
+          (!guardado && matchMedia("(prefers-color-scheme: dark)").matches)
+        ) {
+          document.documentElement.classList.add("dark");
+        }
+      })();
+
+      // ── Token ──
+      const TOKEN =
+        localStorage.getItem("vacapp_token") ||
+        sessionStorage.getItem("vacapp_token");
+
+      // ── Modal ──
+      function abrirModal() {
+        document.getElementById("modal-overlay").classList.add("open");
+        document.getElementById("modal-error").classList.remove("visible");
+      }
+
+      function cerrarModal() {
+        document.getElementById("modal-overlay").classList.remove("open");
+        limpiarFormulario();
+      }
+
+      function cerrarModalSiFondo(e) {
+        if (e.target === document.getElementById("modal-overlay"))
+          cerrarModal();
+      }
+
+      function limpiarFormulario() {
+        ["m-arete", "m-comprador", "m-ine", "m-fecha"].forEach((id) => {
+          document.getElementById(id).value = "";
+        });
+        document.getElementById("m-arete-id").value = "";
+        document.getElementById("animal-info").classList.remove("visible");
+        document.getElementById("m-cedafod").value = "";
+        document.getElementById("m-guia").value = "";
+      }
+
+      function mostrarError(msg) {
+        const el = document.getElementById("modal-error");
+        el.textContent = msg;
+        el.classList.add("visible");
+      }
+
+      // ── Buscar animal por arete ──
+      async function buscarAnimal() {
+        const arete = document.getElementById("m-arete").value.trim();
+        const errorEl = document.getElementById("modal-error");
+        const infoEl = document.getElementById("animal-info");
+        errorEl.classList.remove("visible");
+        infoEl.classList.remove("visible");
+        document.getElementById("m-arete-id").value = "";
+
+        if (!arete) {
+          mostrarError("Escribe un número de arete para buscar.");
+          return;
+        }
+
+        const headers = {};
+        if (TOKEN) headers["Authorization"] = "Bearer " + TOKEN;
+        try {
+          const res = await fetch(
+            `/api/v1/animales/buscar?arete=${encodeURIComponent(arete)}`,
+            { headers, credentials: "include" },
+          );
+          if (res.status === 404) {
+            mostrarError("No se encontró ningún animal con ese arete.");
+            return;
+          }
+          if (!res.ok) {
+            mostrarError("Error al buscar el animal.");
+            return;
+          }
+          const animal = await res.json();
+          if (animal.estatus === "BAJA") {
+            mostrarError(
+              "Este animal ya fue dado de baja (vendido o retirado). No se puede vender de nuevo.",
+            );
+            return;
+          }
+          document.getElementById("m-arete-id").value =
+            animal.numeroIdentificador;
+          document.getElementById("ai-arete").textContent =
+            "Arete: " + animal.numeroIdentificador;
+          document.getElementById("ai-raza").textContent =
+            animal.raza || "Sin raza";
+          document.getElementById("ai-sexo").textContent = animal.sexo || "–";
+          document.getElementById("ai-estatus").textContent = animal.estatus;
+          infoEl.classList.add("visible");
+        } catch (err) {
+          mostrarError("Error de conexión al buscar el animal.");
+        }
+      }
+
+      // ── Guardar venta ──
+      async function guardarVenta() {
+        const areteId = document.getElementById("m-arete-id").value.trim();
+        const nombreComprador = document
+          .getElementById("m-comprador")
+          .value.trim();
+        const ine = document.getElementById("m-ine").value.trim();
+        const fechaVenta = document.getElementById("m-fecha").value;
+        const fileCedafod = document.getElementById("m-cedafod").files[0];
+        const fileGuia = document.getElementById("m-guia").files[0];
+
+        document.getElementById("modal-error").classList.remove("visible");
+
+        if (!areteId || !nombreComprador || !ine) {
+          mostrarError(
+            "Por favor busca y selecciona un animal, y completa los campos obligatorios (*)",
+          );
+          return;
+        }
+
+        const payload = {
+          areteId,
+          nombreComprador,
+          ine,
+          credencialCedafod: fileCedafod ? fileCedafod.name : null,
+          guiaPdf: fileGuia ? fileGuia.name : null,
+          fechaVenta: fechaVenta || null,
+        };
+
+        try {
+          const headers = { "Content-Type": "application/json" };
+          if (TOKEN) headers["Authorization"] = "Bearer " + TOKEN;
+
+          const res = await fetch("/api/v1/ventas-ganado", {
+            method: "POST",
+            headers,
+            credentials: "include",
+            body: JSON.stringify(payload),
+          });
+
+          if (!res.ok) {
+            const msg = await res.text();
+            mostrarError("Error al guardar: " + msg);
+            return;
+          }
+
+          cerrarModal();
+          window.location.reload();
+        } catch (err) {
+          mostrarError("Error de conexión. Intenta de nuevo.");
+        }
+      }
+
+      // ── Filtrar tabla ──
+      function filtrarTabla() {
+        const textoArete = document
+          .getElementById("buscar-arete")
+          .value.toLowerCase();
+        const textoComprador = document
+          .getElementById("buscar-comprador")
+          .value.toLowerCase();
+        const desdeStr = document.getElementById("filtro-fecha-desde").value;
+        const hastaStr = document.getElementById("filtro-fecha-hasta").value;
+
+        const filas = document.querySelectorAll("#tbody-ventas tr.fila-datos");
+        let visibles = 0;
+
+        filas.forEach((fila) => {
+          const arete = (fila.dataset.arete || "").toLowerCase();
+          const comprador = (fila.dataset.comprador || "").toLowerCase();
+          const fechaStr = fila.dataset.fecha || "";
+
+          let visible = true;
+          if (textoArete && !arete.includes(textoArete)) visible = false;
+          if (textoComprador && !comprador.includes(textoComprador))
+            visible = false;
+          if (visible && desdeStr && fechaStr) visible = fechaStr >= desdeStr;
+          if (visible && hastaStr && fechaStr) visible = fechaStr <= hastaStr;
+
+          fila.classList.toggle("fila-oculta", !visible);
+          if (visible) visibles++;
+        });
+
+        document
+          .getElementById("sinResultadosVt")
+          .classList.toggle("visible", filas.length > 0 && visibles === 0);
+      }
+
+      function limpiarFiltros() {
+        document.getElementById("buscar-arete").value = "";
+        document.getElementById("buscar-comprador").value = "";
+        document.getElementById("filtro-fecha-desde").value = "";
+        document.getElementById("filtro-fecha-hasta").value = "";
+        filtrarTabla();
+      }
+
+      // ── Cerrar sesión ──
+      function cerrarSesion() {
+        fetch("/api/v1/auth/logout", {
+          method: "POST",
+          credentials: "include",
+        }).finally(() => {
+          localStorage.removeItem("vacapp_token");
+          sessionStorage.removeItem("vacapp_token");
+          document.cookie = "vacapp_jwt=; path=/; max-age=0";
+          window.location.href = "/login";
+        });
+      }
+    </script>
+  </body>
+</html>

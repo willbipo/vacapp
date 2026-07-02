@@ -2,9 +2,13 @@ package com.vacapp.vacunas.internal.infrastructure.controllers.mobile;
 
 import com.vacapp.core.TenantContext;
 import com.vacapp.vacunas.internal.application.usecases.ActualizarVacunaUseCase;
+import com.vacapp.vacunas.internal.application.usecases.CrearCategoriaVacunaUseCase;
+import com.vacapp.vacunas.internal.application.usecases.ListarCategoriasVacunaUseCase;
 import com.vacapp.vacunas.internal.application.usecases.ListarVacunasUseCase;
 import com.vacapp.vacunas.internal.application.usecases.RegistrarVacunaUseCase;
 import com.vacapp.vacunas.internal.domain.model.Vacuna;
+import com.vacapp.vacunas.internal.infrastructure.controllers.mobile.dtos.CategoriaVacunaRequest;
+import com.vacapp.vacunas.internal.infrastructure.controllers.mobile.dtos.CategoriaVacunaResponse;
 import com.vacapp.vacunas.internal.infrastructure.controllers.mobile.dtos.VacunaRequest;
 import com.vacapp.vacunas.internal.infrastructure.controllers.mobile.dtos.VacunaResponse;
 import jakarta.validation.Valid;
@@ -31,6 +35,8 @@ public class VacunasRestController {
     private final RegistrarVacunaUseCase registrarVacunaUseCase;
     private final ListarVacunasUseCase listarVacunasUseCase;
     private final ActualizarVacunaUseCase actualizarVacunaUseCase;
+    private final CrearCategoriaVacunaUseCase crearCategoriaVacunaUseCase;
+    private final ListarCategoriasVacunaUseCase listarCategoriasVacunaUseCase;
 
     @PostMapping
     public ResponseEntity<VacunaResponse> registrar(@Valid @RequestBody VacunaRequest req) {
@@ -63,4 +69,25 @@ public class VacunasRestController {
         ));
         return ResponseEntity.ok(VacunaResponse.desde(vacuna));
     }
+
+    /* ── Categorías ──────────────────────────────────────────────────────── */
+
+    @PostMapping("/categorias")
+    public ResponseEntity<CategoriaVacunaResponse> crearCategoria(
+            @Valid @RequestBody CategoriaVacunaRequest req) {
+        String tenantId = TenantContext.obtenerTenant();
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                CategoriaVacunaResponse.desde(
+                        crearCategoriaVacunaUseCase.ejecutar(
+                                new CrearCategoriaVacunaUseCase.Comando(req.nombre(), tenantId))));
+    }
+
+    @GetMapping("/categorias")
+    public ResponseEntity<List<CategoriaVacunaResponse>> listarCategorias() {
+        String tenantId = TenantContext.obtenerTenant();
+        return ResponseEntity.ok(
+                listarCategoriasVacunaUseCase.ejecutar(tenantId)
+                        .stream().map(CategoriaVacunaResponse::desde).toList());
+    }
 }
+

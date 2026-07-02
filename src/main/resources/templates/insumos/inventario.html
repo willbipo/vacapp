@@ -1,14 +1,14 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vacapp — Inventario de Insumos</title>
+    <title>Vacapp — Inventario de Vacunas</title>
     <link rel="stylesheet" th:href="@{/css/global.css}" />
     <link rel="stylesheet" th:href="@{/css/navbard.css}" />
     <link rel="stylesheet" th:href="@{/css/sidebard.css}" />
     <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
-    <link rel="stylesheet" th:href="@{/css/inventario.css}" />
+    <link rel="stylesheet" th:href="@{/css/vacunas.css}" />
   </head>
   <body>
     <div class="dashboard-shell">
@@ -18,97 +18,287 @@
         <div th:replace="~{fragments/navbard :: navbar}"></div>
 
         <main class="dashboard-content">
+          <!-- Encabezado -->
           <div class="inv-header">
-            <div>
-              <p class="page-overline">Gestión</p>
-              <h1>Inventario de Insumos</h1>
+            <div class="inv-header-title">
+              <span class="inv-header-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M9 3h6" />
+                  <path
+                    d="M10 3v3.5L6.5 10.2A4 4 0 0 0 9.6 17h4.8a4 4 0 0 0 3.1-6.8L14 6.5V3"
+                  />
+                  <path d="M8 13h8" />
+                </svg>
+              </span>
+              <div>
+                <p class="page-overline">Gestión</p>
+                <h1>Inventario de Vacunas</h1>
+              </div>
             </div>
-            <button class="btn-primary" onclick="abrirModal()">
-              + Agregar insumo
-            </button>
+            <div class="inv-header-actions">
+              <button class="btn-secondary" onclick="abrirModalCategoria()">
+                <svg viewBox="0 0 24 24">
+                  <path d="M4 6h16M4 12h10M4 18h6" />
+                </svg>
+                Crear tipo
+              </button>
+              <button class="btn-primary" onclick="abrirModal()">
+                <svg viewBox="0 0 24 24">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+                Agregar vacuna
+              </button>
+            </div>
           </div>
 
+          <!-- Tarjetas informativas -->
+          <div class="stats-grid">
+            <div class="stat-card stat-card--total">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M9 3h6" />
+                  <path
+                    d="M10 3v3.5L6.5 10.2A4 4 0 0 0 9.6 17h4.8a4 4 0 0 0 3.1-6.8L14 6.5V3"
+                  />
+                  <path d="M8 13h8" />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p
+                  class="stat-value"
+                  id="statTotal"
+                  th:text="${#lists.size(vacunas)}"
+                >
+                  0
+                </p>
+                <p class="stat-label">Total de vacunas</p>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card--stockbajo">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M12 3l10 18H2z" />
+                  <path d="M12 9.5v4.2" />
+                  <circle
+                    cx="12"
+                    cy="17"
+                    r=".65"
+                    fill="currentColor"
+                    stroke="none"
+                  />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p class="stat-value" id="statStockBajo">0</p>
+                <p class="stat-label">Stock bajo</p>
+                <p class="stat-hint">10 dosis o menos</p>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card--porcaducar">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <rect x="3" y="5" width="18" height="16" rx="3" />
+                  <path d="M8 3v4M16 3v4M3 10h18" />
+                  <circle cx="16.2" cy="16" r="3" />
+                  <path d="M16.2 14.6v1.4l1 .8" />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p class="stat-value" id="statPorCaducar">0</p>
+                <p class="stat-label">Por caducar</p>
+                <p class="stat-hint">Próximos 30 días</p>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card--caducadas">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M9 9l6 6M15 9l-6 6" />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p class="stat-value" id="statCaducadas">0</p>
+                <p class="stat-label">Caducadas</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filtros de búsqueda -->
+          <div class="filter-bar">
+            <div class="filter-field filter-search">
+              <label for="filtroBusqueda">Buscar</label>
+              <svg viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M21 21l-4.3-4.3" />
+              </svg>
+              <input
+                type="text"
+                id="filtroBusqueda"
+                placeholder="Nombre, laboratorio, lote…"
+                oninput="aplicarFiltros()"
+              />
+            </div>
+            <div class="filter-field">
+              <label for="filtroTipo">Tipo</label>
+              <select id="filtroTipo" onchange="aplicarFiltros()">
+                <option value="">Todos</option>
+              </select>
+            </div>
+            <div class="filter-field">
+              <label for="filtroVia">Vía</label>
+              <select id="filtroVia" onchange="aplicarFiltros()">
+                <option value="">Todas</option>
+                <option value="SUBCUTANEA">Subcutánea</option>
+                <option value="INTRAMUSCULAR">Intramuscular</option>
+                <option value="ORAL">Oral</option>
+                <option value="INTRANASAL">Intranasal</option>
+              </select>
+            </div>
+            <div class="filter-field">
+              <label for="filtroStock">Stock</label>
+              <select id="filtroStock" onchange="aplicarFiltros()">
+                <option value="">Todos</option>
+                <option value="bajo">Stock bajo (≤10)</option>
+                <option value="sin">Sin stock</option>
+              </select>
+            </div>
+            <div class="filter-actions">
+              <button
+                class="btn-ghost"
+                type="button"
+                onclick="limpiarFiltros()"
+              >
+                <svg viewBox="0 0 24 24">
+                  <path d="M3 12a9 9 0 1 0 3-6.7" />
+                  <path d="M3 4v5h5" />
+                </svg>
+                Limpiar filtros
+              </button>
+            </div>
+          </div>
+
+          <!-- Tabla -->
           <div class="tabla-wrap">
-            <table class="tabla-ganado">
+            <table class="tabla-ganado" id="tablaVacunas">
               <thead>
                 <tr>
                   <th>Nombre</th>
-                  <th>Categoría</th>
-                  <th>Cantidad</th>
+                  <th>Tipo</th>
+                  <th>Laboratorio</th>
+                  <th>Vía</th>
+                  <th>Dosis</th>
+                  <th>Lote</th>
+                  <th>Caducidad</th>
+                  <th>Stock</th>
                   <th>Unidad</th>
-                  <th>Mín.</th>
-                  <th>Proveedor</th>
-                  <th>Precio unit.</th>
-                  <th>Ubicación</th>
-                  <th>Descripción</th>
+                  <th>Temp.</th>
+                  <th>Cada (días)</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                <tr th:if="${#lists.isEmpty(insumos)}">
-                  <td colspan="10">
+                <tr th:if="${#lists.isEmpty(vacunas)}" class="fila-vacia">
+                  <td colspan="12">
                     <div class="empty-state">
                       <svg viewBox="0 0 24 24">
-                        <path d="M6 2l2 5h8l2-5" />
-                        <path d="M4 7h16l-1.5 12h-13z" />
+                        <path d="M3 3h18v18H3z" />
+                        <path d="M12 8v8" />
+                        <path d="M8 12h8" />
                       </svg>
-                      <p>No hay insumos registrados.</p>
+                      <p>No hay vacunas registradas.</p>
                     </div>
                   </td>
                 </tr>
-                <tr th:each="i : ${insumos}">
-                  <td th:text="${i.nombre}">—</td>
-                  <td>
+                <tr
+                  th:each="v : ${vacunas}"
+                  class="fila-vacuna"
+                  th:data-nombre="${v.nombre}"
+                  th:data-tipo="${v.tipo}"
+                  th:data-lab="${v.laboratorio != null ? v.laboratorio : ''}"
+                  th:data-lote="${v.lote != null ? v.lote : ''}"
+                  th:data-via="${v.viaAdministracion != null ? v.viaAdministracion : ''}"
+                  th:data-stock="${v.stock != null ? v.stock : ''}"
+                  th:data-caducidad="${v.fechaCaducidad != null ? v.fechaCaducidad : ''}"
+                >
+                  <td data-label="Nombre" th:text="${v.nombre}">—</td>
+                  <td data-label="Tipo">
                     <span
-                      th:class="${'badge ' + (i.categoria.name() == 'HERRAMIENTA' ? 'badge-macho' :
-                                              i.categoria.name() == 'ALIMENTO'    ? 'badge-vigente' :
-                                              i.categoria.name() == 'MEDICAMENTO' ? 'badge-hembra' : 'badge-baja')}"
-                      th:text="${i.categoria}"
+                      class="badge badge-vigente"
+                      th:text="${v.tipo}"
                     ></span>
                   </td>
-                  <td th:text="${i.cantidad} ?: '—'">—</td>
-                  <td th:text="${i.unidadMedida}">—</td>
-                  <td th:text="${i.cantidadMinima} ?: '—'">—</td>
-                  <td th:text="${i.proveedor} ?: '—'">—</td>
                   <td
-                    th:text="${i.precioUnitario != null} ? '$' + ${#numbers.formatDecimal(i.precioUnitario, 1, 2)} : '—'"
+                    data-label="Laboratorio"
+                    th:text="${v.laboratorio} ?: '—'"
                   >
                     —
                   </td>
-                  <td th:text="${i.ubicacion} ?: '—'">—</td>
-                  <td>
-                    <span
-                      th:if="${i.descripcion != null and !#strings.isEmpty(i.descripcion)}"
-                      th:text="${#strings.abbreviate(i.descripcion, 25)}"
-                    ></span>
-                    <span
-                      th:unless="${i.descripcion != null and !#strings.isEmpty(i.descripcion)}"
-                      class="text-muted"
-                      >—</span
-                    >
+                  <td data-label="Vía" th:text="${v.viaAdministracion} ?: '—'">
+                    —
                   </td>
-                  <td>
+                  <td data-label="Dosis" th:text="${v.dosis} ?: '—'">—</td>
+                  <td data-label="Lote" th:text="${v.lote} ?: '—'">—</td>
+                  <td
+                    data-label="Caducidad"
+                    th:text="${v.fechaCaducidad} ?: '—'"
+                  >
+                    —
+                  </td>
+                  <td data-label="Stock" th:text="${v.stock} ?: '—'">—</td>
+                  <td data-label="Unidad" th:text="${v.unidadMedida} ?: '—'">
+                    —
+                  </td>
+                  <td
+                    data-label="Temp."
+                    th:text="${v.temperaturaAlmacenamiento} ?: '—'"
+                  >
+                    —
+                  </td>
+                  <td
+                    data-label="Cada (días)"
+                    th:text="${v.intervaloDias != null} ? ${v.intervaloDias} + ' días' : '—'"
+                  >
+                    —
+                  </td>
+                  <td data-label="Acciones">
                     <button
-                    <button
-                      class="btn-secondary"
-                      th:data-id="${i.id}"
-                      th:data-nombre="${i.nombre}"
-                      th:data-categoria="${i.categoria}"
-                      th:data-unidad="${i.unidadMedida}"
-                      th:data-cantidad="${i.cantidad}"
-                      th:data-cantmin="${i.cantidadMinima}"
-                      th:data-descripcion="${i.descripcion}"
-                      th:data-proveedor="${i.proveedor}"
-                      th:data-precio="${i.precioUnitario}"
-                      th:data-ubicacion="${i.ubicacion}"
+                      class="btn-secondary icon-btn"
+                      th:data-id="${v.id}"
+                      th:data-nombre="${v.nombre}"
+                      th:data-tipo="${v.tipo}"
+                      th:data-laboratorio="${v.laboratorio}"
+                      th:data-descripcion="${v.descripcion}"
+                      th:data-dosis="${v.dosis}"
+                      th:data-via="${v.viaAdministracion}"
+                      th:data-lote="${v.lote}"
+                      th:data-caducidad="${v.fechaCaducidad}"
+                      th:data-stock="${v.stock}"
+                      th:data-unidad="${v.unidadMedida}"
+                      th:data-temp="${v.temperaturaAlmacenamiento}"
+                      th:data-intervalo="${v.intervaloDias}"
                       onclick="abrirEditarDesdeBtn(this)"
                     >
+                      <svg viewBox="0 0 24 24">
+                        <path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z" />
+                      </svg>
                       Editar
                     </button>
                   </td>
                 </tr>
               </tbody>
             </table>
+          </div>
+
+          <!-- Sin resultados por filtro -->
+          <div class="no-results" id="sinResultados">
+            <svg viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.3-4.3" />
+            </svg>
+            <p>Ninguna vacuna coincide con los filtros seleccionados.</p>
           </div>
         </main>
       </div>
@@ -121,73 +311,90 @@
       onclick="cerrarModalSiAfuera(event)"
     >
       <div class="modal-card" role="dialog" aria-modal="true">
-        <p class="modal-title" id="modalTitulo">Agregar insumo</p>
-        <form id="insumoForm" novalidate>
-          <input type="hidden" id="insumoId" />
+        <p class="modal-title" id="modalTitulo">
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            stroke="currentColor"
+            stroke-width="1.6"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M9 3h6" />
+            <path
+              d="M10 3v3.5L6.5 10.2A4 4 0 0 0 9.6 17h4.8a4 4 0 0 0 3.1-6.8L14 6.5V3"
+            />
+          </svg>
+          Agregar vacuna
+        </p>
+        <form id="vacunaForm" novalidate>
+          <input type="hidden" id="vacunaId" />
           <div class="form-grid">
             <div class="form-field">
               <label>Nombre *</label>
               <input type="text" id="fNombre" required />
             </div>
             <div class="form-field">
-              <label>Categoría *</label>
-              <select id="fCategoria">
-                <option value="HERRAMIENTA">Herramienta</option>
-                <option value="ALIMENTO">Alimento</option>
-                <option value="MEDICAMENTO">Medicamento</option>
-                <option value="EQUIPO">Equipo</option>
-                <option value="SEMILLA">Semilla</option>
-                <option value="FERTILIZANTE">Fertilizante</option>
-                <option value="OTRO">Otro</option>
+              <label>Tipo *</label>
+              <select id="fTipo">
+                <option value="">Cargando...</option>
               </select>
             </div>
             <div class="form-field">
-              <label>Unidad de medida *</label>
-              <select id="fUnidad">
-                <option value="UNIDAD">Unidad</option>
-                <option value="KILOGRAMO">Kilogramo (kg)</option>
-                <option value="GRAMO">Gramo (g)</option>
-                <option value="TONELADA">Tonelada</option>
-                <option value="LITRO">Litro (L)</option>
-                <option value="MILILITRO">Mililitro (ml)</option>
-                <option value="SACO">Saco</option>
-                <option value="CAJA">Caja</option>
-                <option value="ROLLO">Rollo</option>
-                <option value="METRO">Metro (m)</option>
+              <label>Laboratorio</label>
+              <input type="text" id="fLaboratorio" />
+            </div>
+            <div class="form-field">
+              <label>Vía de administración</label>
+              <select id="fVia">
+                <option value="">— Seleccionar —</option>
+                <option value="SUBCUTANEA">Subcutánea</option>
+                <option value="INTRAMUSCULAR">Intramuscular</option>
+                <option value="ORAL">Oral</option>
+                <option value="INTRANASAL">Intranasal</option>
               </select>
             </div>
             <div class="form-field">
-              <label>Cantidad actual</label>
-              <input type="number" id="fCantidad" min="0" step="0.01" />
+              <label>Dosis</label>
+              <input type="text" id="fDosis" placeholder="ej. 2 ml" />
             </div>
             <div class="form-field">
-              <label>Cantidad mínima</label>
-              <input type="number" id="fCantidadMin" min="0" step="0.01" />
+              <label>Lote</label>
+              <input type="text" id="fLote" />
             </div>
             <div class="form-field">
-              <label>Proveedor</label>
-              <input type="text" id="fProveedor" />
+              <label>Fecha de caducidad</label>
+              <input type="date" id="fFechaCaducidad" />
             </div>
             <div class="form-field">
-              <label>Precio unitario</label>
+              <label>Stock</label>
+              <input type="number" id="fStock" min="0" />
+            </div>
+            <div class="form-field">
+              <label>Unidad de medida</label>
               <input
-                type="number"
-                id="fPrecio"
-                min="0"
-                step="0.01"
-                placeholder="0.00"
+                type="text"
+                id="fUnidad"
+                placeholder="ej. dosis, ml, frasco"
               />
             </div>
             <div class="form-field">
-              <label>Ubicación</label>
+              <label>Temperatura almacenamiento</label>
+              <input type="text" id="fTemp" placeholder="ej. 2°C a 8°C" />
+            </div>
+            <div class="form-field">
+              <label>Intervalo de aplicación (días)</label>
               <input
-                type="text"
-                id="fUbicacion"
-                placeholder="ej. Bodega principal"
+                type="number"
+                id="fIntervaloDias"
+                min="0"
+                placeholder="ej. 180"
               />
             </div>
             <div class="form-field full">
-              <label>Descripción</label>
+              <label>Descripción / Indicaciones</label>
               <textarea id="fDescripcion" rows="3"></textarea>
             </div>
           </div>
@@ -201,55 +408,265 @@
       </div>
     </div>
 
+    <!-- Modal Crear Tipo/Categoría -->
+    <div
+      class="modal-backdrop"
+      id="modalCategoriaBackdrop"
+      onclick="cerrarModalCategoriaSiAfuera(event)"
+    >
+      <div class="modal-card" role="dialog" aria-modal="true">
+        <p class="modal-title">
+          <svg
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+            stroke="currentColor"
+            stroke-width="1.8"
+            fill="none"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M4 6h16M4 12h10M4 18h6" />
+          </svg>
+          Nuevo tipo de vacuna
+        </p>
+        <form id="categoriaForm" novalidate>
+          <div class="form-grid">
+            <div class="form-field full">
+              <label>Nombre del tipo *</label>
+              <input
+                type="text"
+                id="fCategoriaNombre"
+                placeholder="ej. Aftosa, Brucella, Newcastle"
+                required
+              />
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="btn-secondary"
+              onclick="cerrarModalCategoria()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primary">Guardar tipo</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <script>
       const TOKEN = localStorage.getItem("vacapp_token");
-      const API = "/api/v1/insumos";
+      const API = "/api/v1/vacunas";
+      const API_CATEGORIAS = "/api/v1/vacunas/categorias";
 
+      /* ── Carga de tipos (formulario) ──────────────────────────────────── */
+      async function cargarCategorias(valorSeleccionado = "") {
+        try {
+          const hdrs = {};
+          if (TOKEN) hdrs["Authorization"] = `Bearer ${TOKEN}`;
+          const resp = await fetch(API_CATEGORIAS, {
+            headers: hdrs,
+            credentials: "include",
+          });
+          if (!resp.ok) return;
+          const cats = await resp.json();
+          const sel = document.getElementById("fTipo");
+          sel.innerHTML =
+            '<option value="">— Seleccionar tipo —</option>' +
+            cats
+              .map(
+                (c) =>
+                  `<option value="${c.nombre}" ${c.nombre === valorSeleccionado ? "selected" : ""}>${c.nombre}</option>`,
+              )
+              .join("");
+        } catch (_) {}
+      }
+
+      /* ── Filtro de tipo: opciones a partir de lo que hay en la tabla ──── */
+      function poblarFiltroTipo() {
+        const sel = document.getElementById("filtroTipo");
+        const valorActual = sel.value;
+        const tipos = new Set();
+        document
+          .querySelectorAll("#tablaVacunas tbody tr.fila-vacuna")
+          .forEach((tr) => {
+            if (tr.dataset.tipo) tipos.add(tr.dataset.tipo);
+          });
+        sel.innerHTML =
+          '<option value="">Todos</option>' +
+          Array.from(tipos)
+            .sort((a, b) => a.localeCompare(b))
+            .map((t) => `<option value="${t}">${t}</option>`)
+            .join("");
+        if (tipos.has(valorActual)) sel.value = valorActual;
+      }
+
+      /* ── Cálculo de tarjetas informativas y alertas de caducidad ──────── */
+      function calcularEstadisticas() {
+        const filas = document.querySelectorAll(
+          "#tablaVacunas tbody tr.fila-vacuna",
+        );
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+        const limite = new Date(hoy);
+        limite.setDate(limite.getDate() + 30);
+
+        let stockBajo = 0;
+        let porCaducar = 0;
+        let caducadas = 0;
+
+        filas.forEach((tr) => {
+          tr.classList.remove("fila-por-caducar", "fila-caducada");
+
+          const stock = tr.dataset.stock;
+          if (stock !== "" && Number(stock) <= 10) stockBajo++;
+
+          const cad = tr.dataset.caducidad;
+          if (cad) {
+            const fechaCad = new Date(cad);
+            if (!isNaN(fechaCad)) {
+              if (fechaCad < hoy) {
+                caducadas++;
+                tr.classList.add("fila-caducada");
+              } else if (fechaCad <= limite) {
+                porCaducar++;
+                tr.classList.add("fila-por-caducar");
+              }
+            }
+          }
+        });
+
+        document.getElementById("statTotal").textContent = filas.length;
+        document.getElementById("statStockBajo").textContent = stockBajo;
+        document.getElementById("statPorCaducar").textContent = porCaducar;
+        document.getElementById("statCaducadas").textContent = caducadas;
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        cargarCategorias();
+        poblarFiltroTipo();
+        calcularEstadisticas();
+      });
+
+      /* ── Filtros de búsqueda ───────────────────────────────────────────── */
+      function aplicarFiltros() {
+        const texto = document
+          .getElementById("filtroBusqueda")
+          .value.trim()
+          .toLowerCase();
+        const tipo = document.getElementById("filtroTipo").value;
+        const via = document.getElementById("filtroVia").value;
+        const stockFiltro = document.getElementById("filtroStock").value;
+
+        const filas = document.querySelectorAll(
+          "#tablaVacunas tbody tr.fila-vacuna",
+        );
+        let visibles = 0;
+
+        filas.forEach((tr) => {
+          const coincideTexto =
+            !texto ||
+            tr.dataset.nombre.toLowerCase().includes(texto) ||
+            tr.dataset.lab.toLowerCase().includes(texto) ||
+            tr.dataset.lote.toLowerCase().includes(texto);
+          const coincideTipo = !tipo || tr.dataset.tipo === tipo;
+          const coincideVia = !via || tr.dataset.via === via;
+
+          let coincideStock = true;
+          if (stockFiltro === "bajo") {
+            coincideStock =
+              tr.dataset.stock !== "" && Number(tr.dataset.stock) <= 10;
+          } else if (stockFiltro === "sin") {
+            coincideStock =
+              tr.dataset.stock === "" || Number(tr.dataset.stock) === 0;
+          }
+
+          const visible =
+            coincideTexto && coincideTipo && coincideVia && coincideStock;
+          tr.classList.toggle("fila-oculta", !visible);
+          if (visible) visibles++;
+        });
+
+        const hayFilasReales = filas.length > 0;
+        document
+          .getElementById("sinResultados")
+          .classList.toggle("visible", hayFilasReales && visibles === 0);
+      }
+
+      function limpiarFiltros() {
+        document.getElementById("filtroBusqueda").value = "";
+        document.getElementById("filtroTipo").value = "";
+        document.getElementById("filtroVia").value = "";
+        document.getElementById("filtroStock").value = "";
+        aplicarFiltros();
+      }
+
+      /* ── Modal vacuna ──────────────────────────────────────────────────── */
       function abrirModal() {
-        document.getElementById("modalTitulo").textContent = "Agregar insumo";
-        document.getElementById("insumoId").value = "";
-        document.getElementById("insumoForm").reset();
+        document.getElementById("modalTitulo").lastChild.textContent =
+          " Agregar vacuna";
+        document.getElementById("vacunaId").value = "";
+        document.getElementById("vacunaForm").reset();
+        cargarCategorias();
         document.getElementById("modalBackdrop").classList.add("open");
       }
 
       function abrirEditarDesdeBtn(btn) {
         const d = btn.dataset;
         abrirEditar(
-          d.id, d.nombre, d.categoria, d.unidad,
-          d.cantidad, d.cantmin, d.descripcion,
-          d.proveedor, d.precio, d.ubicacion
+          d.id,
+          d.nombre,
+          d.tipo,
+          d.laboratorio,
+          d.descripcion,
+          d.dosis,
+          d.via,
+          d.lote,
+          d.caducidad,
+          d.stock,
+          d.unidad,
+          d.temp,
+          d.intervalo,
         );
       }
 
       function abrirEditar(
         id,
         nombre,
-        cat,
-        unidad,
-        cant,
-        cantMin,
+        tipo,
+        lab,
         desc,
-        prov,
-        precio,
-        ubic,
+        dosis,
+        via,
+        lote,
+        cad,
+        stock,
+        unidad,
+        temp,
+        intervalo,
       ) {
-        document.getElementById("modalTitulo").textContent = "Editar insumo";
-        document.getElementById("insumoId").value = id;
+        document.getElementById("modalTitulo").lastChild.textContent =
+          " Editar vacuna";
+        document.getElementById("vacunaId").value = id;
         document.getElementById("fNombre").value = nombre;
-        document.getElementById("fCategoria").value = cat;
-        document.getElementById("fUnidad").value = unidad;
-        document.getElementById("fCantidad").value =
-          cant === "null" ? "" : cant;
-        document.getElementById("fCantidadMin").value =
-          cantMin === "null" ? "" : cantMin;
+        cargarCategorias(tipo === "null" ? "" : tipo);
+        document.getElementById("fLaboratorio").value =
+          lab === "null" ? "" : lab;
         document.getElementById("fDescripcion").value =
           desc === "null" ? "" : desc;
-        document.getElementById("fProveedor").value =
-          prov === "null" ? "" : prov;
-        document.getElementById("fPrecio").value =
-          precio === "null" ? "" : precio;
-        document.getElementById("fUbicacion").value =
-          ubic === "null" ? "" : ubic;
+        document.getElementById("fDosis").value = dosis === "null" ? "" : dosis;
+        document.getElementById("fVia").value = via === "null" ? "" : via;
+        document.getElementById("fLote").value = lote === "null" ? "" : lote;
+        document.getElementById("fFechaCaducidad").value =
+          cad === "null" ? "" : cad;
+        document.getElementById("fStock").value = stock === "null" ? "" : stock;
+        document.getElementById("fUnidad").value =
+          unidad === "null" ? "" : unidad;
+        document.getElementById("fTemp").value = temp === "null" ? "" : temp;
+        document.getElementById("fIntervaloDias").value =
+          intervalo === "null" ? "" : intervalo;
         document.getElementById("modalBackdrop").classList.add("open");
       }
 
@@ -263,41 +680,44 @@
       }
 
       document
-        .getElementById("insumoForm")
+        .getElementById("vacunaForm")
         .addEventListener("submit", async function (e) {
           e.preventDefault();
-          const id = document.getElementById("insumoId").value;
+          const id = document.getElementById("vacunaId").value;
           const body = {
             nombre: document.getElementById("fNombre").value.trim(),
-            categoria: document.getElementById("fCategoria").value,
-            unidadMedida: document.getElementById("fUnidad").value,
-            cantidad: document.getElementById("fCantidad").value
-              ? parseFloat(document.getElementById("fCantidad").value)
-              : null,
-            cantidadMinima: document.getElementById("fCantidadMin").value
-              ? parseFloat(document.getElementById("fCantidadMin").value)
-              : null,
+            tipo: document.getElementById("fTipo").value,
+            laboratorio:
+              document.getElementById("fLaboratorio").value.trim() || null,
             descripcion:
               document.getElementById("fDescripcion").value.trim() || null,
-            proveedor:
-              document.getElementById("fProveedor").value.trim() || null,
-            precioUnitario: document.getElementById("fPrecio").value
-              ? parseFloat(document.getElementById("fPrecio").value)
+            dosis: document.getElementById("fDosis").value.trim() || null,
+            viaAdministracion: document.getElementById("fVia").value || null,
+            lote: document.getElementById("fLote").value.trim() || null,
+            fechaCaducidad:
+              document.getElementById("fFechaCaducidad").value || null,
+            stock: document.getElementById("fStock").value
+              ? parseInt(document.getElementById("fStock").value)
               : null,
-            ubicacion:
-              document.getElementById("fUbicacion").value.trim() || null,
+            unidadMedida:
+              document.getElementById("fUnidad").value.trim() || null,
+            temperaturaAlmacenamiento:
+              document.getElementById("fTemp").value.trim() || null,
+            intervaloDias: document.getElementById("fIntervaloDias").value
+              ? parseInt(document.getElementById("fIntervaloDias").value)
+              : null,
           };
 
           const url = id ? `${API}/${id}` : API;
           const method = id ? "PUT" : "POST";
 
           try {
+            const hdrs = { "Content-Type": "application/json" };
+            if (TOKEN) hdrs["Authorization"] = `Bearer ${TOKEN}`;
             const resp = await fetch(url, {
               method,
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${TOKEN}`,
-              },
+              headers: hdrs,
+              credentials: "include",
               body: JSON.stringify(body),
             });
             if (!resp.ok) {
@@ -312,10 +732,58 @@
           }
         });
 
+      /* ── Modal categoría/tipo ─────────────────────────────────────────── */
+      function abrirModalCategoria() {
+        document.getElementById("categoriaForm").reset();
+        document.getElementById("modalCategoriaBackdrop").classList.add("open");
+      }
+
+      function cerrarModalCategoria() {
+        document
+          .getElementById("modalCategoriaBackdrop")
+          .classList.remove("open");
+      }
+
+      function cerrarModalCategoriaSiAfuera(e) {
+        if (e.target === document.getElementById("modalCategoriaBackdrop"))
+          cerrarModalCategoria();
+      }
+
+      document
+        .getElementById("categoriaForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const nombre = document
+            .getElementById("fCategoriaNombre")
+            .value.trim();
+          if (!nombre) return;
+
+          try {
+            const hdrs = { "Content-Type": "application/json" };
+            if (TOKEN) hdrs["Authorization"] = `Bearer ${TOKEN}`;
+            const resp = await fetch(API_CATEGORIAS, {
+              method: "POST",
+              headers: hdrs,
+              credentials: "include",
+              body: JSON.stringify({ nombre }),
+            });
+            if (!resp.ok) {
+              const err = await resp.json().catch(() => ({}));
+              alert("Error: " + (err.error || resp.statusText));
+              return;
+            }
+            cerrarModalCategoria();
+            await cargarCategorias();
+          } catch (err) {
+            alert("Error de red: " + err.message);
+          }
+        });
+
       function cerrarSesion() {
         sessionStorage.removeItem("vacapp_token");
         localStorage.removeItem("vacapp_token");
-        document.cookie = "vacapp_jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        document.cookie =
+          "vacapp_jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
         window.location.href = "/auth/login";
       }
     </script>

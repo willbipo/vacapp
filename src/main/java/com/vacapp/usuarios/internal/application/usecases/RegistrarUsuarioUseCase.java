@@ -1,6 +1,7 @@
 package com.vacapp.usuarios.internal.application.usecases;
 
 import com.vacapp.usuarios.internal.domain.model.Rol;
+import java.util.UUID;
 import com.vacapp.usuarios.internal.domain.model.Usuario;
 import com.vacapp.usuarios.internal.domain.repository.UsuarioRepository;
 import com.vacapp.usuarios.internal.domain.repository.VerificadorDeContrasena;
@@ -42,6 +43,7 @@ public class RegistrarUsuarioUseCase {
         }
 
         Usuario nuevoUsuario = Usuario.builder()
+                .id(UUID.randomUUID())
                 .username(comando.username())
                 .email(comando.email())
                 .password(verificadorDeContrasena.hashear(comando.password()))

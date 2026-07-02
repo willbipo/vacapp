@@ -2,9 +2,13 @@ package com.vacapp.insumos.internal.infrastructure.controllers.mobile;
 
 import com.vacapp.core.TenantContext;
 import com.vacapp.insumos.internal.application.usecases.ActualizarInsumoUseCase;
+import com.vacapp.insumos.internal.application.usecases.CrearCategoriaInsumoUseCase;
+import com.vacapp.insumos.internal.application.usecases.ListarCategoriasInsumoUseCase;
 import com.vacapp.insumos.internal.application.usecases.ListarInsumosUseCase;
 import com.vacapp.insumos.internal.application.usecases.RegistrarInsumoUseCase;
 import com.vacapp.insumos.internal.domain.model.Insumo;
+import com.vacapp.insumos.internal.infrastructure.controllers.mobile.dtos.CategoriaInsumoRequest;
+import com.vacapp.insumos.internal.infrastructure.controllers.mobile.dtos.CategoriaInsumoResponse;
 import com.vacapp.insumos.internal.infrastructure.controllers.mobile.dtos.InsumoRequest;
 import com.vacapp.insumos.internal.infrastructure.controllers.mobile.dtos.InsumoResponse;
 import jakarta.validation.Valid;
@@ -31,6 +35,8 @@ public class InsumosRestController {
     private final RegistrarInsumoUseCase registrarInsumoUseCase;
     private final ListarInsumosUseCase listarInsumosUseCase;
     private final ActualizarInsumoUseCase actualizarInsumoUseCase;
+    private final CrearCategoriaInsumoUseCase crearCategoriaInsumoUseCase;
+    private final ListarCategoriasInsumoUseCase listarCategoriasInsumoUseCase;
 
     @PostMapping
     public ResponseEntity<InsumoResponse> registrar(@Valid @RequestBody InsumoRequest req) {
@@ -63,4 +69,25 @@ public class InsumosRestController {
         ));
         return ResponseEntity.ok(InsumoResponse.desde(insumo));
     }
+
+    /* ── Categorías ──────────────────────────────────────────────────────── */
+
+    @PostMapping("/categorias")
+    public ResponseEntity<CategoriaInsumoResponse> crearCategoria(
+            @Valid @RequestBody CategoriaInsumoRequest req) {
+        String tenantId = TenantContext.obtenerTenant();
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                CategoriaInsumoResponse.desde(
+                        crearCategoriaInsumoUseCase.ejecutar(
+                                new CrearCategoriaInsumoUseCase.Comando(req.nombre(), tenantId))));
+    }
+
+    @GetMapping("/categorias")
+    public ResponseEntity<List<CategoriaInsumoResponse>> listarCategorias() {
+        String tenantId = TenantContext.obtenerTenant();
+        return ResponseEntity.ok(
+                listarCategoriasInsumoUseCase.ejecutar(tenantId)
+                        .stream().map(CategoriaInsumoResponse::desde).toList());
+    }
 }
+

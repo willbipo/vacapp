@@ -1,6 +1,5 @@
 package com.vacapp.insumos.internal.infrastructure.controllers.mobile.dtos;
 
-import com.vacapp.insumos.internal.domain.model.CategoriaInsumo;
 import com.vacapp.insumos.internal.domain.model.Insumo;
 import com.vacapp.insumos.internal.domain.model.UnidadMedida;
 
@@ -11,7 +10,7 @@ import java.util.UUID;
 public record InsumoResponse(
         UUID id,
         String nombre,
-        CategoriaInsumo categoria,
+        String categoria,
         UnidadMedida unidadMedida,
         Double cantidad,
         Double cantidadMinima,

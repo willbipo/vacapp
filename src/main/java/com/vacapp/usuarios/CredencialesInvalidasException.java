@@ -1,8 +1,10 @@
 package com.vacapp.usuarios;
 
-/**
- * Se lanza cuando las credenciales de inicio de sesión son inválidas.
- */
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+/** Se lanza cuando las credenciales de inicio de sesión son inválidas. */
+@ResponseStatus(HttpStatus.UNAUTHORIZED)
 public class CredencialesInvalidasException extends RuntimeException {
 
     public CredencialesInvalidasException() {

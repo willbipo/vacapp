@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vacapp — Calendario</title>
+    <link rel="stylesheet" th:href="@{/css/global.css}" />
+    <link rel="stylesheet" th:href="@{/css/navbard.css}" />
+    <link rel="stylesheet" th:href="@{/css/sidebard.css}" />
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}" />
+    <link rel="stylesheet" th:href="@{/css/calendario.css}" />
+  </head>
+  <body>
+    <div class="dashboard-shell">
+      <div th:replace="~{fragments/sidebard :: sidebar}"></div>
+      <div class="dashboard-main">
+        <div th:replace="~{fragments/navbard :: navbar}"></div>
+        <main class="dashboard-content">
+          <!-- Encabezado -->
+          <div class="cal-page-header">
+            <div class="cal-page-title">
+              <span class="cal-page-icon">
+                <svg
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect x="3" y="5" width="18" height="16" rx="2.4" />
+                  <path d="M3 10h18M8 3v4M16 3v4" />
+                  <circle
+                    cx="8.5"
+                    cy="14.5"
+                    r="1"
+                    fill="currentColor"
+                    stroke="none"
+                  />
+                  <circle
+                    cx="12"
+                    cy="14.5"
+                    r="1"
+                    fill="currentColor"
+                    stroke="none"
+                  />
+                  <circle
+                    cx="15.5"
+                    cy="14.5"
+                    r="1"
+                    fill="currentColor"
+                    stroke="none"
+                  />
+                </svg>
+              </span>
+              <div>
+                <p class="page-overline">Planeación</p>
+                <h1>Calendario</h1>
+              </div>
+            </div>
+            <div class="cal-header-actions">
+              <button class="btn-hoy" id="btn-hoy" type="button">
+                <svg viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 7v5l3 2" />
+                </svg>
+                Hoy
+              </button>
+              <button
+                class="btn-primary"
+                id="btn-nuevo-evento-top"
+                type="button"
+              >
+                <svg viewBox="0 0 24 24">
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+                Nuevo evento
+              </button>
+            </div>
+          </div>
+
+          <!-- Tarjetas informativas -->
+          <div class="stats-grid">
+            <div class="stat-card stat-card--eventos">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <rect x="3" y="5" width="18" height="16" rx="2.4" />
+                  <path d="M3 10h18M8 3v4M16 3v4" />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p class="stat-value" id="statEventosMes">0</p>
+                <p class="stat-label">Eventos este mes</p>
+                <p class="stat-hint">Programados y vacunas</p>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card--vacunas">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <rect x="6" y="3" width="12" height="18" rx="2.2" />
+                  <path d="M9 3V2.4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V3" />
+                  <path d="M8 12.5h2l1.4-2.8 1.6 4.6 1.4-2.8H16" />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p class="stat-value" id="statVacunasMes">0</p>
+                <p class="stat-label">Vacunas programadas</p>
+                <p class="stat-hint">Próximas dosis del mes</p>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card--proximo">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 7v5l3 2" />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p
+                  class="stat-value"
+                  id="statProximo"
+                  style="font-size: 1.05rem"
+                >
+                  —
+                </p>
+                <p class="stat-label">Próximo evento</p>
+                <p class="stat-hint" id="statProximoFecha">
+                  Sin eventos próximos
+                </p>
+              </div>
+            </div>
+
+            <div class="stat-card stat-card--hoy">
+              <span class="stat-icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M12 3l7 3v5c0 5-3.4 7.9-7 9-3.6-1.1-7-4-7-9V6z" />
+                  <path d="M9 12l2 2 4-4" />
+                </svg>
+              </span>
+              <div class="stat-body">
+                <p class="stat-value" id="statHoy">0</p>
+                <p class="stat-label">Eventos hoy</p>
+                <p class="stat-hint">En la fecha actual</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filtros por tipo -->
+          <div class="filter-bar" id="filter-bar">
+            <span class="filter-bar-label">Mostrar:</span>
+            <button class="filter-chip active" type="button" data-tipo="VACUNA">
+              <span class="dot dot-vacuna"></span>Vacuna
+            </button>
+            <button
+              class="filter-chip active"
+              type="button"
+              data-tipo="VETERINARIO"
+            >
+              <span class="dot dot-veterinario"></span>Veterinario
+            </button>
+            <button
+              class="filter-chip active"
+              type="button"
+              data-tipo="MANTENIMIENTO"
+            >
+              <span class="dot dot-mantenimiento"></span>Mantenimiento
+            </button>
+            <button class="filter-chip active" type="button" data-tipo="OTRO">
+              <span class="dot dot-otro"></span>Otro
+            </button>
+          </div>
+
+          <!-- Layout principal: grilla + panel lateral -->
+          <div class="cal-layout">
+            <!-- ── Tarjeta del calendario ─────────────────────────── -->
+            <div class="cal-card">
+              <div class="cal-header">
+                <button
+                  class="cal-nav-btn"
+                  id="btn-prev"
+                  aria-label="Mes anterior"
+                  type="button"
+                >
+                  <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" /></svg>
+                </button>
+                <h2 id="cal-mes-label">Cargando…</h2>
+                <button
+                  class="cal-nav-btn"
+                  id="btn-next"
+                  aria-label="Mes siguiente"
+                  type="button"
+                >
+                  <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" /></svg>
+                </button>
+              </div>
+
+              <div class="cal-days-header">
+                <span>Dom</span><span>Lun</span><span>Mar</span> <span>Mié</span
+                ><span>Jue</span><span>Vie</span><span>Sáb</span>
+              </div>
+
+              <div class="cal-grid" id="cal-grid"></div>
+
+              <!-- Leyenda de colores -->
+              <div class="cal-legend">
+                <span class="legend-item"
+                  ><span class="dot dot-vacuna"></span>Vacuna</span
+                >
+                <span class="legend-item"
+                  ><span class="dot dot-veterinario"></span>Veterinario</span
+                >
+                <span class="legend-item"
+                  ><span class="dot dot-mantenimiento"></span
+                  >Mantenimiento</span
+                >
+                <span class="legend-item"
+                  ><span class="dot dot-otro"></span>Otro</span
+                >
+              </div>
+            </div>
+
+            <!-- ── Panel lateral ──────────────────────────────────── -->
+            <div class="cal-side">
+              <div class="cal-panel">
+                <div class="cal-panel-header">
+                  <h3 id="panel-fecha-label">Selecciona un día</h3>
+                  <button
+                    class="btn-add-event"
+                    id="btn-nuevo-evento"
+                    type="button"
+                  >
+                    <svg viewBox="0 0 24 24">
+                      <line x1="12" y1="5" x2="12" y2="19" />
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                    Nuevo
+                  </button>
+                </div>
+                <div class="cal-events-list" id="events-list">
+                  <p class="sin-eventos">
+                    <svg
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      fill="none"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M9 3H5a2 2 0 0 0-2 2v4" />
+                      <path d="M15 3h4a2 2 0 0 1 2 2v4" />
+                      <path d="M3 15v4a2 2 0 0 0 2 2h4" />
+                      <path d="M15 21h4a2 2 0 0 0 2-2v-4" />
+                      <line x1="12" y1="8" x2="12" y2="16" />
+                      <line x1="8" y1="12" x2="16" y2="12" />
+                    </svg>
+                    Haz clic en un día para ver sus eventos.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Modal nuevo evento ─────────────────────────────── -->
+          <div class="modal-overlay" id="modal-overlay">
+            <div class="modal-box">
+              <div class="modal-box-header">
+                <h3>
+                  <svg viewBox="0 0 24 24">
+                    <rect x="3" y="5" width="18" height="16" rx="2.4" />
+                    <path d="M3 10h18M8 3v4M16 3v4" />
+                  </svg>
+                  Nuevo evento
+                </h3>
+                <button
+                  class="modal-close"
+                  id="btn-modal-cerrar"
+                  type="button"
+                  aria-label="Cerrar"
+                >
+                  <svg viewBox="0 0 24 24">
+                    <path d="M6 6l12 12M18 6L6 18" />
+                  </svg>
+                </button>
+              </div>
+              <div class="form-field">
+                <label for="ev-titulo">Título *</label>
+                <input
+                  type="text"
+                  id="ev-titulo"
+                  placeholder="Ej: Visita veterinario"
+                  maxlength="255"
+                />
+              </div>
+              <div class="form-field">
+                <label for="ev-fecha">Fecha *</label>
+                <input type="date" id="ev-fecha" />
+              </div>
+              <div class="form-field">
+                <label for="ev-tipo">Tipo</label>
+                <select id="ev-tipo">
+                  <option value="OTRO">Otro</option>
+                  <option value="VACUNA">Vacuna</option>
+                  <option value="VETERINARIO">Veterinario</option>
+                  <option value="MANTENIMIENTO">Mantenimiento</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="ev-descripcion">Descripción</label>
+                <textarea
+                  id="ev-descripcion"
+                  placeholder="Detalles adicionales…"
+                  rows="3"
+                ></textarea>
+              </div>
+              <div class="modal-actions">
+                <button
+                  class="btn-cancel"
+                  id="btn-modal-cancelar"
+                  type="button"
+                >
+                  Cancelar
+                </button>
+                <button class="btn-submit" id="btn-modal-guardar" type="button">
+                  <svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6" /></svg>
+                  Guardar evento
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      // ── Utilidades ─────────────────────────────────────────────
+      const token = () =>
+        localStorage.getItem("vacapp_token") ||
+        sessionStorage.getItem("vacapp_token") ||
+        "";
+      const auth = () => ({
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token(),
+      });
+
+      const MESES = [
+        "Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
+        "Mayo",
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
+        "Octubre",
+        "Noviembre",
+        "Diciembre",
+      ];
+
+      // ── Iconos SVG por tipo (sin emojis) ─────────────────────────
+      const ICONOS = {
+        VACUNA:
+          '<svg viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="18" rx="2.2"/><path d="M9 3V2.4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1V3"/><path d="M8 12.5h2l1.4-2.8 1.6 4.6 1.4-2.8H16"/></svg>',
+        VETERINARIO:
+          '<svg viewBox="0 0 24 24"><path d="M6 3v6a3 3 0 0 0 6 0V3"/><path d="M18 3v6a3 3 0 0 1-6 0"/><circle cx="12" cy="16.5" r="4"/><path d="M12 14.5v1.5h1.5"/></svg>',
+        MANTENIMIENTO:
+          '<svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 1-5.4 5.4L4 17l3 3 5.3-5.3a4 4 0 0 1 5.4-5.4l-3-3z"/></svg>',
+        OTRO: '<svg viewBox="0 0 24 24"><path d="M12 21s-7-5.2-7-11a7 7 0 0 1 14 0c0 5.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.4"/></svg>',
+      };
+
+      function iconoTipo(tipo) {
+        return ICONOS[tipo] || ICONOS.OTRO;
+      }
+
+      // ── Estado ─────────────────────────────────────────────────
+      let hoy = new Date();
+      let anio = hoy.getFullYear();
+      let mes = hoy.getMonth() + 1; // 1-based
+      let eventosMes = []; // custom
+      let vacunasMes = []; // próximas dosis
+      let diaSeleccionado = null;
+      let mapaAnimales = {}; // UUID → AnimalResponse
+      let tiposActivos = new Set([
+        "VACUNA",
+        "VETERINARIO",
+        "MANTENIMIENTO",
+        "OTRO",
+      ]);
+
+      // ── Carga datos del mes ─────────────────────────────────────
+      async function cargarMes() {
+        try {
+          const [resEv, resVac, resAnimales] = await Promise.all([
+            fetch(`/api/v1/calendario?anio=${anio}&mes=${mes}`, {
+              headers: auth(),
+            }),
+            fetch(`/api/v1/historial-clinico/proximas-dosis`, {
+              headers: auth(),
+            }),
+            fetch(`/api/v1/animales`, { headers: auth() }),
+          ]);
+
+          eventosMes = resEv.ok ? await resEv.json() : [];
+          const todasVacunas = resVac.ok ? await resVac.json() : [];
+
+          if (resAnimales.ok) {
+            const animales = await resAnimales.json();
+            mapaAnimales = {};
+            animales.forEach((a) => {
+              mapaAnimales[a.id] = a;
+            });
+          }
+
+          vacunasMes = todasVacunas.filter((v) => {
+            if (!v.proximaDosis) return false;
+            const d = new Date(v.proximaDosis + "T00:00:00");
+            return d.getFullYear() === anio && d.getMonth() + 1 === mes;
+          });
+
+          renderCalendario();
+          renderStats();
+          if (diaSeleccionado) renderPanel(diaSeleccionado);
+        } catch (err) {
+          console.error("Error cargando mes:", err);
+        }
+      }
+
+      // ── Tarjetas informativas ─────────────────────────────────
+      function renderStats() {
+        const total = eventosMes.length + vacunasMes.length;
+        document.getElementById("statEventosMes").textContent = total;
+        document.getElementById("statVacunasMes").textContent =
+          vacunasMes.length;
+
+        const hoyIso = isoHoy();
+        const eventosHoy =
+          eventosMes.filter((e) => e.fecha === hoyIso).length +
+          vacunasMes.filter((v) => v.proximaDosis === hoyIso).length;
+        document.getElementById("statHoy").textContent = eventosHoy;
+
+        const todos = [
+          ...eventosMes.map((e) => ({ titulo: e.titulo, fecha: e.fecha })),
+          ...vacunasMes.map((v) => ({
+            titulo: v.nombreVacuna || "Vacuna",
+            fecha: v.proximaDosis,
+          })),
+        ]
+          .filter((e) => e.fecha >= hoyIso)
+          .sort((a, b) => a.fecha.localeCompare(b.fecha));
+
+        const statProximo = document.getElementById("statProximo");
+        const statProximoFecha = document.getElementById("statProximoFecha");
+        if (todos.length > 0) {
+          statProximo.textContent = todos[0].titulo;
+          const partes = todos[0].fecha.split("-");
+          statProximoFecha.textContent = `${parseInt(partes[2])} de ${MESES[parseInt(partes[1]) - 1]}`;
+        } else {
+          statProximo.textContent = "—";
+          statProximoFecha.textContent = "Sin eventos próximos";
+        }
+      }
+
+      // ── Renderiza grilla ────────────────────────────────────────
+      function renderCalendario() {
+        document.getElementById("cal-mes-label").textContent =
+          `${MESES[mes - 1]} ${anio}`;
+
+        const grid = document.getElementById("cal-grid");
+        grid.innerHTML = "";
+
+        const primerDia = new Date(anio, mes - 1, 1).getDay();
+        const diasMes = new Date(anio, mes, 0).getDate();
+        const diasPrev = new Date(anio, mes - 1, 0).getDate();
+
+        const mapa = {};
+        eventosMes.forEach((ev) => {
+          const k = ev.fecha;
+          if (!mapa[k]) mapa[k] = [];
+          mapa[k].push({ ...ev, fuente: "custom" });
+        });
+        vacunasMes.forEach((v) => {
+          const k = v.proximaDosis;
+          if (!mapa[k]) mapa[k] = [];
+          mapa[k].push({
+            fuente: "vacuna",
+            titulo: v.nombreVacuna || "Vacuna",
+            tipo: "VACUNA",
+            fecha: k,
+            id: v.id,
+          });
+        });
+
+        const totalCeldas = Math.ceil((primerDia + diasMes) / 7) * 7;
+
+        for (let i = 0; i < totalCeldas; i++) {
+          let dia,
+            fechaStr,
+            esOtroMes = false;
+
+          if (i < primerDia) {
+            dia = diasPrev - primerDia + 1 + i;
+            const mPrev = mes === 1 ? 12 : mes - 1;
+            const aPrev = mes === 1 ? anio - 1 : anio;
+            fechaStr = `${aPrev}-${String(mPrev).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+            esOtroMes = true;
+          } else if (i >= primerDia + diasMes) {
+            dia = i - primerDia - diasMes + 1;
+            const mNext = mes === 12 ? 1 : mes + 1;
+            const aNext = mes === 12 ? anio + 1 : anio;
+            fechaStr = `${aNext}-${String(mNext).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+            esOtroMes = true;
+          } else {
+            dia = i - primerDia + 1;
+            fechaStr = `${anio}-${String(mes).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+          }
+
+          const esHoy = fechaStr === isoHoy();
+          const esSel = fechaStr === diaSeleccionado;
+          const eventos = (mapa[fechaStr] || []).filter((ev) =>
+            tiposActivos.has(ev.tipo || "OTRO"),
+          );
+
+          const cell = document.createElement("div");
+          cell.className =
+            "cal-day" +
+            (esOtroMes ? " otro-mes" : "") +
+            (esHoy ? " hoy" : "") +
+            (esSel ? " seleccionado" : "");
+          cell.dataset.fecha = fechaStr;
+
+          const numEl = document.createElement("div");
+          numEl.className = "day-num";
+          numEl.textContent = dia;
+          cell.appendChild(numEl);
+
+          if (eventos.length > 0) {
+            const dotsEl = document.createElement("div");
+            dotsEl.className = "day-dots";
+            eventos.slice(0, 5).forEach((ev) => {
+              const dot = document.createElement("span");
+              dot.className = "dot dot-" + (ev.tipo || "otro").toLowerCase();
+              dotsEl.appendChild(dot);
+            });
+            cell.appendChild(dotsEl);
+          }
+
+          cell.addEventListener("click", () => seleccionarDia(fechaStr));
+          grid.appendChild(cell);
+        }
+      }
+
+      function isoHoy() {
+        const h = new Date();
+        return `${h.getFullYear()}-${String(h.getMonth() + 1).padStart(2, "0")}-${String(h.getDate()).padStart(2, "0")}`;
+      }
+
+      // ── Seleccionar día ─────────────────────────────────────────
+      function seleccionarDia(fechaStr) {
+        diaSeleccionado = fechaStr;
+        document.querySelectorAll(".cal-day").forEach((c) => {
+          c.classList.toggle("seleccionado", c.dataset.fecha === fechaStr);
+        });
+        document.getElementById("ev-fecha").value = fechaStr;
+        renderPanel(fechaStr);
+      }
+
+      // ── Renderiza panel lateral ─────────────────────────────────
+      function renderPanel(fechaStr) {
+        const partes = fechaStr.split("-");
+        const label = `${parseInt(partes[2])} de ${MESES[parseInt(partes[1]) - 1]} ${partes[0]}`;
+        document.getElementById("panel-fecha-label").textContent = label;
+
+        const lista = document.getElementById("events-list");
+        lista.innerHTML = "";
+
+        const evsDia = eventosMes.filter(
+          (e) => e.fecha === fechaStr && tiposActivos.has(e.tipo || "OTRO"),
+        );
+        const vacsDia = vacunasMes.filter(
+          (v) => v.proximaDosis === fechaStr && tiposActivos.has("VACUNA"),
+        );
+
+        if (evsDia.length === 0 && vacsDia.length === 0) {
+          lista.innerHTML = `<p class="sin-eventos">
+            <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 6v4m0 4h.01"/>
+            </svg>
+            No hay eventos este día.
+          </p>`;
+          return;
+        }
+
+        vacsDia.forEach((v) => {
+          const animal = mapaAnimales[v.animalId] || {};
+          const partes = [];
+          if (animal.numeroIdentificador)
+            partes.push(`Arete: ${animal.numeroIdentificador}`);
+          if (animal.raza) partes.push(animal.raza);
+          if (animal.categoria) partes.push(animal.categoria);
+          if (animal.sexo) partes.push(animal.sexo);
+          lista.appendChild(
+            crearItemEvento({
+              titulo: v.nombreVacuna || "Vacuna",
+              descripcion: partes.length
+                ? partes.join(" · ")
+                : v.lote
+                  ? `Lote: ${v.lote}`
+                  : null,
+              tipo: "VACUNA",
+              fuente: "vacuna",
+            }),
+          );
+        });
+
+        evsDia.forEach((ev) => {
+          lista.appendChild(crearItemEvento(ev));
+        });
+      }
+
+      function crearItemEvento(ev) {
+        const item = document.createElement("div");
+        item.className = "event-item";
+        item.dataset.tipo = ev.tipo || "OTRO";
+
+        item.innerHTML = `
+          <span class="event-icon">${iconoTipo(ev.tipo)}</span>
+          <div class="event-body">
+            <div class="event-title">${escHtml(ev.titulo)}</div>
+            ${ev.descripcion ? `<div class="event-meta">${escHtml(ev.descripcion)}</div>` : ""}
+          </div>
+          ${ev.fuente === "custom" ? `<button class="event-del" title="Eliminar" data-id="${ev.id}"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>` : ""}
+        `;
+
+        const btnDel = item.querySelector(".event-del");
+        if (btnDel) {
+          btnDel.addEventListener("click", (e) => {
+            e.stopPropagation();
+            eliminarEvento(ev.id);
+          });
+        }
+
+        return item;
+      }
+
+      function escHtml(s) {
+        if (!s) return "";
+        return s
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+
+      // ── Eliminar evento ─────────────────────────────────────────
+      async function eliminarEvento(id) {
+        if (!confirm("¿Eliminar este evento?")) return;
+        try {
+          const res = await fetch(`/api/v1/calendario/${id}`, {
+            method: "DELETE",
+            headers: auth(),
+          });
+          if (res.ok) {
+            eventosMes = eventosMes.filter((e) => e.id !== id);
+            renderCalendario();
+            renderStats();
+            if (diaSeleccionado) renderPanel(diaSeleccionado);
+          }
+        } catch (err) {
+          alert("Error al eliminar evento.");
+        }
+      }
+
+      // ── Filtros por tipo ──────────────────────────────────────
+      document.querySelectorAll(".filter-chip").forEach((chip) => {
+        chip.addEventListener("click", () => {
+          const tipo = chip.dataset.tipo;
+          if (tiposActivos.has(tipo)) {
+            tiposActivos.delete(tipo);
+            chip.classList.remove("active");
+            chip.classList.add("inactive");
+          } else {
+            tiposActivos.add(tipo);
+            chip.classList.add("active");
+            chip.classList.remove("inactive");
+          }
+          renderCalendario();
+          if (diaSeleccionado) renderPanel(diaSeleccionado);
+        });
+      });
+
+      // ── Modal nuevo evento ──────────────────────────────────────
+      const overlay = document.getElementById("modal-overlay");
+
+      function abrirModal() {
+        if (!diaSeleccionado) {
+          document.getElementById("ev-fecha").value = isoHoy();
+        }
+        overlay.classList.add("open");
+        document.getElementById("ev-titulo").focus();
+      }
+
+      document
+        .getElementById("btn-nuevo-evento")
+        .addEventListener("click", abrirModal);
+      document
+        .getElementById("btn-nuevo-evento-top")
+        .addEventListener("click", abrirModal);
+      document
+        .getElementById("btn-modal-cancelar")
+        .addEventListener("click", cerrarModal);
+      document
+        .getElementById("btn-modal-cerrar")
+        .addEventListener("click", cerrarModal);
+      overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) cerrarModal();
+      });
+
+      function cerrarModal() {
+        overlay.classList.remove("open");
+        document.getElementById("ev-titulo").value = "";
+        document.getElementById("ev-descripcion").value = "";
+        document.getElementById("ev-tipo").value = "OTRO";
+      }
+
+      document
+        .getElementById("btn-modal-guardar")
+        .addEventListener("click", async () => {
+          const titulo = document.getElementById("ev-titulo").value.trim();
+          const fecha = document.getElementById("ev-fecha").value;
+          const tipo = document.getElementById("ev-tipo").value;
+          const desc = document.getElementById("ev-descripcion").value.trim();
+
+          if (!titulo || !fecha) {
+            alert("El título y la fecha son obligatorios.");
+            return;
+          }
+
+          try {
+            const res = await fetch("/api/v1/calendario", {
+              method: "POST",
+              headers: auth(),
+              body: JSON.stringify({
+                titulo,
+                descripcion: desc || null,
+                fecha,
+                tipo,
+              }),
+            });
+            if (res.ok) {
+              const nuevo = await res.json();
+              eventosMes.push(nuevo);
+              cerrarModal();
+              renderCalendario();
+              renderStats();
+              if (diaSeleccionado === fecha) renderPanel(fecha);
+            } else {
+              alert("Error al guardar el evento.");
+            }
+          } catch (err) {
+            alert("Error de conexión.");
+          }
+        });
+
+      // ── Navegación de mes ───────────────────────────────────────
+      document.getElementById("btn-prev").addEventListener("click", () => {
+        mes--;
+        if (mes < 1) {
+          mes = 12;
+          anio--;
+        }
+        diaSeleccionado = null;
+        cargarMes();
+      });
+
+      document.getElementById("btn-next").addEventListener("click", () => {
+        mes++;
+        if (mes > 12) {
+          mes = 1;
+          anio++;
+        }
+        diaSeleccionado = null;
+        cargarMes();
+      });
+
+      document.getElementById("btn-hoy").addEventListener("click", () => {
+        const h = new Date();
+        anio = h.getFullYear();
+        mes = h.getMonth() + 1;
+        cargarMes();
+        setTimeout(() => seleccionarDia(isoHoy()), 300);
+      });
+
+      // ── Modo claro / oscuro ──────────────────────────────────────
+      (function () {
+        const guardado =
+          localStorage.getItem("vacapp_theme") ||
+          localStorage.getItem("vacapp_tema");
+        if (
+          guardado === "dark" ||
+          (!guardado && matchMedia("(prefers-color-scheme: dark)").matches)
+        ) {
+          document.documentElement.classList.add("dark");
+        }
+      })();
+
+      // ── Inicialización ──────────────────────────────────────────
+      cargarMes();
+      setTimeout(() => seleccionarDia(isoHoy()), 400);
+    </script>
+  </body>
+</html>

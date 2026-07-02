@@ -26,7 +26,7 @@ public class Insumo {
     private String nombre;
 
     /** Categoría del insumo. */
-    private CategoriaInsumo categoria;
+    private String categoria;
 
     /** Unidad en la que se mide la cantidad. */
     private UnidadMedida unidadMedida;
