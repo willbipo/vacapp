@@ -11,8 +11,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -25,13 +29,14 @@ import java.util.UUID;
  */
 @RestController
 @RequiredArgsConstructor
-public class VacunasRestController implements VacunasApi {
+@RequestMapping("/api/v1/vacunas")
+public class VacunasRestController {
 
     private final RegistrarVacunaUseCase registrarVacunaUseCase;
     private final ListarVacunasUseCase listarVacunasUseCase;
     private final ActualizarVacunaUseCase actualizarVacunaUseCase;
 
-    @Override
+    @PostMapping
     public ResponseEntity<VacunaResponse> registrarVacuna(@Valid @RequestBody VacunaRequest vacunaRequest) {
         String tenantId = TenantContext.obtenerTenant();
         Vacuna vacuna = registrarVacunaUseCase.ejecutar(new RegistrarVacunaUseCase.Comando(
@@ -44,7 +49,7 @@ public class VacunasRestController implements VacunasApi {
         return ResponseEntity.status(HttpStatus.CREATED).body(VacunaResponse.desde(vacuna));
     }
 
-    @Override
+    @GetMapping
     public ResponseEntity<List<VacunaResponse>> listarVacunas() {
         String tenantId = TenantContext.obtenerTenant();
         List<VacunaResponse> lista = listarVacunasUseCase.ejecutar(tenantId)
@@ -52,7 +57,7 @@ public class VacunasRestController implements VacunasApi {
         return ResponseEntity.ok(lista);
     }
 
-    @Override
+    @PutMapping("/{id}")
     public ResponseEntity<VacunaResponse> actualizarVacuna(@PathVariable("id") UUID id,
                                                             @Valid @RequestBody VacunaRequest vacunaRequest) {
         String tenantId = TenantContext.obtenerTenant();

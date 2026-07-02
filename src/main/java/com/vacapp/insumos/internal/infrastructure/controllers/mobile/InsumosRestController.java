@@ -11,8 +11,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -25,13 +29,14 @@ import java.util.UUID;
  */
 @RestController
 @RequiredArgsConstructor
-public class InsumosRestController implements InsumosApi {
+@RequestMapping("/api/v1/insumos")
+public class InsumosRestController {
 
     private final RegistrarInsumoUseCase registrarInsumoUseCase;
     private final ListarInsumosUseCase listarInsumosUseCase;
     private final ActualizarInsumoUseCase actualizarInsumoUseCase;
 
-    @Override
+    @PostMapping
     public ResponseEntity<InsumoResponse> registrarInsumo(@Valid @RequestBody InsumoRequest insumoRequest) {
         String tenantId = TenantContext.obtenerTenant();
         Insumo insumo = registrarInsumoUseCase.ejecutar(new RegistrarInsumoUseCase.Comando(
@@ -42,7 +47,7 @@ public class InsumosRestController implements InsumosApi {
         return ResponseEntity.status(HttpStatus.CREATED).body(InsumoResponse.desde(insumo));
     }
 
-    @Override
+    @GetMapping
     public ResponseEntity<List<InsumoResponse>> listarInsumos() {
         String tenantId = TenantContext.obtenerTenant();
         List<InsumoResponse> lista = listarInsumosUseCase.ejecutar(tenantId)
@@ -50,7 +55,7 @@ public class InsumosRestController implements InsumosApi {
         return ResponseEntity.ok(lista);
     }
 
-    @Override
+    @PutMapping("/{id}")
     public ResponseEntity<InsumoResponse> actualizarInsumo(@PathVariable("id") UUID id,
                                                             @Valid @RequestBody InsumoRequest insumoRequest) {
         String tenantId = TenantContext.obtenerTenant();

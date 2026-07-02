@@ -15,7 +15,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -29,7 +32,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class AuthRestController implements AutenticacinApi {
+@RequestMapping("/api/v1/auth")
+public class AuthRestController {
 
     private final AutenticarUsuarioUseCase autenticarUsuarioUseCase;
     private final RegistrarUsuarioUseCase registrarUsuarioUseCase;
@@ -39,7 +43,7 @@ public class AuthRestController implements AutenticacinApi {
         return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getResponse();
     }
 
-    @Override
+    @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         ResultadoAutenticacion resultado = autenticarUsuarioUseCase.ejecutar(
                 loginRequest.username(), loginRequest.password());
@@ -57,7 +61,7 @@ public class AuthRestController implements AutenticacinApi {
         return ResponseEntity.ok(respuesta);
     }
 
-    @Override
+    @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
         HttpServletResponse response = httpResponse();
         Cookie cookie = new Cookie("vacapp_jwt", "");
@@ -68,7 +72,7 @@ public class AuthRestController implements AutenticacinApi {
         return ResponseEntity.ok().build();
     }
 
-    @Override
+    @GetMapping("/me")
     public ResponseEntity<UsuarioActualResponse> obtenerUsuarioActual() {
         // El principal se obtiene del SecurityContext, ya autenticado por el filtro JWT
         org.springframework.security.core.Authentication auth =
@@ -80,7 +84,7 @@ public class AuthRestController implements AutenticacinApi {
         return ResponseEntity.ok(new UsuarioActualResponse(auth.getName()));
     }
 
-    @Override
+    @PostMapping("/registro")
     public ResponseEntity<Void> registro(@Valid @RequestBody RegistroRequest registroRequest) {
         registrarUsuarioUseCase.ejecutar(new ComandoRegistroUsuario(
                 registroRequest.username(),
