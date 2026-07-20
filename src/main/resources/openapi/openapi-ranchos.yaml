@@ -1,0 +1,184 @@
+openapi: 3.0.3
+info:
+  title: Vacapp — Ranchos
+  version: v1
+  description: API para gestión de ranchos (fincas/granjas)
+servers:
+  - url: http://localhost:8080
+    description: Desarrollo local
+
+paths:
+  /api/v1/ranchos:
+    post:
+      summary: Registrar nuevo rancho
+      operationId: registrarRancho
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RanchoRequest'
+      responses:
+        '201':
+          description: Rancho creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RanchoResponse'
+        '400':
+          description: Validación fallida
+        '403':
+          description: Permiso denegado
+      security:
+        - bearerAuth: []
+
+    get:
+      summary: Listar mis ranchos
+      operationId: listarRanchos
+      responses:
+        '200':
+          description: Lista de ranchos del usuario
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RanchoResponse'
+      security:
+        - bearerAuth: []
+
+  /api/v1/ranchos/{id}:
+    get:
+      summary: Obtener rancho por ID
+      operationId: obtenerRancho
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Datos del rancho
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RanchoResponse'
+        '404':
+          description: Rancho no encontrado
+      security:
+        - bearerAuth: []
+
+    put:
+      summary: Actualizar rancho
+      operationId: actualizarRancho
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RanchoRequest'
+      responses:
+        '200':
+          description: Rancho actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RanchoResponse'
+        '400':
+          description: Validación fallida
+        '404':
+          description: Rancho no encontrado
+      security:
+        - bearerAuth: []
+
+    delete:
+      summary: Eliminar rancho
+      operationId: eliminarRancho
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Rancho eliminado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensajeResponse'
+        '404':
+          description: Rancho no encontrado
+      security:
+        - bearerAuth: []
+
+components:
+  schemas:
+    RanchoRequest:
+      type: object
+      required:
+        - nombre
+        - hectareas
+      properties:
+        nombre:
+          type: string
+          minLength: 2
+          maxLength: 255
+          description: Nombre del rancho
+        descripcion:
+          type: string
+          maxLength: 500
+          description: Descripción del rancho
+        hectareas:
+          type: number
+          format: double
+          minimum: 0.01
+          description: Tamaño del rancho en hectáreas
+        ubicacion:
+          type: string
+          maxLength: 255
+          description: Ubicación del rancho
+
+    RanchoResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        nombre:
+          type: string
+        descripcion:
+          type: string
+        hectareas:
+          type: number
+          format: double
+        ubicacion:
+          type: string
+        fechaRegistro:
+          type: string
+          format: date-time
+        fechaActualizacion:
+          type: string
+          format: date-time
+
+    MensajeResponse:
+      type: object
+      properties:
+        mensaje:
+          type: string
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

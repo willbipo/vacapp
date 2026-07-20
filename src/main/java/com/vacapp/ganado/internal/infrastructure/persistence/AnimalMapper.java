@@ -10,6 +10,7 @@ public class AnimalMapper {
     public AnimalEntidad aEntidad(Animal animal) {
         return AnimalEntidad.builder()
                 .id(animal.getId())
+                .ranchoId(animal.getRanchoId())
                 .numeroIdentificador(animal.getNumeroIdentificador())
                 .estatus(animal.getEstatus())
                 .sexo(animal.getSexo())
@@ -28,6 +29,7 @@ public class AnimalMapper {
     public Animal aDominio(AnimalEntidad entidad) {
         return Animal.builder()
                 .id(entidad.getId())
+                .ranchoId(entidad.getRanchoId())
                 .numeroIdentificador(entidad.getNumeroIdentificador())
                 .estatus(entidad.getEstatus())
                 .sexo(entidad.getSexo())

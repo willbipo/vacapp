@@ -1,0 +1,228 @@
+openapi: 3.0.3
+info:
+  title: Vacapp — Potreros
+  version: v1
+  description: API para gestión de potreros de ranchos
+servers:
+  - url: http://localhost:8080
+    description: Desarrollo local
+
+paths:
+  /api/v1/ranchos/{ranchoId}/potreros:
+    post:
+      summary: Registrar nuevo potrero en un rancho
+      operationId: registrarPotrero
+      parameters:
+        - name: ranchoId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PotreroRequest'
+      responses:
+        '201':
+          description: Potrero creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PotreroResponse'
+        '400':
+          description: Validación fallida
+        '403':
+          description: Permiso denegado
+        '404':
+          description: Rancho no encontrado
+      security:
+        - bearerAuth: []
+
+    get:
+      summary: Listar potreros de un rancho
+      operationId: listarPotreros
+      parameters:
+        - name: ranchoId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Lista de potreros del rancho
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PotreroResponse'
+      security:
+        - bearerAuth: []
+
+  /api/v1/secciones/{seccionId}/potreros:
+    get:
+      summary: Listar potreros de una sección
+      operationId: listarPotrerosPorSeccion
+      parameters:
+        - name: seccionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Lista de potreros de la sección
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PotreroResponse'
+      security:
+        - bearerAuth: []
+
+  /api/v1/potreros/{id}:
+    get:
+      summary: Obtener potrero por ID
+      operationId: obtenerPotrero
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Datos del potrero
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PotreroResponse'
+        '404':
+          description: Potrero no encontrado
+      security:
+        - bearerAuth: []
+
+    put:
+      summary: Actualizar potrero
+      operationId: actualizarPotrero
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PotreroRequest'
+      responses:
+        '200':
+          description: Potrero actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PotreroResponse'
+        '400':
+          description: Validación fallida
+        '404':
+          description: Potrero no encontrado
+      security:
+        - bearerAuth: []
+
+    delete:
+      summary: Eliminar potrero
+      operationId: eliminarPotrero
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Potrero eliminado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensajeResponse'
+        '404':
+          description: Potrero no encontrado
+      security:
+        - bearerAuth: []
+
+components:
+  schemas:
+    PotreroRequest:
+      type: object
+      required:
+        - nombre
+        - hectareas
+      properties:
+        nombre:
+          type: string
+          minLength: 2
+          maxLength: 255
+          description: Nombre del potrero
+        seccionId:
+          type: string
+          format: uuid
+          description: ID de la sección (opcional)
+        hectareas:
+          type: number
+          format: double
+          minimum: 0.01
+          description: Tamaño del potrero en hectáreas
+        tipoPasto:
+          type: string
+          maxLength: 100
+          description: Tipo de pasto del potrero
+
+    PotreroResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        ranchoId:
+          type: string
+          format: uuid
+        seccionId:
+          type: string
+          format: uuid
+          nullable: true
+        nombre:
+          type: string
+        hectareas:
+          type: number
+          format: double
+        tipoPasto:
+          type: string
+        fechaRegistro:
+          type: string
+          format: date-time
+        fechaActualizacion:
+          type: string
+          format: date-time
+
+    MensajeResponse:
+      type: object
+      properties:
+        mensaje:
+          type: string
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

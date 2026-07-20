@@ -22,6 +22,9 @@ public class Insumo {
 
     private UUID id;
 
+    /** Identificador del rancho al que pertenece el insumo. */
+    private String ranchoId;
+
     /** Nombre del insumo (ej. "Pala redonda", "Maíz amarillo"). */
     private String nombre;
 

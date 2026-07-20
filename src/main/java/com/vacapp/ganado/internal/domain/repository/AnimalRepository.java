@@ -15,5 +15,7 @@ public interface AnimalRepository {
 
     List<Animal> listarPorTenant(String tenantId);
 
+    List<Animal> listarPorRancho(String ranchoId, String tenantId);  // Filtrar por rancho
+
     void eliminar(UUID id, String tenantId);
 }

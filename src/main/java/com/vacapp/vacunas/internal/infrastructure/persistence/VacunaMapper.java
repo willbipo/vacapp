@@ -10,6 +10,7 @@ public class VacunaMapper {
     public VacunaEntidad aEntidad(Vacuna vacuna) {
         return VacunaEntidad.builder()
                 .id(vacuna.getId())
+                .ranchoId(vacuna.getRanchoId())
                 .nombre(vacuna.getNombre())
                 .tipo(vacuna.getTipo())
                 .laboratorio(vacuna.getLaboratorio())
@@ -29,6 +30,7 @@ public class VacunaMapper {
     public Vacuna aDominio(VacunaEntidad entidad) {
         return Vacuna.builder()
                 .id(entidad.getId())
+                .ranchoId(entidad.getRanchoId())
                 .nombre(entidad.getNombre())
                 .tipo(entidad.getTipo())
                 .laboratorio(entidad.getLaboratorio())

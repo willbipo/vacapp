@@ -19,4 +19,9 @@ public class ListarInsumosUseCase {
     public List<Insumo> ejecutar(String tenantId) {
         return insumoRepository.listarPorTenant(tenantId);
     }
+
+    @Transactional(readOnly = true)
+    public List<Insumo> ejecutar(String ranchoId, String tenantId) {
+        return insumoRepository.listarPorRancho(ranchoId, tenantId);
+    }
 }

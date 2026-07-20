@@ -40,6 +40,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .csrf(csrf -> csrf.disable()) // Desactiva CSRF para pruebas fáciles en Postman
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll() // <-- ¡PASE LIBRE A TODO!
+            );
+       /*  http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session ->
@@ -48,11 +53,14 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 // Documentación OpenAPI/Swagger
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                // Vistas Thymeleaf públicas
-                .requestMatchers("/", "/login", "/salida", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/dashboard/**", "/inventario/**", "/vacunas/**", "/insumos/**").permitAll()
+                // Vistas Thymeleaf públicas (sin autenticación)
+                .requestMatchers("/", "/login", "/salida", "/css/**", "/js/**", "/images/**",
+                 "/favicon.ico", "/dashboard/**", "/inventario/**", "/vacunas/**", "/insumos/**").permitAll()
+                // Vistas administrativas (requieren autenticación)
+                .requestMatchers("/empleados/**").authenticated()
                 .anyRequest().authenticated())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
+        */
         return http.build();
     }
 

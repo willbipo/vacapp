@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -50,10 +51,20 @@ public class VacunasRestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<VacunaResponse>> listarVacunas() {
+    public ResponseEntity<List<VacunaResponse>> listarVacunas(@RequestParam(required = false) String ranchoId) {
         String tenantId = TenantContext.obtenerTenant();
-        List<VacunaResponse> lista = listarVacunasUseCase.ejecutar(tenantId)
-                .stream().map(VacunaResponse::desde).toList();
+        List<VacunaResponse> lista;
+        
+        if (ranchoId != null && !ranchoId.isBlank()) {
+            // Filtrar por rancho específico (incluye vacunas compartidas si se solicita por rancho)
+            lista = listarVacunasUseCase.ejecutar(ranchoId, tenantId)
+                    .stream().map(VacunaResponse::desde).toList();
+        } else {
+            // Listar todas del tenant (todas las vacunas compartidas + específicas)
+            lista = listarVacunasUseCase.ejecutar(tenantId)
+                    .stream().map(VacunaResponse::desde).toList();
+        }
+        
         return ResponseEntity.ok(lista);
     }
 

@@ -1,0 +1,182 @@
+openapi: 3.0.3
+info:
+  title: Vacapp — Secciones
+  version: v1
+  description: API para gestión de secciones de ranchos
+servers:
+  - url: http://localhost:8080
+    description: Desarrollo local
+
+paths:
+  /api/v1/ranchos/{ranchoId}/secciones:
+    post:
+      summary: Registrar nueva sección en un rancho
+      operationId: registrarSeccion
+      parameters:
+        - name: ranchoId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeccionRequest'
+      responses:
+        '201':
+          description: Sección creada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeccionResponse'
+        '400':
+          description: Validación fallida
+        '403':
+          description: Permiso denegado
+        '404':
+          description: Rancho no encontrado
+      security:
+        - bearerAuth: []
+
+    get:
+      summary: Listar secciones de un rancho
+      operationId: listarSecciones
+      parameters:
+        - name: ranchoId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Lista de secciones del rancho
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SeccionResponse'
+      security:
+        - bearerAuth: []
+
+  /api/v1/secciones/{id}:
+    get:
+      summary: Obtener sección por ID
+      operationId: obtenerSeccion
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Datos de la sección
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeccionResponse'
+        '404':
+          description: Sección no encontrada
+      security:
+        - bearerAuth: []
+
+    put:
+      summary: Actualizar sección
+      operationId: actualizarSeccion
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SeccionRequest'
+      responses:
+        '200':
+          description: Sección actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeccionResponse'
+        '400':
+          description: Validación fallida
+        '404':
+          description: Sección no encontrada
+      security:
+        - bearerAuth: []
+
+    delete:
+      summary: Eliminar sección
+      operationId: eliminarSeccion
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Sección eliminada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensajeResponse'
+        '404':
+          description: Sección no encontrada
+      security:
+        - bearerAuth: []
+
+components:
+  schemas:
+    SeccionRequest:
+      type: object
+      required:
+        - nombre
+      properties:
+        nombre:
+          type: string
+          minLength: 2
+          maxLength: 255
+          description: Nombre de la sección
+
+    SeccionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        ranchoId:
+          type: string
+          format: uuid
+        nombre:
+          type: string
+        fechaRegistro:
+          type: string
+          format: date-time
+        fechaActualizacion:
+          type: string
+          format: date-time
+
+    MensajeResponse:
+      type: object
+      properties:
+        mensaje:
+          type: string
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

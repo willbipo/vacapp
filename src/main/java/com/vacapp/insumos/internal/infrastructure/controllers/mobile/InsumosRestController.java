@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -48,10 +49,20 @@ public class InsumosRestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<InsumoResponse>> listarInsumos() {
+    public ResponseEntity<List<InsumoResponse>> listarInsumos(@RequestParam(required = false) String ranchoId) {
         String tenantId = TenantContext.obtenerTenant();
-        List<InsumoResponse> lista = listarInsumosUseCase.ejecutar(tenantId)
-                .stream().map(InsumoResponse::desde).toList();
+        List<InsumoResponse> lista;
+        
+        if (ranchoId != null && !ranchoId.isBlank()) {
+            // Filtrar por rancho específico
+            lista = listarInsumosUseCase.ejecutar(ranchoId, tenantId)
+                    .stream().map(InsumoResponse::desde).toList();
+        } else {
+            // Listar todos del tenant
+            lista = listarInsumosUseCase.ejecutar(tenantId)
+                    .stream().map(InsumoResponse::desde).toList();
+        }
+        
         return ResponseEntity.ok(lista);
     }
 

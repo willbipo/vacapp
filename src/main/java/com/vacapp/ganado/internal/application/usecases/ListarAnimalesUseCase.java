@@ -19,4 +19,9 @@ public class ListarAnimalesUseCase {
     public List<Animal> ejecutar(String tenantId) {
         return animalRepository.listarPorTenant(tenantId);
     }
+
+    @Transactional(readOnly = true)
+    public List<Animal> ejecutar(String ranchoId, String tenantId) {
+        return animalRepository.listarPorRancho(ranchoId, tenantId);
+    }
 }

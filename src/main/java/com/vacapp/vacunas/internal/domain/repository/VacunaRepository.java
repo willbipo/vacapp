@@ -15,5 +15,7 @@ public interface VacunaRepository {
 
     List<Vacuna> listarPorTenant(String tenantId);
 
+    List<Vacuna> listarPorRancho(String ranchoId, String tenantId);  // Filtrar por rancho (NULL = compartidas)
+
     void eliminar(UUID id, String tenantId);
 }

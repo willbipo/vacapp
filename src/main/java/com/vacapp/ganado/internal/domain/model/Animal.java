@@ -22,6 +22,9 @@ public class Animal {
 
     private UUID id;
 
+    /** Identificador del rancho al que pertenece el animal. */
+    private String ranchoId;
+
     /** Número de identificador (arete) del animal. */
     private String numeroIdentificador;
 

@@ -10,6 +10,7 @@ public class InsumoMapper {
     public InsumoEntidad aEntidad(Insumo insumo) {
         return InsumoEntidad.builder()
                 .id(insumo.getId())
+                .ranchoId(insumo.getRanchoId())
                 .nombre(insumo.getNombre())
                 .categoria(insumo.getCategoria())
                 .unidadMedida(insumo.getUnidadMedida())
@@ -26,6 +27,7 @@ public class InsumoMapper {
     public Insumo aDominio(InsumoEntidad entidad) {
         return Insumo.builder()
                 .id(entidad.getId())
+                .ranchoId(entidad.getRanchoId())
                 .nombre(entidad.getNombre())
                 .categoria(entidad.getCategoria())
                 .unidadMedida(entidad.getUnidadMedida())

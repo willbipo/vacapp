@@ -9,11 +9,6 @@ import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
  * y que todos los repositorios sean escaneados y registrados como beans.
  */
 @Configuration
-@EnableJdbcRepositories(basePackages = {
-	"com.vacapp.usuarios.internal.infrastructure.persistence",
-	"com.vacapp.ganado.internal.infrastructure.persistence",
-	"com.vacapp.insumos.internal.infrastructure.persistence",
-	"com.vacapp.vacunas.internal.infrastructure.persistence"
-})
+@EnableJdbcRepositories(basePackages = "com.vacapp")
 public class DataJdbcConfig {
 }

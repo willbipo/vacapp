@@ -1,6 +1,7 @@
 package com.vacapp.core.security;
 
 import com.vacapp.core.TenantContext;
+import com.vacapp.core.UserContext;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -50,6 +51,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 // Configura el contexto de multi-tenancy
                 TenantContext.establecerTenant(tenantId);
+                
+                // Configura el contexto del usuario (username como identificador)
+                UserContext.establecerUsuario(username);
             }
         } catch (Exception e) {
             log.error("Error al procesar el token JWT: {}", e.getMessage());
@@ -58,8 +62,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } finally {
-            // Limpia el TenantContext al finalizar la petición para evitar fugas entre hilos
+            // Limpia los contextos al finalizar la petición para evitar fugas entre hilos
             TenantContext.limpiar();
+            UserContext.limpiar();
         }
     }
 

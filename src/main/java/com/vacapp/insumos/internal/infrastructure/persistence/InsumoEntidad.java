@@ -21,6 +21,7 @@ import java.util.UUID;
 public class InsumoEntidad {
 
     private UUID id;
+    private String ranchoId;  // FK a ranchos.id
     private String nombre;
     private CategoriaInsumo categoria;
     private UnidadMedida unidadMedida;

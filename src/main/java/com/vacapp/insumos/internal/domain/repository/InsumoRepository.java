@@ -15,5 +15,7 @@ public interface InsumoRepository {
 
     List<Insumo> listarPorTenant(String tenantId);
 
+    List<Insumo> listarPorRancho(String ranchoId, String tenantId);  // Filtrar por rancho
+
     void eliminar(UUID id, String tenantId);
 }

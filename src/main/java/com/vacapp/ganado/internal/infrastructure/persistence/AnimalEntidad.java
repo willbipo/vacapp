@@ -24,6 +24,7 @@ import java.util.UUID;
 public class AnimalEntidad {
 
     private UUID id;
+    private String ranchoId;  // FK a ranchos.id
     private String numeroIdentificador;
     private Estatus estatus;
     private Sexo sexo;

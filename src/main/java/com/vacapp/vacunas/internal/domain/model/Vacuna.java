@@ -22,6 +22,9 @@ public class Vacuna {
 
     private UUID id;
 
+    /** Identificador del rancho (NULL = compartida entre ranchos). */
+    private String ranchoId;
+
     /** Nombre comercial o genérico de la vacuna. */
     private String nombre;
 

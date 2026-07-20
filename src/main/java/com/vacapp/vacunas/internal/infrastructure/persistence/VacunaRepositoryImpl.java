@@ -39,6 +39,14 @@ public class VacunaRepositoryImpl implements VacunaRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<Vacuna> listarPorRancho(String ranchoId, String tenantId) {
+        return jpaRepository.findByRanchoIdAndTenantId(ranchoId, tenantId).stream()
+                .map(mapper::aDominio)
+                .toList();
+    }
+
+    @Override
     @Transactional
     public void eliminar(UUID id, String tenantId) {
         jpaRepository.deleteByIdAndTenantId(id, tenantId);

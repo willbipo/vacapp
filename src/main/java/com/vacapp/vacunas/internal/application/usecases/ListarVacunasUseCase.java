@@ -19,4 +19,9 @@ public class ListarVacunasUseCase {
     public List<Vacuna> ejecutar(String tenantId) {
         return vacunaRepository.listarPorTenant(tenantId);
     }
+
+    @Transactional(readOnly = true)
+    public List<Vacuna> ejecutar(String ranchoId, String tenantId) {
+        return vacunaRepository.listarPorRancho(ranchoId, tenantId);
+    }
 }

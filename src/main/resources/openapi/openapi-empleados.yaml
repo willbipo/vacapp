@@ -1,0 +1,195 @@
+openapi: 3.0.3
+info:
+  title: Vacapp — Empleados
+  version: v1
+  description: Operaciones de gestión de empleados
+
+tags:
+  - name: Empleados
+    description: Operaciones de gestión de empleados
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/v1/empleados:
+    post:
+      tags:
+        - Empleados
+      operationId: registrarEmpleado
+      summary: Registrar empleado
+      description: Registra un nuevo empleado para el tenant autenticado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpleadoRequest'
+      responses:
+        '201':
+          description: Empleado registrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmpleadoResponse'
+        '400':
+          description: Datos inválidos
+        '401':
+          description: No autenticado
+
+    get:
+      tags:
+        - Empleados
+      operationId: listarEmpleados
+      summary: Listar empleados
+      description: Obtiene todos los empleados del tenant autenticado
+      responses:
+        '200':
+          description: Listado de empleados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmpleadoResponse'
+        '401':
+          description: No autenticado
+
+  /api/v1/empleados/{id}:
+    put:
+      tags:
+        - Empleados
+      operationId: actualizarEmpleado
+      summary: Actualizar empleado
+      description: Actualiza un empleado existente del tenant autenticado
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Identificador único del empleado
+          example: 1f5644fb-7ae1-4f87-8b07-8a2036e28cd1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpleadoRequest'
+      responses:
+        '200':
+          description: Empleado actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmpleadoResponse'
+        '400':
+          description: Datos inválidos
+        '401':
+          description: No autenticado
+        '404':
+          description: Empleado no encontrado
+
+  /api/v1/empleados/{id}/enviar-invitacion:
+    post:
+      tags:
+        - Empleados
+      operationId: enviarInvitacion
+      summary: Enviar invitación
+      description: Envía una invitación por correo al empleado con link de descarga de app
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Identificador único del empleado
+      responses:
+        '200':
+          description: Invitación enviada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensajeResponse'
+        '401':
+          description: No autenticado
+        '404':
+          description: Empleado no encontrado
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    EmpleadoRequest:
+      type: object
+      required:
+        - nombre
+        - email
+        - rol
+      properties:
+        nombre:
+          type: string
+          minLength: 1
+          maxLength: 100
+          example: Juan García
+        email:
+          type: string
+          format: email
+          example: juan@example.com
+        telefono:
+          type: string
+          nullable: true
+          maxLength: 20
+          example: "31234567890"
+        rol:
+          type: string
+          enum: [ADMIN, OPERADOR, VISUALIZADOR]
+          example: OPERADOR
+        estado:
+          type: string
+          enum: [ACTIVO, INACTIVO, PENDIENTE]
+          example: PENDIENTE
+
+    EmpleadoResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 1f5644fb-7ae1-4f87-8b07-8a2036e28cd1
+        nombre:
+          type: string
+          example: Juan García
+        email:
+          type: string
+          format: email
+          example: juan@example.com
+        telefono:
+          type: string
+          nullable: true
+          example: "31234567890"
+        rol:
+          type: string
+          enum: [ADMIN, OPERADOR, VISUALIZADOR]
+          example: OPERADOR
+        estado:
+          type: string
+          enum: [ACTIVO, INACTIVO, PENDIENTE]
+          example: ACTIVO
+        fechaRegistro:
+          type: string
+          format: date-time
+          example: 2024-01-15T10:30:00Z
+
+    MensajeResponse:
+      type: object
+      properties:
+        mensaje:
+          type: string
+          example: Invitación enviada exitosamente

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -48,10 +49,20 @@ public class GanadoRestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AnimalResponse>> listarAnimales() {
+    public ResponseEntity<List<AnimalResponse>> listarAnimales(@RequestParam(required = false) String ranchoId) {
         String tenantId = TenantContext.obtenerTenant();
-        List<AnimalResponse> lista = listarAnimalesUseCase.ejecutar(tenantId)
-                .stream().map(AnimalResponse::desde).toList();
+        List<AnimalResponse> lista;
+        
+        if (ranchoId != null && !ranchoId.isBlank()) {
+            // Filtrar por rancho específico
+            lista = listarAnimalesUseCase.ejecutar(ranchoId, tenantId)
+                    .stream().map(AnimalResponse::desde).toList();
+        } else {
+            // Listar todos del tenant (sin filtro por rancho)
+            lista = listarAnimalesUseCase.ejecutar(tenantId)
+                    .stream().map(AnimalResponse::desde).toList();
+        }
+        
         return ResponseEntity.ok(lista);
     }
 

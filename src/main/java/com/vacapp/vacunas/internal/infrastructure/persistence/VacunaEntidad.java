@@ -21,6 +21,7 @@ import java.util.UUID;
 public class VacunaEntidad {
 
     private UUID id;
+    private String ranchoId;  // NULL = compartida entre ranchos
     private String nombre;
     private TipoVacuna tipo;
     private String laboratorio;
