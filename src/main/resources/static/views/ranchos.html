@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventario de Ranchos - Vacapp</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal.hidden {
+      display: none;
+    }
+    .modal-content {
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .modal-body-scroll {
+      padding: 1.5rem;
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+    }
+    .modal-footer {
+      padding: 1.5rem;
+      border-top: 1px solid #e5e7eb;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <header class="mb-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">Inventario de Ranchos</h1>
+          <p class="text-gray-600 mt-1">Gestión de tus propiedades y estructura jerárquica</p>
+        </div>
+        <a href="/views/dashboard.html" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">Volver al Dashboard</a>
+      </div>
+    </header>
+
+    <!-- Estadísticas -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white rounded-lg shadow p-6 text-center">
+        <div class="text-2xl font-bold text-blue-600" id="stat-total">0</div>
+        <div class="text-sm text-gray-600">Total Ranchos</div>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6 text-center">
+        <div class="text-2xl font-bold text-green-600" id="stat-secciones">0</div>
+        <div class="text-sm text-gray-600">Con Secciones</div>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6 text-center">
+        <div class="text-2xl font-bold text-yellow-600" id="stat-potreros">0</div>
+        <div class="text-sm text-gray-600">Con Potreros Directos</div>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6 text-center">
+        <div class="text-2xl font-bold text-indigo-600" id="stat-hectareas">0</div>
+        <div class="text-sm text-gray-600">Hectáreas en Uso</div>
+      </div>
+    </div>
+
+    <!-- Lista de Ranchos -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold">Ranchos Registrados</h2>
+        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" onclick="abrirModalCrearRancho()">+ Nuevo Rancho</button>
+      </div>
+      
+      <div id="ranchos-container">
+        <!-- Los ranchos se cargarán dinámicamente con JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Rancho -->
+  <div id="modal-rancho" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-rancho-titulo" class="text-lg font-semibold">Nuevo Rancho</h3>
+        <button class="text-gray-400 hover:text-gray-600 text-2xl" onclick="cerrarModal('modal-rancho')">&times;</button>
+      </div>
+      <form id="formulario-rancho" onsubmit="guardarRancho(event)">
+        <input type="hidden" id="rancho-id">
+        
+        <div class="modal-body-scroll">
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
+            <input type="text" id="rancho-nombre" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+          </div>
+          
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+            <textarea id="rancho-descripcion" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" rows="3"></textarea>
+          </div>
+          
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Hectáreas *</label>
+            <input type="number" id="rancho-hectareas" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" step="0.01" required>
+          </div>
+          
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
+            <input type="text" id="rancho-ubicacion" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <div class="flex justify-end gap-2">
+            <button type="button" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition" onclick="cerrarModal('modal-rancho')">Cancelar</button>
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Guardar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Sección -->
+  <div id="modal-seccion" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-seccion-titulo" class="text-lg font-semibold">Nueva Sección</h3>
+        <button class="text-gray-400 hover:text-gray-600 text-2xl" onclick="cerrarModal('modal-seccion')">&times;</button>
+      </div>
+      <form id="formulario-seccion" onsubmit="guardarSeccion(event)">
+        <input type="hidden" id="seccion-id">
+        <input type="hidden" id="seccion-ranchoId">
+        
+        <div class="modal-body-scroll">
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre de la Sección *</label>
+            <input type="text" id="seccion-nombre" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <div class="flex justify-end gap-2">
+            <button type="button" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition" onclick="cerrarModal('modal-seccion')">Cancelar</button>
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Guardar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Potrero -->
+  <div id="modal-potrero" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-potrero-titulo" class="text-lg font-semibold">Nuevo Potrero</h3>
+        <button class="text-gray-400 hover:text-gray-600 text-2xl" onclick="cerrarModal('modal-potrero')">&times;</button>
+      </div>
+      <form id="formulario-potrero" onsubmit="guardarPotrero(event)">
+        <input type="hidden" id="potrero-id">
+        <input type="hidden" id="potrero-ranchoId">
+        <input type="hidden" id="potrero-seccionId">
+        
+        <div class="modal-body-scroll">
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del Potrero *</label>
+            <input type="text" id="potrero-nombre" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+          </div>
+          
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Hectáreas *</label>
+            <input type="number" id="potrero-hectareas" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" step="0.01" required>
+          </div>
+          
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de Pasto</label>
+            <input type="text" id="potrero-tipoPasto" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <div class="flex justify-end gap-2">
+            <button type="button" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition" onclick="cerrarModal('modal-potrero')">Cancelar</button>
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Guardar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/ranchos.js"></script>
+</body>
+</html>

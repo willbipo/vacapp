@@ -30,32 +30,6 @@ CREATE TABLE IF NOT EXISTS ranchos (
     INDEX idx_ranchos_fecha (fecha_registro)
 );
 
-CREATE TABLE IF NOT EXISTS animales (
-    id                    CHAR(36)     NOT NULL PRIMARY KEY,
-    numero_identificador  VARCHAR(100) NOT NULL,
-    estatus               VARCHAR(50),
-    sexo                  VARCHAR(50),
-    raza                  VARCHAR(100),
-    fecha_nacimiento      DATE,
-    meses                 INT,
-    fecha_aretado         DATE,
-    tipo                  VARCHAR(50),
-    arete_anterior        VARCHAR(100),
-    folio_reemo           VARCHAR(100),
-    nota                  TEXT,
-    categoria             VARCHAR(100),
-    fecha_inicio_reposo   DATE,
-    fecha_fin_reposo      DATE,
-    rancho_id             CHAR(36),
-    potrero_id            CHAR(36),
-    tenant_id             VARCHAR(100) NOT NULL,
-    INDEX idx_animales_tenant (tenant_id),
-    INDEX idx_animales_rancho (rancho_id),
-    INDEX idx_animales_potrero (potrero_id),
-    CONSTRAINT fk_animales_rancho FOREIGN KEY (rancho_id) REFERENCES ranchos(id) ON DELETE SET NULL,
-    CONSTRAINT fk_animales_potrero FOREIGN KEY (potrero_id) REFERENCES potreros(id) ON DELETE SET NULL
-);
-
 CREATE TABLE IF NOT EXISTS vacunas (
     id                         CHAR(36)     NOT NULL PRIMARY KEY,
     nombre                     VARCHAR(255) NOT NULL,
@@ -237,6 +211,32 @@ CREATE TABLE IF NOT EXISTS potreros (
     INDEX idx_potreros_seccion (seccion_id),
     CONSTRAINT fk_potreros_rancho FOREIGN KEY (rancho_id) REFERENCES ranchos(id) ON DELETE CASCADE,
     CONSTRAINT fk_potreros_seccion FOREIGN KEY (seccion_id) REFERENCES secciones(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS animales (
+    id                    CHAR(36)     NOT NULL PRIMARY KEY,
+    numero_identificador  VARCHAR(100) NOT NULL,
+    estatus               VARCHAR(50),
+    sexo                  VARCHAR(50),
+    raza                  VARCHAR(100),
+    fecha_nacimiento      DATE,
+    meses                 INT,
+    fecha_aretado         DATE,
+    tipo                  VARCHAR(50),
+    arete_anterior        VARCHAR(100),
+    folio_reemo           VARCHAR(100),
+    nota                  TEXT,
+    categoria             VARCHAR(100),
+    fecha_inicio_reposo   DATE,
+    fecha_fin_reposo      DATE,
+    rancho_id             CHAR(36),
+    potrero_id            CHAR(36),
+    tenant_id             VARCHAR(100) NOT NULL,
+    INDEX idx_animales_tenant (tenant_id),
+    INDEX idx_animales_rancho (rancho_id),
+    INDEX idx_animales_potrero (potrero_id),
+    CONSTRAINT fk_animales_rancho FOREIGN KEY (rancho_id) REFERENCES ranchos(id) ON DELETE SET NULL,
+    CONSTRAINT fk_animales_potrero FOREIGN KEY (potrero_id) REFERENCES potreros(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS empleados (

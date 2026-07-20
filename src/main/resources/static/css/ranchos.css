@@ -1,0 +1,270 @@
+/* ==========================================
+   RANCHOS.CSS - Estilos específicos para vista de ranchos
+   ========================================== */
+
+/* Header */
+.header {
+  padding: var(--spacing-6) 0;
+  border-bottom: 1px solid var(--color-gray-200);
+  margin-bottom: var(--spacing-6);
+}
+
+/* Tarjeta de Rancho */
+.rancho-card {
+  margin-bottom: var(--spacing-8);
+}
+
+.rancho-details {
+  padding: var(--spacing-4) 0;
+  border-top: 1px solid var(--color-gray-100);
+}
+
+/* Iconos jerárquicos */
+.rancho-icon,
+.seccion-icon,
+.potrero-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--border-radius);
+  background-color: var(--color-secondary);
+  color: var(--color-primary-dark);
+}
+
+.seccion-icon {
+  width: 36px;
+  height: 36px;
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.potrero-icon {
+  width: 32px;
+  height: 32px;
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+/* Contenedores jerárquicos */
+.secciones-container,
+.potreros-container,
+.potreros-directos-container {
+  position: relative;
+}
+
+.secciones-container::before,
+.potreros-container::before,
+.potreros-directos-container::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--color-gray-200);
+}
+
+.secciones-container::before {
+  height: calc(100% - 20px);
+}
+
+.potreros-container::before,
+.potreros-directos-container::before {
+  height: calc(100% - 16px);
+}
+
+/* Tarjeta de Sección */
+.seccion-card {
+  position: relative;
+}
+
+.seccion-card::before {
+  content: '';
+  position: absolute;
+  left: -24px;
+  top: 20px;
+  width: 20px;
+  height: 2px;
+  background-color: var(--color-gray-200);
+}
+
+/* Tarjeta de Potrero */
+.potrero-card {
+  position: relative;
+}
+
+.potrero-card::before {
+  content: '';
+  position: absolute;
+  left: -24px;
+  top: 16px;
+  width: 20px;
+  height: 2px;
+  background-color: var(--color-gray-200);
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.modal-content {
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease-out;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-6);
+  border-bottom: 1px solid var(--color-gray-200);
+  flex-shrink: 0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: var(--font-size-3xl);
+  color: var(--color-gray-500);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius);
+  transition: background-color var(--transition-fast);
+  pointer-events: auto;
+  z-index: 1002;
+}
+
+.modal-close:hover {
+  background-color: var(--color-gray-100);
+  color: var(--color-gray-700);
+}
+
+.modal-body-scroll {
+  padding: var(--spacing-6);
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.modal-footer {
+  padding: var(--spacing-6);
+  border-top: 1px solid var(--color-gray-200);
+  flex-shrink: 0;
+}
+
+.modal-body {
+  padding: var(--spacing-6);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    padding: var(--spacing-4) 0;
+  }
+  
+  .grid-cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  
+  .secciones-container,
+  .potreros-container,
+  .potreros-directos-container {
+    margin-left: var(--spacing-4);
+  }
+  
+  .modal-content {
+    width: 95%;
+    margin: var(--spacing-4);
+  }
+  
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+  }
+  
+  .card-header .flex {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-cols-4 {
+    grid-template-columns: 1fr;
+  }
+  
+  .rancho-details .grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+  
+  .secciones-container,
+  .potreros-container,
+  .potreros-directos-container {
+    margin-left: var(--spacing-2);
+  }
+  
+  .secciones-container::before,
+  .potreros-container::before,
+  .potreros-directos-container::before {
+    left: 0;
+  }
+  
+  .seccion-card::before,
+  .potrero-card::before {
+    left: -16px;
+    width: 12px;
+  }
+}

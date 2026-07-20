@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * Filtro que intercepta cada petición HTTP, extrae el JWT del header
- * {@code Authorization: Bearer <token>}, lo valida y configura el
+ * {@code Authorization: Bearer <token>} o cookie, lo valida y configura el
  * {@link SecurityContextHolder} y el {@link TenantContext}.
  */
 @Slf4j
@@ -74,7 +74,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(cabecera) && cabecera.startsWith("Bearer ")) {
             return cabecera.substring(7);
         }
-        // 2. Intentar desde la cookie HttpOnly (navegador web)
+        // 2. Intentar desde la cookie (navegador web)
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("vacapp_jwt".equals(cookie.getName())) {

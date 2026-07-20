@@ -1,0 +1,87 @@
+/* ==========================================
+   DASHBOARD.CSS - Estilos específicos para dashboard
+   ========================================== */
+
+/* Header */
+.header {
+  padding: var(--spacing-6) 0;
+  border-bottom: 1px solid var(--color-gray-200);
+  margin-bottom: var(--spacing-6);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--border-radius-lg);
+  background-color: var(--color-secondary);
+  color: var(--color-primary-dark);
+}
+
+/* Tarjetas de módulos */
+.module-card {
+  text-decoration: none;
+  color: inherit;
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  cursor: pointer;
+}
+
+.module-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.module-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--spacing-4);
+  border-radius: var(--border-radius-lg);
+  background-color: var(--color-secondary);
+  color: var(--color-primary-dark);
+}
+
+.module-title {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: var(--spacing-2);
+  color: var(--color-gray-900);
+}
+
+.module-description {
+  text-align: center;
+  color: var(--color-gray-600);
+  font-size: var(--font-size-sm);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    padding: var(--spacing-4) 0;
+  }
+  
+  .header .flex {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-4);
+  }
+  
+  .header .flex:last-child {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+  
+  .module-icon {
+    width: 56px;
+    height: 56px;
+  }
+}

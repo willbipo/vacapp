@@ -48,6 +48,13 @@
 
     <script>
       (function () {
+        // Limpiar token de sesión y localStorage
+        sessionStorage.removeItem("vacapp_token");
+        localStorage.removeItem("vacapp_token");
+        
+        // Limpiar cookie JWT
+        document.cookie = "vacapp_jwt=; path=/; SameSite=Lax; max-age=0";
+        
         const tema =
           localStorage.getItem("vacapp_theme") ||
           localStorage.getItem("vacapp_tema");

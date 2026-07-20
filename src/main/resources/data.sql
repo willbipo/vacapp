@@ -142,22 +142,79 @@ INSERT IGNORE INTO categorias_ganado (id, nombre, tenant_id) VALUES
     ('850e8400-e29b-41d4-a716-446655440003', 'Doble propósito', 'default');
 
 -- ============================================================
+--  SECCIONES Y POTREROS PARA RANCHO 1 (Santa María)
+-- ============================================================
+
+-- Secciones del Rancho Santa María
+INSERT IGNORE INTO secciones (id, rancho_id, nombre, descripcion, fecha_registro, fecha_actualizacion, tenant_id) VALUES 
+    ('s60e8400-e29b-41d4-a716-446655440001', 'r60e8400-e29b-41d4-a716-446655440001', 'Zona Norte', 'Área de pastoreo y reproducción', NOW(), NOW(), 'default'),
+    ('s60e8400-e29b-41d4-a716-446655440002', 'r60e8400-e29b-41d4-a716-446655440001', 'Zona Sur', 'Área de ordeño y alimentación', NOW(), NOW(), 'default');
+
+-- Potreros directos del Rancho Santa María (sin sección)
+INSERT IGNORE INTO potreros (id, rancho_id, seccion_id, nombre, hectareas, tipo_pasto, fecha_registro, fecha_actualizacion, tenant_id) VALUES 
+    ('p60e8400-e29b-41d4-a716-446655440001', 'r60e8400-e29b-41d4-a716-446655440001', NULL, 'Potrero Principal', 3.5, 'Grama Bermuda', NOW(), NOW(), 'default'),
+    ('p60e8400-e29b-41d4-a716-446655440002', 'r60e8400-e29b-41d4-a716-446655440001', NULL, 'Potrero de Reposo', 1.5, 'Pasto Estrella', NOW(), NOW(), 'default');
+
+-- Potreros de la Sección Norte (Rancho Santa María)
+INSERT IGNORE INTO potreros (id, rancho_id, seccion_id, nombre, hectareas, tipo_pasto, fecha_registro, fecha_actualizacion, tenant_id) VALUES 
+    ('p60e8400-e29b-41d4-a716-446655440003', 'r60e8400-e29b-41d4-a716-446655440001', 's60e8400-e29b-41d4-a716-446655440001', 'Potrero Norte 1', 2.0, 'Grama Rhodes', NOW(), NOW(), 'default'),
+    ('p60e8400-e29b-41d4-a716-446655440004', 'r60e8400-e29b-41d4-a716-446655440001', 's60e8400-e29b-41d4-a716-446655440001', 'Potrero Norte 2', 1.8, 'Pasto Brachiaria', NOW(), NOW(), 'default');
+
+-- Potreros de la Sección Sur (Rancho Santa María)
+INSERT IGNORE INTO potreros (id, rancho_id, seccion_id, nombre, hectareas, tipo_pasto, fecha_registro, fecha_actualizacion, tenant_id) VALUES 
+    ('p60e8400-e29b-41d4-a716-446655440005', 'r60e8400-e29b-41d4-a716-446655440001', 's60e8400-e29b-41d4-a716-446655440002', 'Potrero Sur 1', 1.2, 'Grama Bermuda', NOW(), NOW(), 'default');
+
+-- ============================================================
+--  SECCIONES Y POTREROS PARA RANCHO 2 (Los Altos)
+-- ============================================================
+
+-- Secciones del Rancho Los Altos
+INSERT IGNORE INTO secciones (id, rancho_id, nombre, descripcion, fecha_registro, fecha_actualizacion, tenant_id) VALUES 
+    ('s60e8400-e29b-41d4-a716-446655440003', 'r60e8400-e29b-41d4-a716-446655440002', 'Zona Este', 'Área de engorde', NOW(), NOW(), 'default'),
+    ('s60e8400-e29b-41d4-a716-446655440004', 'r60e8400-e29b-41d4-a716-446655440002', 'Zona Oeste', 'Área de cría', NOW(), NOW(), 'default');
+
+-- Potreros directos del Rancho Los Altos (sin sección)
+INSERT IGNORE INTO potreros (id, rancho_id, seccion_id, nombre, hectareas, tipo_pasto, fecha_registro, fecha_actualizacion, tenant_id) VALUES 
+    ('p60e8400-e29b-41d4-a716-446655440006', 'r60e8400-e29b-41d4-a716-446655440002', NULL, 'Potrero Central', 2.0, 'Pasto Buffel', NOW(), NOW(), 'default');
+
+-- Potreros de la Sección Este (Rancho Los Altos)
+INSERT IGNORE INTO potreros (id, rancho_id, seccion_id, nombre, hectareas, tipo_pasto, fecha_registro, fecha_actualizacion, tenant_id) VALUES 
+    ('p60e8400-e29b-41d4-a716-446655440007', 'r60e8400-e29b-41d4-a716-446655440002', 's60e8400-e29b-41d4-a716-446655440003', 'Potrero Este 1', 1.5, 'Pasto Pangola', NOW(), NOW(), 'default'),
+    ('p60e8400-e29b-41d4-a716-446655440008', 'r60e8400-e29b-41d4-a716-446655440002', 's60e8400-e29b-41d4-a716-446655440003', 'Potrero Este 2', 0.8, 'Grama Bermuda', NOW(), NOW(), 'default');
+
+-- Potreros de la Sección Oeste (Rancho Los Altos)
+INSERT IGNORE INTO potreros (id, rancho_id, seccion_id, nombre, hectareas, tipo_pasto, fecha_registro, fecha_actualizacion, tenant_id) VALUES 
+    ('p60e8400-e29b-41d4-a716-446655440009', 'r60e8400-e29b-41d4-a716-446655440002', 's60e8400-e29b-41d4-a716-446655440004', 'Potrero Oeste 1', 0.7, 'Pasto Estrella', NOW(), NOW(), 'default');
+
+-- ============================================================
 --  EMPLEADOS PARA RANCHO 1 (Santa María)
 -- ============================================================
 
-INSERT IGNORE INTO empleados (id, nombre, email, telefono, rol, estado, rancho_id, fecha_registro, fecha_actualizacion, tenant_id) VALUES 
-    ('e60e8400-e29b-41d4-a716-446655440001', 'María García López', 'maria.garcia@vacapp.test', '3001234567', 'DOCTOR', 'ACTIVO', 'r60e8400-e29b-41d4-a716-446655440001', NOW(), NOW(), 'default'),
-    ('e60e8400-e29b-41d4-a716-446655440002', 'Juan Pérez Rodríguez', 'juan.perez@vacapp.test', '3011234567', 'WORKER', 'ACTIVO', 'r60e8400-e29b-41d4-a716-446655440001', NOW(), NOW(), 'default'),
-    ('e60e8400-e29b-41d4-a716-446655440003', 'Carlos López Martínez', 'carlos.lopez@vacapp.test', '3012345678', 'WORKER', 'PENDIENTE', 'r60e8400-e29b-41d4-a716-446655440001', NOW(), NOW(), 'default');
+INSERT IGNORE INTO empleados (id, nombre, email, telefono, rol, estado, fecha_registro, fecha_actualizacion, tenant_id) VALUES 
+    ('e60e8400-e29b-41d4-a716-446655440001', 'María García López', 'maria.garcia@vacapp.test', '3001234567', 'DOCTOR', 'ACTIVO', NOW(), NOW(), 'default'),
+    ('e60e8400-e29b-41d4-a716-446655440002', 'Juan Pérez Rodríguez', 'juan.perez@vacapp.test', '3011234567', 'WORKER', 'ACTIVO', NOW(), NOW(), 'default'),
+    ('e60e8400-e29b-41d4-a716-446655440003', 'Carlos López Martínez', 'carlos.lopez@vacapp.test', '3012345678', 'WORKER', 'PENDIENTE', NOW(), NOW(), 'default');
+
+-- Asignar empleados al Rancho Santa María
+INSERT IGNORE INTO empleados_ranchos (id, empleado_id, rancho_id, fecha_asignacion, fecha_fin_asignacion, activo, tenant_id) VALUES 
+    ('er60e8400-e29b-41d4-a716-446655440001', 'e60e8400-e29b-41d4-a716-446655440001', 'r60e8400-e29b-41d4-a716-446655440001', NOW(), NULL, TRUE, 'default'),
+    ('er60e8400-e29b-41d4-a716-446655440002', 'e60e8400-e29b-41d4-a716-446655440002', 'r60e8400-e29b-41d4-a716-446655440001', NOW(), NULL, TRUE, 'default'),
+    ('er60e8400-e29b-41d4-a716-446655440003', 'e60e8400-e29b-41d4-a716-446655440003', 'r60e8400-e29b-41d4-a716-446655440001', NOW(), NULL, TRUE, 'default');
 
 -- ============================================================
 --  EMPLEADOS PARA RANCHO 2 (Los Altos)
 -- ============================================================
 
-INSERT IGNORE INTO empleados (id, nombre, email, telefono, rol, estado, rancho_id, fecha_registro, fecha_actualizacion, tenant_id) VALUES 
-    ('e60e8400-e29b-41d4-a716-446655440004', 'Dr. Luis Fernando Sánchez', 'luis.sanchez@vacapp.test', '3023456789', 'DOCTOR', 'ACTIVO', 'r60e8400-e29b-41d4-a716-446655440002', NOW(), NOW(), 'default'),
-    ('e60e8400-e29b-41d4-a716-446655440005', 'Jorge Hernández García', 'jorge.hernandez@vacapp.test', '3034567890', 'WORKER', 'ACTIVO', 'r60e8400-e29b-41d4-a716-446655440002', NOW(), NOW(), 'default'),
-    ('e60e8400-e29b-41d4-a716-446655440006', 'Patricia Estrada Morales', 'patricia.estrada@vacapp.test', '3045678901', 'WORKER', 'ACTIVO', 'r60e8400-e29b-41d4-a716-446655440002', NOW(), NOW(), 'default');
+INSERT IGNORE INTO empleados (id, nombre, email, telefono, rol, estado, fecha_registro, fecha_actualizacion, tenant_id) VALUES 
+    ('e60e8400-e29b-41d4-a716-446655440004', 'Dr. Luis Fernando Sánchez', 'luis.sanchez@vacapp.test', '3023456789', 'DOCTOR', 'ACTIVO', NOW(), NOW(), 'default'),
+    ('e60e8400-e29b-41d4-a716-446655440005', 'Jorge Hernández García', 'jorge.hernandez@vacapp.test', '3034567890', 'WORKER', 'ACTIVO', NOW(), NOW(), 'default'),
+    ('e60e8400-e29b-41d4-a716-446655440006', 'Patricia Estrada Morales', 'patricia.estrada@vacapp.test', '3045678901', 'WORKER', 'ACTIVO', NOW(), NOW(), 'default');
+
+-- Asignar empleados al Rancho Los Altos
+INSERT IGNORE INTO empleados_ranchos (id, empleado_id, rancho_id, fecha_asignacion, fecha_fin_asignacion, activo, tenant_id) VALUES 
+    ('er60e8400-e29b-41d4-a716-446655440004', 'e60e8400-e29b-41d4-a716-446655440004', 'r60e8400-e29b-41d4-a716-446655440002', NOW(), NULL, TRUE, 'default'),
+    ('er60e8400-e29b-41d4-a716-446655440005', 'e60e8400-e29b-41d4-a716-446655440005', 'r60e8400-e29b-41d4-a716-446655440002', NOW(), NULL, TRUE, 'default'),
+    ('er60e8400-e29b-41d4-a716-446655440006', 'e60e8400-e29b-41d4-a716-446655440006', 'r60e8400-e29b-41d4-a716-446655440002', NOW(), NULL, TRUE, 'default');
 
 -- ============================================================
 --  INSUMOS PARA RANCHO 1 (Santa María)

@@ -10,7 +10,7 @@
 - **Nombre**: Vacapp
 - **Dominio**: Gestión ganadera SaaS
 - **Tipo**: Monolito Modular — Spring Modulith + Clean Architecture
-- **Stack**: Java 21 + Spring Boot 4.1.0 + Spring Modulith + MySQL + Spring Data JDBC + Spring Security (JWT) + Lombok + Thymeleaf + CSS Vanilla
+- **Stack**: Java 21 + Spring Boot 4.1.0 + Spring Modulith + MySQL + Spring Data JDBC + Spring Security (JWT) + Lombok + HTML puro + Tailwind CSS + JavaScript Vanilla
 
 ---
 
@@ -76,44 +76,44 @@ HTTP Request
 
 ---
 
-## Frontend Thymeleaf + HTML + CSS + JavaScript Vanilla
+## Frontend HTML Puro + Tailwind CSS + JavaScript Vanilla
 
-El frontend es **server-rendered** con Thymeleaf, sin frameworks JavaScript complejos:
+El frontend es **HTML estático servido** con Tailwind CSS vía CDN, sin frameworks JavaScript complejos:
 
-- **Motor de plantillas**: Thymeleaf — archivos en `src/main/resources/templates/`
-- **Estilos**: CSS vanilla con variables custom en `src/main/resources/static/css/`
-- **JavaScript**: Vanilla integrado en HTML (sin Node, sin npm, sin React, sin Tailwind)
-- **Token JWT**: Guardado en `sessionStorage` tras login
+- **Motor de plantillas**: Ninguno — HTML puro en `src/main/resources/static/views/`
+- **Estilos**: Tailwind CSS vía CDN (sin CSS custom, sin preprocesadores)
+- **JavaScript**: Vanilla en archivos separados en `src/main/resources/static/js/`
+- **Token JWT**: Guardado en cookie `vacapp_jwt` y `sessionStorage` tras login
 - **API**: Consumida con Fetch API desde JavaScript vanilla
+- **Controladores web**: Solo hacen `forward` a archivos HTML estáticos
 
 ### Estructura de vistas
 
 ```
-templates/
-├── auth/
-│   ├── login.html        ← Formulario de login con JS integrado
-│   └── logout.html       ← Confirmación de logout
-├── dashboard/
-│   └── index.html        ← Dashboard principal
-└── fragments/            ← Componentes reutilizables
-    ├── navbard.html
-    └── sidebard.html
-
-static/css/
-├── global.css            ← Estilos globales (reset, variables CSS)
-├── login.css
-├── dashboard.css
-├── navbard.css
-└── sidebard.css
+static/
+├── views/                 ← Archivos HTML puro
+│   ├── dashboard.html     ← Dashboard principal
+│   ├── empleados.html     ← Vista de empleados
+│   ├── ranchos.html       ← Vista de ranchos
+│   └── ganado.html        ← Vista de ganado
+├── js/                    ← JavaScript vanilla
+│   ├── dashboard.js
+│   ├── empleados.js
+│   ├── ranchos.js
+│   └── ganado.js
+└── css/                   ← CSS custom (solo si es necesario)
+    └── global.css
 ```
 
 ### Reglas clave
 
 - **Nombres de archivos y carpetas en español**
-- **JavaScript integrado**: Todo código JS dentro de `<script>` al final del HTML
-- **Thymeleaf helpers**: `th:href`, `th:action`, `th:text` para URLs dinámicas
-- **Sin frameworks**: HTML + CSS + JS vanilla, sin React/Vue/Angular
-- **Sin preprocesadores CSS**: Usar CSS vanilla o variables CSS custom
+- **JavaScript en archivos separados**: Código JS en archivos `.js` en `static/js/`
+- **Tailwind CSS vía CDN**: `<script src="https://cdn.tailwindcss.com"></script>` en el `<head>`
+- **Sin Thymeleaf**: No usar `th:`, `th:href`, `th:text`, etc. HTML puro
+- **Datos dinámicos**: Cargados vía Fetch API desde JavaScript
+- **Controladores web**: Solo hacen `return "forward:/views/nombre.html";`
+- **Sin frameworks**: HTML + Tailwind + JS vanilla, sin React/Vue/Angular
 
 ---
 
@@ -147,22 +147,21 @@ static/css/
 
 ---
 
-## Arquitectura del Frontend Thymeleaf
+## Arquitectura del Frontend HTML Puro + Tailwind CSS
 
-Cada vista es un archivo `.html` con:
+Cada vista es un archivo `.html` en `static/views/` con:
 
-1. **Head**: Links a CSS en `static/css/`
-2. **Body**: HTML semántico con `xmlns:th="http://www.thymeleaf.org"`
-3. **Script**: JavaScript vanilla al final para interactividad
+1. **Head**: Tailwind CSS vía CDN
+2. **Body**: HTML semántico puro (sin Thymeleaf)
+3. **Script**: JavaScript vanilla en archivo separado
 
 Ejemplo estructura:
 
 ```html
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es">
 <head>
-  <link rel="stylesheet" th:href="@{/css/global.css}" />
-  <link rel="stylesheet" th:href="@{/css/login.css}" />
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
   <!-- Contenido HTML semántico -->
@@ -172,24 +171,27 @@ Ejemplo estructura:
     <button type="submit">Iniciar sesión</button>
   </form>
 
-  <script>
-    // JavaScript vanilla integrado
-    document.getElementById('formulario-login').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const res = await fetch('/api/v1/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        sessionStorage.setItem('vacapp_token', data.token);
-        window.location.href = '/dashboard';
-      }
-    });
-  </script>
+  <script src="/js/login.js"></script>
 </body>
 </html>
+```
+
+JavaScript en archivo separado (`static/js/login.js`):
+
+```javascript
+document.getElementById('formulario-login').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const res = await fetch('/api/v1/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
+  });
+  if (res.ok) {
+    const data = await res.json();
+    sessionStorage.setItem('vacapp_token', data.token);
+    window.location.href = '/views/dashboard.html';
+  }
+});
 ```
 
 ---

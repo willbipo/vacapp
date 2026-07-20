@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventario de Ranchos - Vacapp</title>
+  <link rel="stylesheet" th:href="@{/css/global.css}" />
+  <link rel="stylesheet" th:href="@{/css/ranchos.css}" />
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1>Inventario de Ranchos</h1>
+          <p class="text-gray-600">Gestión de tus propiedades y estructura jerárquica</p>
+        </div>
+        <a href="/dashboard" class="btn btn-secondary">Volver al Dashboard</a>
+      </div>
+    </header>
+
+    <!-- Estadísticas -->
+    <div class="grid grid-cols-4 gap-4 mt-6">
+      <div class="card text-center">
+        <div class="text-xl font-bold text-primary" th:text="${totalRanchos}">0</div>
+        <div class="text-sm text-gray-600">Total Ranchos</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-xl font-bold text-success" th:text="${conSecciones}">0</div>
+        <div class="text-sm text-gray-600">Con Secciones</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-xl font-bold text-warning" th:text="${conPotrerosDirectos}">0</div>
+        <div class="text-sm text-gray-600">Con Potreros Directos</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-xl font-bold text-info" th:text="${hectareasEnUso}">0</div>
+        <div class="text-sm text-gray-600">Hectáreas en Uso</div>
+      </div>
+    </div>
+
+    <!-- Lista de Ranchos con Jerarquía -->
+    <div class="mt-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold">Ranchos Registrados</h2>
+        <button class="btn btn-primary" onclick="abrirModalCrearRancho()">+ Nuevo Rancho</button>
+      </div>
+      
+      <div th:if="${ranchos.isEmpty()}" class="card text-center py-8">
+        <p class="text-gray-500">No hay ranchos registrados</p>
+      </div>
+      
+      <div th:each="rancho : ${ranchos}" class="rancho-card mb-6">
+        <!-- Rancho -->
+        <div class="card">
+          <div class="card-header flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="rancho-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+              </div>
+              <div>
+                <h3 class="card-title" th:text="${rancho.nombre}"></h3>
+                <p class="text-sm text-gray-600" th:text="${rancho.descripcion}"></p>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button class="btn btn-sm btn-secondary" 
+                      th:attr="data-id=${rancho.id}, data-nombre=${rancho.nombre}, data-descripcion=${rancho.descripcion}, data-hectareas=${rancho.hectareas}, data-ubicacion=${rancho.ubicacion}"
+                      onclick="abrirModalEditarRancho(this)">Editar</button>
+              <button class="btn btn-sm btn-primary" 
+                      th:attr="data-ranchoId=${rancho.id}"
+                      onclick="abrirModalCrearSeccion(this)">+ Sección</button>
+              <button class="btn btn-sm btn-primary" 
+                      th:attr="data-ranchoId=${rancho.id}"
+                      onclick="abrirModalCrearPotrero(this)">+ Potrero</button>
+            </div>
+          </div>
+          
+          <div class="rancho-details">
+            <div class="grid grid-cols-3 gap-4">
+              <div>
+                <span class="text-sm text-gray-600">Hectáreas totales:</span>
+                <span class="font-medium" th:text="${rancho.hectareas}"></span>
+              </div>
+              <div>
+                <span class="text-sm text-gray-600">Ubicación:</span>
+                <span class="font-medium" th:text="${rancho.ubicacion}"></span>
+              </div>
+              <div>
+                <span class="text-sm text-gray-600">Hectáreas en uso:</span>
+                <span class="font-medium text-success" th:text="${rancho.calcularHectareasEnUso()}"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Secciones (Nivel 2 de jerarquía) -->
+        <div th:if="${!rancho.secciones.isEmpty()}" class="secciones-container ml-6 mt-4">
+          <div th:each="seccion : ${rancho.secciones}" class="seccion-card mb-4">
+            <div class="card" style="border-left: 4px solid var(--color-primary-light);">
+              <div class="card-header flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="seccion-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="7" height="7"></rect>
+                      <rect x="14" y="3" width="7" height="7"></rect>
+                      <rect x="14" y="14" width="7" height="7"></rect>
+                      <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="font-bold" th:text="${seccion.nombre}"></h4>
+                    <p class="text-sm text-gray-600">
+                      <span th:text="${seccion.potreros.size()}"></span> potreros • 
+                      <span th:text="${seccion.calcularHectareasTotales()}"></span> ha
+                    </p>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button class="btn btn-sm btn-secondary" 
+                          th:attr="data-id=${seccion.id}, data-nombre=${seccion.nombre}"
+                          onclick="abrirModalEditarSeccion(this)">Editar</button>
+                  <button class="btn btn-sm btn-primary" 
+                          th:attr="data-seccionId=${seccion.id}, data-ranchoId=${seccion.ranchoId}"
+                          onclick="abrirModalCrearPotrero(this)">+ Potrero</button>
+                </div>
+              </div>
+              
+              <!-- Potreros dentro de sección (Nivel 3 de jerarquía) -->
+              <div th:if="${!seccion.potreros.isEmpty()}" class="potreros-container ml-6 mt-4">
+                <div th:each="potrero : ${seccion.potreros}" class="potrero-card mb-3">
+                  <div class="card" style="border-left: 4px solid var(--color-accent);">
+                    <div class="flex items-center justify-between py-2">
+                      <div class="flex items-center gap-3">
+                        <div class="potrero-icon">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path>
+                            <path d="M18 14h-8"></path>
+                            <path d="M15 18h-5"></path>
+                            <path d="M10 6h8v4h-8V6Z"></path>
+                          </svg>
+                        </div>
+                        <div>
+                          <span class="font-medium" th:text="${potrero.nombre}"></span>
+                          <span class="text-sm text-gray-600 ml-2">
+                            <span th:text="${potrero.hectareas}"></span> ha • 
+                            <span th:text="${potrero.tipoPasto}"></span>
+                          </span>
+                        </div>
+                      </div>
+                      <div class="flex gap-2">
+                        <button class="btn btn-sm btn-secondary" 
+                                th:attr="data-id=${potrero.id}, data-nombre=${potrero.nombre}, data-hectareas=${potrero.hectareas}, data-tipoPasto=${potrero.tipoPasto}"
+                                onclick="abrirModalEditarPotrero(this)">Editar</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Potreros Directos (Nivel 2 de jerarquía, sin sección) -->
+        <div th:if="${!rancho.potrerosDirectos.isEmpty()}" class="potreros-directos-container ml-6 mt-4">
+          <h4 class="text-sm font-bold text-gray-600 mb-3">Potreros Directos</h4>
+          <div th:each="potrero : ${rancho.potrerosDirectos}" class="potrero-card mb-3">
+            <div class="card" style="border-left: 4px solid var(--color-warning);">
+              <div class="flex items-center justify-between py-2">
+                <div class="flex items-center gap-3">
+                  <div class="potrero-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path>
+                      <path d="M18 14h-8"></path>
+                      <path d="M15 18h-5"></path>
+                      <path d="M10 6h8v4h-8V6Z"></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <span class="font-medium" th:text="${potrero.nombre}"></span>
+                    <span class="text-sm text-gray-600 ml-2">
+                      <span th:text="${potrero.hectareas}"></span> ha • 
+                      <span th:text="${potrero.tipoPasto}"></span>
+                    </span>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button class="btn btn-sm btn-secondary" 
+                          th:attr="data-id=${potrero.id}, data-nombre=${potrero.nombre}, data-hectareas=${potrero.hectareas}, data-tipoPasto=${potrero.tipoPasto}"
+                          onclick="abrirModalEditarPotrero(this)">Editar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Rancho -->
+  <div id="modal-rancho" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-rancho-titulo">Nuevo Rancho</h3>
+        <button class="modal-close" onclick="cerrarModal('modal-rancho')">&times;</button>
+      </div>
+      <form id="formulario-rancho" onsubmit="guardarRancho(event)">
+        <input type="hidden" id="rancho-id">
+        
+        <div class="modal-body-scroll">
+          <div class="form-group">
+            <label class="form-label" for="rancho-nombre">Nombre *</label>
+            <input type="text" id="rancho-nombre" class="form-input" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="rancho-descripcion">Descripción</label>
+            <textarea id="rancho-descripcion" class="form-textarea"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="rancho-hectareas">Hectáreas *</label>
+            <input type="number" id="rancho-hectareas" class="form-input" step="0.01" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="rancho-ubicacion">Ubicación</label>
+            <input type="text" id="rancho-ubicacion" class="form-input">
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <div class="flex justify-end gap-2">
+            <button type="button" class="btn btn-secondary" onclick="cerrarModal('modal-rancho')">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Sección -->
+  <div id="modal-seccion" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-seccion-titulo">Nueva Sección</h3>
+        <button class="modal-close" onclick="cerrarModal('modal-seccion')">&times;</button>
+      </div>
+      <form id="formulario-seccion" onsubmit="guardarSeccion(event)">
+        <input type="hidden" id="seccion-id">
+        <input type="hidden" id="seccion-ranchoId">
+        
+        <div class="modal-body-scroll">
+          <div class="form-group">
+            <label class="form-label" for="seccion-nombre">Nombre de la Sección *</label>
+            <input type="text" id="seccion-nombre" class="form-input" required>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <div class="flex justify-end gap-2">
+            <button type="button" class="btn btn-secondary" onclick="cerrarModal('modal-seccion')">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Potrero -->
+  <div id="modal-potrero" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-potrero-titulo">Nuevo Potrero</h3>
+        <button class="modal-close" onclick="cerrarModal('modal-potrero')">&times;</button>
+      </div>
+      <form id="formulario-potrero" onsubmit="guardarPotrero(event)">
+        <input type="hidden" id="potrero-id">
+        <input type="hidden" id="potrero-ranchoId">
+        <input type="hidden" id="potrero-seccionId">
+        
+        <div class="modal-body-scroll">
+          <div class="form-group">
+            <label class="form-label" for="potrero-nombre">Nombre del Potrero *</label>
+            <input type="text" id="potrero-nombre" class="form-input" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="potrero-hectareas">Hectáreas *</label>
+            <input type="number" id="potrero-hectareas" class="form-input" step="0.01" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="potrero-tipoPasto">Tipo de Pasto</label>
+            <input type="text" id="potrero-tipoPasto" class="form-input">
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <div class="flex justify-end gap-2">
+            <button type="button" class="btn btn-secondary" onclick="cerrarModal('modal-potrero')">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script th:src="@{/js/ranchos.js}"></script>
+</body>
+</html>

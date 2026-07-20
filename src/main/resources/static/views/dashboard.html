@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Vacapp</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+  <div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <header class="mb-6">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="p-2 bg-blue-100 rounded-lg">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-600">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900">Vacapp</h1>
+            <p class="text-sm text-gray-600">Sistema de Gestión Ganadera</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <span class="text-gray-600" id="usuario-activo">Usuario</span>
+          <a href="/salida" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">Cerrar Sesión</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Bienvenida -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-2">Bienvenido a Vacapp</h2>
+      <p class="text-gray-600">Selecciona un módulo para comenzar:</p>
+    </div>
+
+    <!-- Módulos -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      <!-- Empleados -->
+      <a href="/empleados" class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition cursor-pointer">
+        <div class="flex flex-col items-center text-center">
+          <div class="p-4 bg-blue-100 rounded-full mb-4">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-blue-600">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Empleados</h3>
+          <p class="text-gray-600">Gestión de personal y roles</p>
+        </div>
+      </a>
+
+      <!-- Ranchos -->
+      <a href="/ranchos" class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition cursor-pointer">
+        <div class="flex flex-col items-center text-center">
+          <div class="p-4 bg-green-100 rounded-full mb-4">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-green-600">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Ranchos</h3>
+          <p class="text-gray-600">Gestión de propiedades y estructura</p>
+        </div>
+      </a>
+
+      <!-- Ganado -->
+      <a href="/inventario" class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition cursor-pointer">
+        <div class="flex flex-col items-center text-center">
+          <div class="p-4 bg-indigo-100 rounded-full mb-4">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-indigo-600">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Ganado</h3>
+          <p class="text-gray-600">Inventario de animales</p>
+        </div>
+      </a>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-semibold mb-4">Accesos Rápidos</h3>
+      <div class="flex gap-4">
+        <a href="/ranchos" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">Ver Ranchos</a>
+        <a href="/empleados" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">Ver Empleados</a>
+        <a href="/inventario" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">Ver Ganado</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>

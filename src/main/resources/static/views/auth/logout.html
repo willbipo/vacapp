@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vacapp — Hasta luego</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .dark {
+      color-scheme: dark;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 min-h-screen flex items-center justify-center">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 w-full max-w-md text-center">
+    <div class="mb-6">
+      <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto">
+        <svg class="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </div>
+    </div>
+
+    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Sesión cerrada</p>
+
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+      Hasta luego,<br />
+      <em id="logout-username" class="text-blue-600 dark:text-blue-400">amigo</em>
+    </h1>
+
+    <p class="text-gray-600 dark:text-gray-400 mb-6">Tu sesión ha terminado de forma segura.</p>
+
+    <a href="/login" class="inline-block w-full text-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+      Volver a iniciar sesión
+    </a>
+  </div>
+
+  <script>
+    (function () {
+      // Limpiar token de sesión y localStorage
+      sessionStorage.removeItem('vacapp_token');
+      localStorage.removeItem('vacapp_token');
+      
+      // Limpiar cookie JWT
+      document.cookie = 'vacapp_jwt=; path=/; SameSite=Lax; max-age=0';
+      
+      const tema = localStorage.getItem('vacapp_theme') || localStorage.getItem('vacapp_tema');
+      if (tema === 'dark' || (!tema && matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      }
+
+      const nombre = localStorage.getItem('vacapp_ultimo_usuario');
+      if (nombre) {
+        document.getElementById('logout-username').textContent = nombre;
+        localStorage.removeItem('vacapp_ultimo_usuario');
+      }
+    })();
+  </script>
+</body>
+</html>

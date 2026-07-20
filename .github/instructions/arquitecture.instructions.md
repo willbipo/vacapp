@@ -14,7 +14,7 @@
 | **Seguridad** | Spring Security + JWT |
 | **Validación** | Spring Validation (Bean Validation) |
 | **Utilidades** | Lombok |
-| **Frontend Web** | Thymeleaf + HTML + CSS vanilla + JavaScript vanilla (no React, no Tailwind) |
+| **Frontend Web** | HTML puro + Tailwind CSS (vía CDN) + JavaScript vanilla (no React, no Thymeleaf) |
 | **Frontend Móvil** | Flutter — consume la API REST |
 | **Multi-tenancy** | Columna `tenant_id` en todas las tablas; extraído del JWT |
 

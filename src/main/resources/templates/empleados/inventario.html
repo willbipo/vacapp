@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventario de Empleados - Vacapp</title>
+  <link rel="stylesheet" th:href="@{/css/global.css}" />
+  <link rel="stylesheet" th:href="@{/css/empleados.css}" />
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1>Inventario de Empleados</h1>
+          <p class="text-gray-600">Gestión del personal de tus ranchos</p>
+        </div>
+        <a href="/dashboard" class="btn btn-secondary">Volver al Dashboard</a>
+      </div>
+    </header>
+
+    <!-- Filtros -->
+    <div class="card mt-6">
+      <div class="card-header">
+        <h2 class="card-title">Filtros</h2>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="form-group" style="margin-bottom: 0; flex: 1;">
+          <label class="form-label" for="filtro-rancho">Filtrar por Rancho</label>
+          <select id="filtro-rancho" class="form-select" onchange="filtrarPorRancho()">
+            <option value="">Todos los ranchos</option>
+            <option th:each="rancho : ${ranchos}" 
+                    th:value="${rancho.id}" 
+                    th:text="${rancho.nombre}"
+                    th:selected="${ranchoSeleccionadoId != null && ranchoSeleccionadoId == rancho.id}"></option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <button class="btn btn-primary" onclick="limpiarFiltros()">Limpiar Filtros</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="grid grid-cols-4 gap-4 mt-6">
+      <div class="card text-center">
+        <div class="text-xl font-bold text-primary" th:text="${empleados.size()}">0</div>
+        <div class="text-sm text-gray-600">Total Empleados</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-xl font-bold text-success" th:text="${empleados.?[estado == T(com.vacapp.empleados.internal.domain.model.Estado).ACTIVO].size()}">0</div>
+        <div class="text-sm text-gray-600">Activos</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-xl font-bold text-warning" th:text="${empleados.?[estado == T(com.vacapp.empleados.internal.domain.model.Estado).PENDIENTE].size()}">0</div>
+        <div class="text-sm text-gray-600">Pendientes</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-xl font-bold text-danger" th:text="${empleados.?[estado == T(com.vacapp.empleados.internal.domain.model.Estado).INACTIVO].size()}">0</div>
+        <div class="text-sm text-gray-600">Inactivos</div>
+      </div>
+    </div>
+
+    <!-- Tabla de Empleados -->
+    <div class="card mt-6">
+      <div class="card-header flex items-center justify-between">
+        <h2 class="card-title">Lista de Empleados</h2>
+        <button class="btn btn-primary" onclick="abrirModalCrear()">+ Nuevo Empleado</button>
+      </div>
+      
+      <div class="table-container">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Rol</th>
+              <th>Estado</th>
+              <th>Rancho</th>
+              <th>Fecha Registro</th>
+              <th class="text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="empleado : ${empleados}">
+              <td>
+                <span class="font-medium" th:text="${empleado.nombre}"></span>
+              </td>
+              <td th:text="${empleado.email}"></td>
+              <td th:text="${empleado.telefono}"></td>
+              <td>
+                <span class="badge badge-primary" th:text="${empleado.rol}"></span>
+              </td>
+              <td>
+                <th:block th:switch="${empleado.estado.name()}">
+                  <span class="badge badge-success" th:case="'ACTIVO'" th:text="${empleado.estado.descripcion}"></span>
+                  <span class="badge badge-warning" th:case="'PENDIENTE'" th:text="${empleado.estado.descripcion}"></span>
+                  <span class="badge badge-danger" th:case="*" th:text="${empleado.estado.descripcion}"></span>
+                </th:block>
+              </td>
+              <td>
+                <span class="text-sm text-gray-600" 
+                      th:text="${ranchos.?[id == empleado.ranchoId].isEmpty() ? 'Sin asignar' : ranchos.?[id == empleado.ranchoId][0].nombre}"></span>
+              </td>
+              <td>
+                <span class="text-sm text-gray-600" 
+                      th:text="${#temporals.format(empleado.fechaRegistro, 'dd/MM/yyyy')}"></span>
+              </td>
+              <td class="text-right">
+                <div class="flex justify-end gap-2">
+                  <button class="btn btn-sm btn-secondary" 
+                          th:attr="data-id=${empleado.id}, 
+                                 data-nombre=${empleado.nombre},
+                                 data-email=${empleado.email},
+                                 data-telefono=${empleado.telefono},
+                                 data-rol=${empleado.rol},
+                                 data-estado=${empleado.estado},
+                                 data-ranchoId=${empleado.ranchoId}"
+                          onclick="abrirModalEditar(this)">Editar</button>
+                  
+                  <!-- Solo ADMIN puede eliminar -->
+                  <button class="btn btn-sm btn-danger" 
+                          th:attr="data-id=${empleado.id}"
+                          onclick="eliminarEmpleado(this)"
+                          sec:authorize="hasRole('ADMIN')">Eliminar</button>
+                </div>
+              </td>
+            </tr>
+            <tr th:if="${empleados.isEmpty()}">
+              <td colspan="8" class="text-center text-gray-500 py-8">
+                No hay empleados registrados
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Crear/Editar Empleado -->
+  <div id="modal-empleado" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-titulo">Nuevo Empleado</h3>
+        <button class="modal-close" onclick="cerrarModal()">&times;</button>
+      </div>
+      <form id="formulario-empleado" onsubmit="guardarEmpleado(event)">
+        <input type="hidden" id="empleado-id">
+        
+        <div class="modal-body-scroll">
+          <div class="form-group">
+            <label class="form-label" for="empleado-nombre">Nombre *</label>
+            <input type="text" id="empleado-nombre" class="form-input" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="empleado-email">Email *</label>
+            <input type="email" id="empleado-email" class="form-input" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="empleado-telefono">Teléfono</label>
+            <input type="tel" id="empleado-telefono" class="form-input">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="empleado-rol">Rol *</label>
+            <select id="empleado-rol" class="form-select" required>
+              <option value="">Seleccionar rol</option>
+              <option value="DOCTOR">Doctor (Veterinario)</option>
+              <option value="WORKER">Worker (Trabajador)</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="empleado-rancho">Rancho *</label>
+            <select id="empleado-rancho" class="form-select" required>
+              <option value="">Seleccionar rancho</option>
+              <option th:each="rancho : ${ranchos}" 
+                      th:value="${rancho.id}" 
+                      th:text="${rancho.nombre}"></option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="empleado-estado">Estado *</label>
+            <select id="empleado-estado" class="form-select" required>
+              <option value="ACTIVO">Activo</option>
+              <option value="INACTIVO">Inactivo</option>
+              <option value="PENDIENTE">Pendiente de aceptación</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <div class="flex justify-end gap-2">
+            <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script th:src="@{/js/empleados.js}"></script>
+</body>
+</html>

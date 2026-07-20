@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventario de Ganado - Vacapp</title>
+  <link rel="stylesheet" th:href="@{/css/global.css}" />
+  <link rel="stylesheet" th:href="@{/css/ganado.css}" />
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1>Inventario de Ganado</h1>
+          <p class="text-gray-600">Gestión del inventario animal de tus ranchos</p>
+        </div>
+        <a href="/dashboard" class="btn btn-secondary">Volver al Dashboard</a>
+      </div>
+    </header>
+
+    <!-- Filtros -->
+    <div class="card mt-6">
+      <div class="card-header">
+        <h2 class="card-title">Filtros</h2>
+      </div>
+      <div class="flex items-center gap-4 flex-wrap">
+        <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 200px;">
+          <label class="form-label" for="filtro-rancho">Filtrar por Rancho</label>
+          <select id="filtro-rancho" class="form-select" onchange="filtrarPorRancho()">
+            <option value="">Todos los ranchos</option>
+            <option th:each="rancho : ${ranchos}" 
+                    th:value="${rancho.id}" 
+                    th:text="${rancho.nombre}"
+                    th:selected="${ranchoSeleccionadoId != null && ranchoSeleccionadoId == rancho.id}"></option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 150px;">
+          <label class="form-label" for="filtro-estatus">Estatus</label>
+          <select id="filtro-estatus" class="form-select" onchange="filtrarTabla()">
+            <option value="">Todos</option>
+            <option th:each="estatus : ${estatusOpciones}" 
+                    th:value="${estatus}" 
+                    th:text="${estatus}"></option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 150px;">
+          <label class="form-label" for="filtro-sexo">Sexo</label>
+          <select id="filtro-sexo" class="form-select" onchange="filtrarTabla()">
+            <option value="">Todos</option>
+            <option th:each="sexo : ${sexoOpciones}" 
+                    th:value="${sexo}" 
+                    th:text="${sexo}"></option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 150px;">
+          <label class="form-label" for="filtro-tipo">Tipo</label>
+          <select id="filtro-tipo" class="form-select" onchange="filtrarTabla()">
+            <option value="">Todos</option>
+            <option th:each="tipo : ${tipoOpciones}" 
+                    th:value="${tipo}" 
+                    th:text="${tipo}"></option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <button class="btn btn-primary" onclick="limpiarFiltros()">Limpiar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="grid grid-cols-4 gap-4 mt-6">
+      <div class="card text-center">
+        <div class="text-xl font-bold text-primary" th:text="${animales.size()}">0</div>
+        <div class="text-sm text-gray-600">Total Animales</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-xl font-bold text-success" th:text="${animales.?[estatus == T(com.vacapp.ganado.internal.domain.model.Estatus).VIGENTE].size()}">0</div>
+        <div class="text-sm text-gray-600">Vigentes</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-xl font-bold text-danger" th:text="${animales.?[estatus == T(com.vacapp.ganado.internal.domain.model.Estatus).BAJA].size()}">0</div>
+        <div class="text-sm text-gray-600">Baja</div>
+      </div>
+      <div class="card text-center">
+        <div class="text-xl font-bold text-info" th:text="${animales.?[sexo == T(com.vacapp.ganado.internal.domain.model.Sexo).HEMBRA].size()}">0</div>
+        <div class="text-sm text-gray-600">Hembras</div>
+      </div>
+    </div>
+
+    <!-- Tabla de Ganado -->
+    <div class="card mt-6">
+      <div class="card-header flex items-center justify-between">
+        <h2 class="card-title">Lista de Animales</h2>
+        <button class="btn btn-primary" onclick="abrirModalCrear()">+ Nuevo Animal</button>
+      </div>
+      
+      <div class="table-container">
+        <table class="table" id="tabla-animales">
+          <thead>
+            <tr>
+              <th>Arete</th>
+              <th>Raza</th>
+              <th>Sexo</th>
+              <th>Estatus</th>
+              <th>Tipo</th>
+              <th>Edad (meses)</th>
+              <th>Fecha Nacimiento</th>
+              <th>Rancho</th>
+              <th class="text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="animal : ${animales}" 
+                th:data-estatus="${animal.estatus}"
+                th:data-sexo="${animal.sexo}"
+                th:data-tipo="${animal.tipo}">
+              <td>
+                <span class="font-medium" th:text="${animal.numeroIdentificador}"></span>
+              </td>
+              <td th:text="${animal.raza}"></td>
+              <td>
+                <th:block th:switch="${animal.sexo.name()}">
+                  <span class="badge badge-info" th:case="'HEMBRA'" th:text="${animal.sexo}"></span>
+                  <span class="badge badge-warning" th:case="*" th:text="${animal.sexo}"></span>
+                </th:block>
+              </td>
+              <td>
+                <th:block th:switch="${animal.estatus.name()}">
+                  <span class="badge badge-success" th:case="'VIGENTE'" th:text="${animal.estatus}"></span>
+                  <span class="badge badge-danger" th:case="*" th:text="${animal.estatus}"></span>
+                </th:block>
+              </td>
+              <td th:text="${animal.tipo}"></td>
+              <td th:text="${animal.meses}"></td>
+              <td>
+                <span class="text-sm text-gray-600" 
+                      th:text="${animal.fechaNacimiento != null ? #temporals.format(animal.fechaNacimiento, 'dd/MM/yyyy') : '-'}"></span>
+              </td>
+              <td>
+                <span class="text-sm text-gray-600" 
+                      th:text="${ranchos.?[id == animal.ranchoId].isEmpty() ? 'Sin asignar' : ranchos.?[id == animal.ranchoId][0].nombre}"></span>
+              </td>
+              <td class="text-right">
+                <div class="flex justify-end gap-2">
+                  <button class="btn btn-sm btn-secondary" 
+                          th:attr="data-id=${animal.id}, 
+                                 data-numeroIdentificador=${animal.numeroIdentificador},
+                                 data-raza=${animal.raza},
+                                 data-sexo=${animal.sexo},
+                                 data-estatus=${animal.estatus},
+                                 data-tipo=${animal.tipo},
+                                 data-meses=${animal.meses},
+                                 data-fechaNacimiento=${animal.fechaNacimiento != null ? #temporals.format(animal.fechaNacimiento, 'yyyy-MM-dd') : ''},
+                                 data-fechaAretado=${animal.fechaAretado != null ? #temporals.format(animal.fechaAretado, 'yyyy-MM-dd') : ''},
+                                 data-areteAnterior=${animal.areteAnterior},
+                                 data-folioReemo=${animal.folioReemo},
+                                 data-nota=${animal.nota},
+                                 data-ranchoId=${animal.ranchoId}"
+                          onclick="abrirModalEditar(this)">Editar</button>
+                  
+                  <button class="btn btn-sm btn-danger" 
+                          th:attr="data-id=${animal.id}"
+                          onclick="eliminarAnimal(this)">Eliminar</button>
+                </div>
+              </td>
+            </tr>
+            <tr th:if="${animales.isEmpty()}">
+              <td colspan="9" class="text-center text-gray-500 py-8">
+                No hay animales registrados
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Crear/Editar Animal -->
+  <div id="modal-animal" class="modal hidden">
+    <div class="modal-content modal-lg">
+      <div class="modal-header">
+        <h3 id="modal-titulo">Nuevo Animal</h3>
+        <button class="modal-close" onclick="cerrarModal()">&times;</button>
+      </div>
+      <form id="formulario-animal" onsubmit="guardarAnimal(event)">
+        <input type="hidden" id="animal-id">
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div class="form-group">
+            <label class="form-label" for="animal-numeroIdentificador">Número de Arete *</label>
+            <input type="text" id="animal-numeroIdentificador" class="form-input" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="animal-raza">Raza *</label>
+            <input type="text" id="animal-raza" class="form-input" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="animal-sexo">Sexo *</label>
+            <select id="animal-sexo" class="form-select" required>
+              <option value="">Seleccionar sexo</option>
+              <option value="HEMBRA">Hembra</option>
+              <option value="MACHO">Macho</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="animal-estatus">Estatus *</label>
+            <select id="animal-estatus" class="form-select" required>
+              <option value="VIGENTE">Vigente</option>
+              <option value="BAJA">Baja</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="animal-tipo">Tipo</label>
+            <select id="animal-tipo" class="form-select">
+              <option value="">Seleccionar tipo</option>
+              <option value="VENTA">Venta</option>
+              <option value="TRASLADO">Traslado</option>
+              <option value="OTRO">Otro</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="animal-meses">Edad (meses)</label>
+            <input type="number" id="animal-meses" class="form-input" min="0">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="animal-fechaNacimiento">Fecha Nacimiento</label>
+            <input type="date" id="animal-fechaNacimiento" class="form-input">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="animal-fechaAretado">Fecha Aretado</label>
+            <input type="date" id="animal-fechaAretado" class="form-input">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="animal-rancho">Rancho *</label>
+            <select id="animal-rancho" class="form-select" required>
+              <option value="">Seleccionar rancho</option>
+              <option th:each="rancho : ${ranchos}" 
+                      th:value="${rancho.id}" 
+                      th:text="${rancho.nombre}"></option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="animal-areteAnterior">Arete Anterior</label>
+            <input type="text" id="animal-areteAnterior" class="form-input">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="animal-folioReemo">Folio REEMO</label>
+            <input type="text" id="animal-folioReemo" class="form-input">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="animal-nota">Nota / Observación</label>
+          <textarea id="animal-nota" class="form-textarea" rows="3"></textarea>
+        </div>
+        
+        <div class="flex justify-end gap-2 mt-6">
+          <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script th:src="@{/js/ganado.js}"></script>
+</body>
+</html>

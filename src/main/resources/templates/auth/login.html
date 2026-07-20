@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&family=Playfair+Display:wght@700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" th:href="@{/css/global.css}" />
+    <link rel="stylesheet" th:href="@{/css/global-login.css}" />
     <link rel="stylesheet" th:href="@{/css/login.css}" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="icon" href="/favicon.ico" type="image/x-icon" th:href="@{/favicon.ico}" />
@@ -475,7 +475,7 @@
             sessionStorage.setItem("vacapp_token", data.token);
             localStorage.setItem("vacapp_token", data.token);
             // Cookie para que el filtro JWT funcione en navegación del browser
-            document.cookie = `vacapp_jwt=${data.token}; path=/; SameSite=Strict`;
+            document.cookie = `vacapp_jwt=${data.token}; path=/; SameSite=Lax; max-age=86400`;
             iniciarAnimacionSalida("/dashboard");
           } catch {
             mostrarError(

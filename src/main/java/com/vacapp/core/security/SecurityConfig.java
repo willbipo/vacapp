@@ -16,6 +16,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -39,28 +41,29 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        SecurityContextRepository securityContextRepository = 
+            new HttpSessionSecurityContextRepository();
+        
         http
-            .csrf(csrf -> csrf.disable()) // Desactiva CSRF para pruebas fáciles en Postman
-            .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll() // <-- ¡PASE LIBRE A TODO!
-            );
-       /*  http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
+            .securityContext(security -> security
+                .securityContextRepository(securityContextRepository))
             .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .authorizeHttpRequests(auth -> auth
+                // API de autenticación pública
                 .requestMatchers("/api/v1/auth/**").permitAll()
                 // Documentación OpenAPI/Swagger
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                // Vistas Thymeleaf públicas (sin autenticación)
-                .requestMatchers("/", "/login", "/salida", "/css/**", "/js/**", "/images/**",
-                 "/favicon.ico", "/dashboard/**", "/inventario/**", "/vacunas/**", "/insumos/**").permitAll()
-                // Vistas administrativas (requieren autenticación)
-                .requestMatchers("/empleados/**").authenticated()
+                // Vistas Thymeleaf públicas (login y recursos estáticos)
+                .requestMatchers("/", "/login", "/salida", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
+                // Vistas Thymeleaf que requieren autenticación (con subrutas)
+                .requestMatchers("/dashboard/**", "/inventario/**", "/empleados/**", "/ranchos/**").authenticated()
+                // API REST protegida
+                .requestMatchers("/api/v1/**").authenticated()
                 .anyRequest().authenticated())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        */
         return http.build();
     }
 
