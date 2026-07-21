@@ -86,11 +86,15 @@ public class RanchoRestController {
         System.out.println("[RANCHOS] RanchoRestController.listarRanchos - userId: " + userId + ", tenantId: " + tenantId);
         
         List<Rancho> ranchos = listarRanchosConJerarquiaUseCase.ejecutar(userId, tenantId);
-        return ResponseEntity.ok(
-            ranchos.stream()
-                .map(this::mapToJerarquiaResponse)
-                .toList()
-        );
+        System.out.println("[RANCHOS] RanchoRestController - ranchos recibidos del use case: " + ranchos.size());
+        
+        List<RanchoConJerarquiaResponse> response = ranchos.stream()
+            .map(this::mapToJerarquiaResponse)
+            .toList();
+        
+        System.out.println("[RANCHOS] RanchoRestController - response mapeada: " + response.size());
+        
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")

@@ -1,6 +1,7 @@
 package com.vacapp.ranchos.internal.infrastructure.controllers.mobile;
 
 import com.vacapp.ranchos.internal.domain.model.RanchoNoEncontradoException;
+import com.vacapp.ranchos.internal.domain.model.PotreroNoEncontradoException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,14 @@ public class RanchoExceptionHandler {
     
     @ExceptionHandler(RanchoNoEncontradoException.class)
     public ResponseEntity<ErrorResponse> handleRanchoNoEncontrado(RanchoNoEncontradoException e) {
+        log.warn("Rancho no encontrado: {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(PotreroNoEncontradoException.class)
+    public ResponseEntity<ErrorResponse> handlePotreroNoEncontrado(PotreroNoEncontradoException e) {
+        log.warn("Potrero no encontrado: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(new ErrorResponse(e.getMessage()));
     }
@@ -40,6 +49,13 @@ public class RanchoExceptionHandler {
         log.warn("Argumento inválido: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGenericException(Exception e) {
+        log.error("Error no controlado al procesar solicitud", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(new ErrorResponse("Error al procesar la solicitud: " + e.getMessage()));
     }
 
     public record ErrorResponse(String error) {}

@@ -1,8 +1,11 @@
 package com.vacapp.ranchos.internal.application.usecases;
 
 import com.vacapp.ranchos.internal.domain.model.Potrero;
-import com.vacapp.ranchos.internal.domain.repository.PotreroRepository;
+import com.vacapp.ranchos.internal.domain.model.Rancho;
 import com.vacapp.ranchos.internal.domain.model.PotreroNoEncontradoException;
+import com.vacapp.ranchos.internal.domain.model.RanchoNoEncontradoException;
+import com.vacapp.ranchos.internal.domain.repository.PotreroRepository;
+import com.vacapp.ranchos.internal.domain.repository.RanchoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ActualizarPotreroUseCase {
     private final PotreroRepository potreroRepository;
+    private final RanchoRepository ranchoRepository;
 
     public Potrero ejecutar(String id, String tenantId, String nombre, Double hectareas, String tipoPasto) {
         Potrero potrero = potreroRepository.obtenerPorId(id, tenantId)
@@ -27,6 +31,21 @@ public class ActualizarPotreroUseCase {
                         throw new IllegalArgumentException("Ya existe un potrero con el nombre: " + nombre);
                     }
                 });
+
+        // Validar que las hectáreas actualizadas no sobrepasen el total del rancho
+        Rancho rancho = ranchoRepository.obtenerPorId(potrero.getRanchoId(), tenantId)
+                .orElseThrow(() -> new RanchoNoEncontradoException("Rancho no encontrado con ID: " + potrero.getRanchoId()));
+
+        Double hectareasActuales = potreroRepository.sumarHectareasPorRancho(potrero.getRanchoId(), tenantId);
+        Double hectareasSinEstePotrero = hectareasActuales - potrero.getHectareas();
+        Double hectareasTotales = hectareasSinEstePotrero + hectareas;
+
+        if (hectareasTotales > rancho.getHectareas()) {
+            throw new IllegalArgumentException(
+                    String.format("Las hectáreas totales de los potreros (%.2f ha) sobrepasan el total del rancho (%.2f ha). Disponible: %.2f ha",
+                            hectareasTotales, rancho.getHectareas(), rancho.getHectareas() - hectareasSinEstePotrero)
+            );
+        }
 
         potrero.setNombre(nombre);
         potrero.setHectareas(hectareas);

@@ -29,16 +29,24 @@ public class SeccionRestController {
         @PathVariable String ranchoId,
         @Valid @RequestBody SeccionRequest request
     ) {
+        System.out.println("[SECCIONES] POST /api/v1/ranchos/" + ranchoId + "/secciones - Iniciando registro");
+        System.out.println("[SECCIONES] Request: " + request.nombre());
+        
         String tenantId = TenantContext.obtenerTenant();
         if (tenantId == null || tenantId.isBlank()) {
             throw new IllegalArgumentException("No autenticado: tenant no encontrado");
         }
+        
+        System.out.println("[SECCIONES] tenantId: " + tenantId + ", ranchoId: " + ranchoId);
         
         Seccion seccion = registrarSeccionUseCase.ejecutar(
             ranchoId,
             tenantId,
             request.nombre()
         );
+        
+        System.out.println("[SECCIONES] Sección guardada con ID: " + seccion.getId());
+        
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(mapToResponse(seccion));
     }

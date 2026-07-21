@@ -14,6 +14,7 @@ public interface PotreroRepository {
     List<Potrero> obtenerPorRancho(String ranchoId, String tenantId);
     List<Potrero> obtenerPorSeccion(String seccionId, String tenantId);
     Optional<Potrero> obtenerPorNombre(String nombre, String ranchoId, String tenantId);
+    Double sumarHectareasPorRancho(String ranchoId, String tenantId);
     void actualizar(Potrero potrero);
     void eliminar(String id, String tenantId);
 }

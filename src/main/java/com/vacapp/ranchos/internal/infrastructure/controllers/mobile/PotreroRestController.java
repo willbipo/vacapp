@@ -29,10 +29,15 @@ public class PotreroRestController {
         @PathVariable String ranchoId,
         @Valid @RequestBody PotreroRequest request
     ) {
+        System.out.println("[POTREROS] POST /api/v1/ranchos/" + ranchoId + "/potreros - Iniciando registro");
+        System.out.println("[POTREROS] Request: " + request.nombre() + ", seccionId: " + request.seccionId());
+        
         String tenantId = TenantContext.obtenerTenant();
         if (tenantId == null || tenantId.isBlank()) {
             throw new IllegalArgumentException("No autenticado: tenant no encontrado");
         }
+        
+        System.out.println("[POTREROS] tenantId: " + tenantId + ", ranchoId: " + ranchoId);
         
         Potrero potrero = registrarPotreroUseCase.ejecutar(
             ranchoId,
@@ -42,6 +47,9 @@ public class PotreroRestController {
             request.hectareas(),
             request.tipoPasto()
         );
+        
+        System.out.println("[POTREROS] Potrero guardado con ID: " + potrero.getId());
+        
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(mapToResponse(potrero));
     }
@@ -78,7 +86,40 @@ public class PotreroRestController {
 @RequestMapping("/api/v1/secciones/{seccionId}/potreros")
 @RequiredArgsConstructor
 class PotreroPorSeccionRestController {
+    private final RegistrarPotreroUseCase registrarPotreroUseCase;
     private final ListarPotrerosPorSeccionUseCase listarPotrerosPorSeccionUseCase;
+
+    @PostMapping
+    public ResponseEntity<PotreroResponse> registrarPotreroEnSeccion(
+        @PathVariable String seccionId,
+        @Valid @RequestBody PotreroRequest request
+    ) {
+        System.out.println("[POTREROS] POST /api/v1/secciones/" + seccionId + "/potreros - Iniciando registro");
+        System.out.println("[POTREROS] Request: " + request.nombre());
+        
+        String tenantId = TenantContext.obtenerTenant();
+        if (tenantId == null || tenantId.isBlank()) {
+            throw new IllegalArgumentException("No autenticado: tenant no encontrado");
+        }
+        
+        System.out.println("[POTREROS] tenantId: " + tenantId + ", seccionId: " + seccionId);
+        
+        // Obtener el ranchoId de la sección primero
+        // Por ahora, asumimos que el request incluye el ranchoId
+        Potrero potrero = registrarPotreroUseCase.ejecutar(
+            request.ranchoId(),
+            seccionId,
+            tenantId,
+            request.nombre(),
+            request.hectareas(),
+            request.tipoPasto()
+        );
+        
+        System.out.println("[POTREROS] Potrero guardado con ID: " + potrero.getId());
+        
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(mapToResponse(potrero));
+    }
 
     @GetMapping
     public ResponseEntity<List<PotreroResponse>> listarPotrerosPorSeccion(

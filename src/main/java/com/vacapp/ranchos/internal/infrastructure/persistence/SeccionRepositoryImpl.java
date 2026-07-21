@@ -1,35 +1,50 @@
 package com.vacapp.ranchos.internal.infrastructure.persistence;
 
+import com.vacapp.core.TenantContext;
 import com.vacapp.ranchos.internal.domain.model.Seccion;
 import com.vacapp.ranchos.internal.domain.repository.SeccionRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
  * Implementación del repositorio de Secciones usando JDBC.
  */
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class SeccionRepositoryImpl implements SeccionRepository {
 
     private final SeccionJpaRepository seccionJpaRepository;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public Seccion guardar(Seccion seccion) {
+        String tenantId = TenantContext.obtenerTenant();
         SeccionEntity entity = toEntity(seccion);
-        if (entity.getId() == null) {
-            entity.setId(UUID.randomUUID().toString());
-            entity.setFechaRegistro(LocalDateTime.now());
-            entity.setFechaActualizacion(LocalDateTime.now());
-        }
-        SeccionEntity saved = seccionJpaRepository.save(entity);
-        return toDomain(saved);
+        
+        // Usar INSERT explícito con JdbcTemplate para asegurar INSERT en lugar de UPDATE
+        String sql = "INSERT INTO secciones (id, rancho_id, nombre, tenant_id, fecha_registro, fecha_actualizacion) " +
+                     "VALUES (?, ?, ?, ?, ?, ?)";
+        
+        jdbcTemplate.update(sql,
+            entity.getId(),
+            entity.getRanchoId(),
+            entity.getNombre(),
+            tenantId,
+            entity.getFechaRegistro(),
+            entity.getFechaActualizacion()
+        );
+        
+        log.info("[SECCIONES] Sección guardada con ID: {}, ranchoId: {}, tenantId: {}", 
+            entity.getId(), entity.getRanchoId(), tenantId);
+        return toDomain(entity);
     }
 
     @Override
@@ -79,6 +94,8 @@ public class SeccionRepositoryImpl implements SeccionRepository {
         entity.setId(seccion.getId());
         entity.setRanchoId(seccion.getRanchoId());
         entity.setNombre(seccion.getNombre());
+        entity.setTenantId(TenantContext.obtenerTenant());
+        entity.setFechaRegistro(LocalDateTime.now());
         entity.setFechaActualizacion(LocalDateTime.now());
         return entity;
     }

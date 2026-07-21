@@ -36,14 +36,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
+        String uri = request.getRequestURI();
+        log.debug("[JWT] Procesando petición: {}", uri);
+        
         try {
             String token = extraerTokenDeCabecera(request);
+            log.debug("[JWT] Token extraído: {}", token != null ? "presente" : "ausente");
 
             if (StringUtils.hasText(token) && jwtTokenProvider.esValido(token)) {
                 String userId = jwtTokenProvider.extraerUserId(token);
                 String username = jwtTokenProvider.extraerUsername(token);
                 String role = jwtTokenProvider.extraerRole(token);
                 String tenantId = jwtTokenProvider.extraerTenantId(token);
+
+                log.debug("[JWT] Token válido - userId: {}, username: {}, role: {}, tenantId: {}", 
+                    userId, username, role, tenantId);
 
                 // Configura el contexto de Spring Security
                 var autoridades = List.of(new SimpleGrantedAuthority("ROLE_" + role));
@@ -56,9 +63,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Configura el contexto del usuario (userId UUID como identificador)
                 UserContext.establecerUsuario(userId);
                 UserContext.establecerRol(role);
+            } else {
+                log.debug("[JWT] Token no válido o ausente, continuando sin autenticación");
             }
         } catch (Exception e) {
-            log.error("Error al procesar el token JWT: {}", e.getMessage());
+            log.error("[JWT] Error al procesar el token JWT: {}", e.getMessage(), e);
         }
 
         try {

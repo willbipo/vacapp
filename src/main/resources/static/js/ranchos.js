@@ -27,7 +27,7 @@ function getAuthHeaders() {
 
 // Cargar datos iniciales
 async function cargarDatos() {
-  console.log('[RANCHOS] Cargando datos desde API...');
+  console.log('[RANCHOS] ===== cargarDatos INICIADO =====');
   console.log('[RANCHOS] Token disponible:', !!getToken());
   
   try {
@@ -36,12 +36,24 @@ async function cargarDatos() {
     });
     
     console.log('[RANCHOS] Response status:', response.status);
+    console.log('[RANCHOS] Response headers:', response.headers);
     
     if (response.ok) {
-      const ranchos = await response.json();
-      console.log('[RANCHOS] Ranchos recibidos:', ranchos);
-      renderizarRanchos(ranchos);
-      actualizarEstadisticas(ranchos);
+      const text = await response.text();
+      console.log('[RANCHOS] Response text (raw):', text);
+      
+      try {
+        const ranchos = JSON.parse(text);
+        console.log('[RANCHOS] Ranchos parseados:', ranchos);
+        console.log('[RANCHOS] Ranchos es array:', Array.isArray(ranchos));
+        console.log('[RANCHOS] Ranchos length:', ranchos.length);
+        
+        renderizarRanchos(ranchos);
+        actualizarEstadisticas(ranchos);
+      } catch (parseError) {
+        console.error('[RANCHOS] Error al parsear JSON:', parseError);
+        console.error('[RANCHOS] Text recibido:', text);
+      }
     } else if (response.status === 401) {
       console.error('[RANCHOS] Error de autenticación - redirigiendo a login');
       window.location.href = '/views/login.html';
@@ -388,7 +400,7 @@ async function guardarRancho(event) {
 
 async function guardarSeccion(event) {
   event.preventDefault();
-  console.log('[RANCHOS] Guardando sección...');
+  console.log('[RANCHOS] ===== guardarSeccion INICIADO =====');
   
   const seccionId = document.getElementById('seccion-id').value;
   const ranchoId = document.getElementById('seccion-ranchoId').value;
@@ -397,6 +409,12 @@ async function guardarSeccion(event) {
   };
   
   console.log('[RANCHOS] Datos de la sección:', seccionData, 'ranchoId:', ranchoId);
+  
+  if (!ranchoId) {
+    console.error('[RANCHOS] ERROR: ranchoId está vacío');
+    alert('Error: No se pudo identificar el rancho');
+    return;
+  }
   
   try {
     const url = seccionId 
@@ -432,18 +450,26 @@ async function guardarSeccion(event) {
 
 async function guardarPotrero(event) {
   event.preventDefault();
-  console.log('[RANCHOS] Guardando potrero...');
+  console.log('[RANCHOS] ===== guardarPotrero INICIADO =====');
   
   const potreroId = document.getElementById('potrero-id').value;
   const ranchoId = document.getElementById('potrero-ranchoId').value;
   const seccionId = document.getElementById('potrero-seccionId').value || null;
   const potreroData = {
+    ranchoId: ranchoId,
+    seccionId: seccionId,
     nombre: document.getElementById('potrero-nombre').value,
     hectareas: parseFloat(document.getElementById('potrero-hectareas').value),
     tipoPasto: document.getElementById('potrero-tipoPasto').value
   };
   
   console.log('[RANCHOS] Datos del potrero:', potreroData, 'ranchoId:', ranchoId, 'seccionId:', seccionId);
+  
+  if (!ranchoId) {
+    console.error('[RANCHOS] ERROR: ranchoId está vacío');
+    alert('Error: No se pudo identificar el rancho');
+    return;
+  }
   
   try {
     let url;
@@ -474,7 +500,7 @@ async function guardarPotrero(event) {
     } else {
       const error = await response.json();
       console.error('[RANCHOS] Error al guardar potrero:', error);
-      alert('Error al guardar potrero: ' + (error.message || 'Error desconocido'));
+      alert('Error al guardar potrero: ' + (error.error || 'Error desconocido'));
     }
   } catch (error) {
     console.error('[RANCHOS] Error al guardar potrero:', error);
