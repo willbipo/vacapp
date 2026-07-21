@@ -27,27 +27,44 @@ function getAuthHeaders() {
 
 // Cargar datos iniciales
 async function cargarDatos() {
+  console.log('[RANCHOS] Cargando datos desde API...');
+  console.log('[RANCHOS] Token disponible:', !!getToken());
+  
   try {
     const response = await fetch(`${API_BASE}/ranchos`, {
       headers: getAuthHeaders()
     });
     
+    console.log('[RANCHOS] Response status:', response.status);
+    
     if (response.ok) {
       const ranchos = await response.json();
+      console.log('[RANCHOS] Ranchos recibidos:', ranchos);
       renderizarRanchos(ranchos);
       actualizarEstadisticas(ranchos);
+    } else if (response.status === 401) {
+      console.error('[RANCHOS] Error de autenticación - redirigiendo a login');
+      window.location.href = '/views/login.html';
+    } else {
+      console.error('[RANCHOS] Error en respuesta:', response.status, response.statusText);
+      const errorText = await response.text();
+      console.error('[RANCHOS] Error body:', errorText);
     }
   } catch (error) {
-    console.error('Error al cargar ranchos:', error);
+    console.error('[RANCHOS] Error al cargar ranchos:', error);
   }
 }
 
 // Renderizar ranchos con jerarquía
 function renderizarRanchos(ranchos) {
   const container = document.getElementById('ranchos-container');
+  if (!container) {
+    console.error('[RANCHOS] No se encontró el elemento ranchos-container');
+    return;
+  }
   container.innerHTML = '';
   
-  if (ranchos.length === 0) {
+  if (!ranchos || ranchos.length === 0) {
     container.innerHTML = '<div class="bg-white rounded-lg shadow p-6 text-center"><p class="text-gray-500">No hay ranchos registrados</p></div>';
     return;
   }
@@ -197,15 +214,22 @@ function crearPotrerosDirectosHtml(potreros) {
 
 // Actualizar estadísticas
 function actualizarEstadisticas(ranchos) {
+  if (!ranchos) return;
+  
   const totalRanchos = ranchos.length;
   const conSecciones = ranchos.filter(r => r.secciones && r.secciones.length > 0).length;
   const conPotrerosDirectos = ranchos.filter(r => r.potrerosDirectos && r.potrerosDirectos.length > 0).length;
   const hectareasEnUso = ranchos.reduce((sum, r) => sum + (r.hectareasEnUso || 0), 0);
   
-  document.getElementById('stat-total').textContent = totalRanchos;
-  document.getElementById('stat-secciones').textContent = conSecciones;
-  document.getElementById('stat-potreros').textContent = conPotrerosDirectos;
-  document.getElementById('stat-hectareas').textContent = hectareasEnUso.toFixed(2);
+  const statTotal = document.getElementById('stat-total');
+  const statSecciones = document.getElementById('stat-secciones');
+  const statPotreros = document.getElementById('stat-potreros');
+  const statHectareas = document.getElementById('stat-hectareas');
+  
+  if (statTotal) statTotal.textContent = totalRanchos;
+  if (statSecciones) statSecciones.textContent = conSecciones;
+  if (statPotreros) statPotreros.textContent = conPotrerosDirectos;
+  if (statHectareas) statHectareas.textContent = hectareasEnUso.toFixed(2);
 }
 
 // ===== MODALES =====
@@ -317,6 +341,7 @@ async function abrirModalEditarPotrero(potreroId) {
 
 async function guardarRancho(event) {
   event.preventDefault();
+  console.log('[RANCHOS] Guardando rancho...');
   
   const ranchoId = document.getElementById('rancho-id').value;
   const ranchoData = {
@@ -326,6 +351,8 @@ async function guardarRancho(event) {
     ubicacion: document.getElementById('rancho-ubicacion').value
   };
   
+  console.log('[RANCHOS] Datos del rancho:', ranchoData);
+  
   try {
     const url = ranchoId 
       ? `${API_BASE}/ranchos/${ranchoId}`
@@ -333,40 +360,52 @@ async function guardarRancho(event) {
     
     const method = ranchoId ? 'PUT' : 'POST';
     
+    console.log('[RANCHOS] Enviando', method, 'a', url);
+    
     const response = await fetch(url, {
       method: method,
       headers: getAuthHeaders(),
       body: JSON.stringify(ranchoData)
     });
     
+    console.log('[RANCHOS] Response status:', response.status);
+    
     if (response.ok) {
+      console.log('[RANCHOS] Rancho guardado exitosamente');
       cerrarModal('modal-rancho');
-      cargarDatos();
+      // Agregar delay para permitir que la transacción se comprometa
+      setTimeout(() => cargarDatos(), 500);
     } else {
       const error = await response.json();
+      console.error('[RANCHOS] Error al guardar rancho:', error);
       alert('Error al guardar rancho: ' + (error.message || 'Error desconocido'));
     }
   } catch (error) {
-    console.error('Error al guardar rancho:', error);
+    console.error('[RANCHOS] Error al guardar rancho:', error);
     alert('Error de conexión al guardar rancho');
   }
 }
 
 async function guardarSeccion(event) {
   event.preventDefault();
+  console.log('[RANCHOS] Guardando sección...');
   
   const seccionId = document.getElementById('seccion-id').value;
+  const ranchoId = document.getElementById('seccion-ranchoId').value;
   const seccionData = {
-    nombre: document.getElementById('seccion-nombre').value,
-    ranchoId: document.getElementById('seccion-ranchoId').value
+    nombre: document.getElementById('seccion-nombre').value
   };
+  
+  console.log('[RANCHOS] Datos de la sección:', seccionData, 'ranchoId:', ranchoId);
   
   try {
     const url = seccionId 
       ? `${API_BASE}/secciones/${seccionId}`
-      : `${API_BASE}/secciones`;
+      : `${API_BASE}/ranchos/${ranchoId}/secciones`;
     
     const method = seccionId ? 'PUT' : 'POST';
+    
+    console.log('[RANCHOS] Enviando', method, 'a', url);
     
     const response = await fetch(url, {
       method: method,
@@ -374,37 +413,51 @@ async function guardarSeccion(event) {
       body: JSON.stringify(seccionData)
     });
     
+    console.log('[RANCHOS] Response status:', response.status);
+    
     if (response.ok) {
+      console.log('[RANCHOS] Sección guardada exitosamente');
       cerrarModal('modal-seccion');
       cargarDatos();
     } else {
       const error = await response.json();
+      console.error('[RANCHOS] Error al guardar sección:', error);
       alert('Error al guardar sección: ' + (error.message || 'Error desconocido'));
     }
   } catch (error) {
-    console.error('Error al guardar sección:', error);
+    console.error('[RANCHOS] Error al guardar sección:', error);
     alert('Error de conexión al guardar sección');
   }
 }
 
 async function guardarPotrero(event) {
   event.preventDefault();
+  console.log('[RANCHOS] Guardando potrero...');
   
   const potreroId = document.getElementById('potrero-id').value;
+  const ranchoId = document.getElementById('potrero-ranchoId').value;
+  const seccionId = document.getElementById('potrero-seccionId').value || null;
   const potreroData = {
     nombre: document.getElementById('potrero-nombre').value,
     hectareas: parseFloat(document.getElementById('potrero-hectareas').value),
-    tipoPasto: document.getElementById('potrero-tipoPasto').value,
-    ranchoId: document.getElementById('potrero-ranchoId').value,
-    seccionId: document.getElementById('potrero-seccionId').value || null
+    tipoPasto: document.getElementById('potrero-tipoPasto').value
   };
   
+  console.log('[RANCHOS] Datos del potrero:', potreroData, 'ranchoId:', ranchoId, 'seccionId:', seccionId);
+  
   try {
-    const url = potreroId 
-      ? `${API_BASE}/potreros/${potreroId}`
-      : `${API_BASE}/potreros`;
+    let url;
+    if (potreroId) {
+      url = `${API_BASE}/potreros/${potreroId}`;
+    } else if (seccionId) {
+      url = `${API_BASE}/secciones/${seccionId}/potreros`;
+    } else {
+      url = `${API_BASE}/ranchos/${ranchoId}/potreros`;
+    }
     
     const method = potreroId ? 'PUT' : 'POST';
+    
+    console.log('[RANCHOS] Enviando', method, 'a', url);
     
     const response = await fetch(url, {
       method: method,
@@ -412,15 +465,19 @@ async function guardarPotrero(event) {
       body: JSON.stringify(potreroData)
     });
     
+    console.log('[RANCHOS] Response status:', response.status);
+    
     if (response.ok) {
+      console.log('[RANCHOS] Potrero guardado exitosamente');
       cerrarModal('modal-potrero');
       cargarDatos();
     } else {
       const error = await response.json();
+      console.error('[RANCHOS] Error al guardar potrero:', error);
       alert('Error al guardar potrero: ' + (error.message || 'Error desconocido'));
     }
   } catch (error) {
-    console.error('Error al guardar potrero:', error);
+    console.error('[RANCHOS] Error al guardar potrero:', error);
     alert('Error de conexión al guardar potrero');
   }
 }

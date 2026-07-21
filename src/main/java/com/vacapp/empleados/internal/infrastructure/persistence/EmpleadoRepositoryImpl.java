@@ -57,4 +57,9 @@ public class EmpleadoRepositoryImpl implements EmpleadoRepository {
         EmpleadoEntity entity = mapper.toEntity(empleado);
         jpaRepository.save(entity);
     }
+
+    @Override
+    public void eliminar(String id, String tenantId) {
+        jpaRepository.deleteById(id);
+    }
 }

@@ -33,7 +33,7 @@ public class JwtTokenProvider implements GeneradorDeToken {
     }
 
     /**
-     * Genera un token JWT con los claims: sub (username), role y tenantId.
+     * Genera un token JWT con los claims: sub (username), userId, role y tenantId.
      */
     @Override
     public String generar(DatosToken datos) {
@@ -42,12 +42,20 @@ public class JwtTokenProvider implements GeneradorDeToken {
 
         return Jwts.builder()
                 .subject(datos.username())
+                .claim("userId", datos.userId())
                 .claim("role", datos.role())
                 .claim("tenantId", datos.tenantId())
                 .issuedAt(ahora)
                 .expiration(expiracion)
                 .signWith(claveSecreta)
                 .compact();
+    }
+
+    /**
+     * Extrae el userId del token.
+     */
+    public String extraerUserId(String token) {
+        return parsearClaims(token).get("userId", String.class);
     }
 
     /**

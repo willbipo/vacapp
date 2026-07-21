@@ -25,5 +25,7 @@ public record EmpleadoRequest(
     String rol,
 
     @NotBlank(message = "El estado no puede estar vacío")
-    String estado
+    String estado,
+
+    String ranchoId
 ) {}

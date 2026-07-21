@@ -248,11 +248,22 @@ CREATE TABLE IF NOT EXISTS empleados (
     estado                VARCHAR(50)  NOT NULL DEFAULT 'PENDIENTE',
     fecha_registro        DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion   DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    rancho_id             CHAR(36),
     tenant_id             VARCHAR(100) NOT NULL,
     UNIQUE KEY uk_email_tenant (email, tenant_id),
     INDEX idx_empleados_tenant (tenant_id),
-    INDEX idx_empleados_estado (estado)
+    INDEX idx_empleados_estado (estado),
+    INDEX idx_empleados_rancho (rancho_id),
+    CONSTRAINT fk_empleados_rancho FOREIGN KEY (rancho_id) REFERENCES ranchos(id) ON DELETE SET NULL
 );
+
+-- Migración: agrega rancho_id si la tabla ya existía sin esa columna
+ALTER TABLE empleados
+    ADD COLUMN IF NOT EXISTS rancho_id CHAR(36) AFTER fecha_actualizacion;
+
+-- Migración: agrega índice si no existe
+ALTER TABLE empleados
+    ADD INDEX IF NOT EXISTS idx_empleados_rancho (rancho_id);
 
 CREATE TABLE IF NOT EXISTS empleados_ranchos (
     id                    CHAR(36)     NOT NULL PRIMARY KEY,
@@ -268,4 +279,18 @@ CREATE TABLE IF NOT EXISTS empleados_ranchos (
     INDEX idx_empleados_ranchos_rancho (rancho_id),
     CONSTRAINT fk_empleado_rancho_empleado FOREIGN KEY (empleado_id) REFERENCES empleados(id) ON DELETE CASCADE,
     CONSTRAINT fk_empleado_rancho_rancho FOREIGN KEY (rancho_id) REFERENCES ranchos(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS rancho_asignaciones (
+    id                    CHAR(36)     NOT NULL PRIMARY KEY,
+    usuario_id            CHAR(36)     NOT NULL,
+    rancho_id             CHAR(36)     NOT NULL,
+    fecha_asignacion      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    tenant_id             VARCHAR(100) NOT NULL,
+    UNIQUE KEY uk_usuario_rancho (usuario_id, rancho_id),
+    INDEX idx_rancho_asignaciones_tenant (tenant_id),
+    INDEX idx_rancho_asignaciones_usuario (usuario_id),
+    INDEX idx_rancho_asignaciones_rancho (rancho_id),
+    CONSTRAINT fk_rancho_asignacion_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    CONSTRAINT fk_rancho_asignacion_rancho FOREIGN KEY (rancho_id) REFERENCES ranchos(id) ON DELETE CASCADE
 );

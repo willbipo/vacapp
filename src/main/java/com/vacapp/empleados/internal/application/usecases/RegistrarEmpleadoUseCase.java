@@ -25,12 +25,13 @@ public class RegistrarEmpleadoUseCase {
         String nombre,
         String email,
         String telefono,
-        Rol rol
+        Rol rol,
+        String ranchoId
     ) {
         Empleado empleado = new Empleado(
             UUID.randomUUID().toString(),
             tenantId,
-            null,  // ranchoId: se asigna después si es necesario
+            ranchoId,
             nombre,
             email,
             telefono,

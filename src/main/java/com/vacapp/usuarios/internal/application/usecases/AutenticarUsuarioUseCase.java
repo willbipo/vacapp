@@ -48,7 +48,7 @@ public class AutenticarUsuarioUseCase {
             throw new CredencialesInvalidasException();
         }
 
-        DatosToken datosToken = new DatosToken(usuario.getUsername(), usuario.getRole().name(), usuario.getTenantId());
+        DatosToken datosToken = new DatosToken(usuario.getId().toString(), usuario.getUsername(), usuario.getRole().name(), usuario.getTenantId());
         String token = generadorDeToken.generar(datosToken);
 
         return new ResultadoAutenticacion(token, usuario.getUsername(), usuario.getRole().name(), usuario.getTenantId());

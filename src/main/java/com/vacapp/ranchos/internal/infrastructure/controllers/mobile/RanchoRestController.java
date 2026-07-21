@@ -4,6 +4,9 @@ import com.vacapp.ranchos.internal.application.usecases.*;
 import com.vacapp.ranchos.internal.domain.model.Rancho;
 import com.vacapp.ranchos.internal.infrastructure.controllers.mobile.dtos.RanchoRequest;
 import com.vacapp.ranchos.internal.infrastructure.controllers.mobile.dtos.RanchoResponse;
+import com.vacapp.ranchos.internal.infrastructure.controllers.mobile.dtos.RanchoConJerarquiaResponse;
+import com.vacapp.ranchos.internal.infrastructure.controllers.mobile.dtos.SeccionConPotrerosResponse;
+import com.vacapp.ranchos.internal.infrastructure.controllers.mobile.dtos.PotreroResponse;
 import com.vacapp.ranchos.internal.infrastructure.controllers.mobile.dtos.MensajeResponse;
 import com.vacapp.core.TenantContext;
 import com.vacapp.core.UserContext;
@@ -12,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,17 +29,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RanchoRestController {
     private final RegistrarRanchoUseCase registrarRanchoUseCase;
-    private final ListarRanchosUseCase listarRanchosUseCase;
+    private final ListarRanchosConJerarquiaUseCase listarRanchosConJerarquiaUseCase;
     private final ActualizarRanchoUseCase actualizarRanchoUseCase;
     private final ObtenerRanchoUseCase obtenerRanchoUseCase;
     private final EliminarRanchoUseCase eliminarRanchoUseCase;
 
     @PostMapping
+    @Transactional
     public ResponseEntity<RanchoResponse> registrarRancho(
         @Valid @RequestBody RanchoRequest request,
         Authentication auth
     ) {
         try {
+            System.out.println("[RANCHOS] POST /api/v1/ranchos - Iniciando registro de rancho");
+            System.out.println("[RANCHOS] Request: " + request.nombre() + ", " + request.descripcion());
+            
             validarPermiso(auth);
             
             String tenantId = TenantContext.obtenerTenant();
@@ -48,6 +56,8 @@ public class RanchoRestController {
                 throw new IllegalArgumentException("No autenticado: usuario no encontrado");
             }
             
+            System.out.println("[RANCHOS] RanchoRestController.registrarRancho - userId: " + userId + ", tenantId: " + tenantId);
+            
             Rancho rancho = registrarRanchoUseCase.ejecutar(
                 tenantId,
                 userId,
@@ -56,22 +66,29 @@ public class RanchoRestController {
                 request.hectareas(),
                 request.ubicacion()
             );
+            
+            System.out.println("[RANCHOS] RanchoRestController - después de guardar, ID: " + rancho.getId());
+            System.out.println("[RANCHOS] RanchoRestController - rancho guardado con userId: " + rancho.getUserId());
+            
             return ResponseEntity.status(HttpStatus.CREATED)
                 .body(mapToResponse(rancho));
         } catch (IllegalArgumentException e) {
+            System.out.println("[RANCHOS] Error en POST: " + e.getMessage());
             throw e;
         }
     }
 
     @GetMapping
-    public ResponseEntity<List<RanchoResponse>> listarRanchos() {
+    public ResponseEntity<List<RanchoConJerarquiaResponse>> listarRanchos() {
         String tenantId = TenantContext.obtenerTenant();
         String userId = UserContext.obtenerUsuario();
         
-        List<Rancho> ranchos = listarRanchosUseCase.ejecutar(userId, tenantId);
+        System.out.println("[RANCHOS] RanchoRestController.listarRanchos - userId: " + userId + ", tenantId: " + tenantId);
+        
+        List<Rancho> ranchos = listarRanchosConJerarquiaUseCase.ejecutar(userId, tenantId);
         return ResponseEntity.ok(
             ranchos.stream()
-                .map(this::mapToResponse)
+                .map(this::mapToJerarquiaResponse)
                 .toList()
         );
     }
@@ -140,6 +157,56 @@ public class RanchoRestController {
             rancho.getUbicacion(),
             rancho.getFechaRegistro(),
             rancho.getFechaActualizacion()
+        );
+    }
+
+    private RanchoConJerarquiaResponse mapToJerarquiaResponse(Rancho rancho) {
+        List<SeccionConPotrerosResponse> seccionesResponse = rancho.getSecciones().stream()
+            .map(this::mapSeccionToResponse)
+            .toList();
+        
+        List<PotreroResponse> potrerosDirectosResponse = rancho.getPotrerosDirectos().stream()
+            .map(this::mapPotreroToResponse)
+            .toList();
+        
+        return new RanchoConJerarquiaResponse(
+            rancho.getId(),
+            rancho.getNombre(),
+            rancho.getDescripcion(),
+            rancho.getHectareas(),
+            rancho.getUbicacion(),
+            rancho.calcularHectareasEnUso(),
+            seccionesResponse,
+            potrerosDirectosResponse,
+            rancho.getFechaRegistro(),
+            rancho.getFechaActualizacion()
+        );
+    }
+
+    private SeccionConPotrerosResponse mapSeccionToResponse(com.vacapp.ranchos.internal.domain.model.Seccion seccion) {
+        List<PotreroResponse> potrerosResponse = seccion.getPotreros().stream()
+            .map(this::mapPotreroToResponse)
+            .toList();
+        
+        return new SeccionConPotrerosResponse(
+            seccion.getId(),
+            seccion.getRanchoId(),
+            seccion.getNombre(),
+            seccion.calcularHectareasTotales(),
+            potrerosResponse
+        );
+    }
+
+    private PotreroResponse mapPotreroToResponse(com.vacapp.ranchos.internal.domain.model.Potrero potrero) {
+        return new PotreroResponse(
+            potrero.getId(),
+            potrero.getRanchoId(),
+            potrero.getSeccionId().orElse(null),
+            potrero.getNombre(),
+            potrero.getHectareas(),
+            potrero.getTipoPasto(),
+            null,
+            null
         );
     }
 

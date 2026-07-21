@@ -3,8 +3,8 @@ package com.vacapp.ranchos.internal.application.usecases;
 import com.vacapp.ranchos.internal.domain.model.Rancho;
 import com.vacapp.ranchos.internal.domain.repository.RanchoRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -12,9 +12,9 @@ import java.util.UUID;
 /**
  * Caso de uso: Registrar un nuevo rancho.
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class RegistrarRanchoUseCase {
     private final RanchoRepository ranchoRepository;
 
@@ -26,6 +26,8 @@ public class RegistrarRanchoUseCase {
         Double hectareas,
         String ubicacion
     ) {
+        log.info("[RANCHOS] RegistrarRanchoUseCase - userId: {}, tenantId: {}, nombre: {}", userId, tenantId, nombre);
+        
         Rancho rancho = new Rancho(
             UUID.randomUUID().toString(),
             tenantId,
@@ -37,6 +39,10 @@ public class RegistrarRanchoUseCase {
             LocalDateTime.now(),
             LocalDateTime.now()
         );
-        return ranchoRepository.guardar(rancho);
+        
+        Rancho guardado = ranchoRepository.guardar(rancho);
+        log.info("[RANCHOS] Rancho guardado con ID: {}", guardado.getId());
+        
+        return guardado;
     }
 }

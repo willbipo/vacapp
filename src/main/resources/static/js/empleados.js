@@ -56,6 +56,14 @@ function poblarSelectRanchos(ranchos) {
   const filtroSelect = document.getElementById('filtro-rancho');
   const modalSelect = document.getElementById('empleado-rancho');
   
+  // Limpiar opciones existentes (excepto la primera que es el placeholder)
+  while (filtroSelect.options.length > 1) {
+    filtroSelect.remove(1);
+  }
+  while (modalSelect.options.length > 1) {
+    modalSelect.remove(1);
+  }
+  
   ranchos.forEach(rancho => {
     const option = document.createElement('option');
     option.value = rancho.id;

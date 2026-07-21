@@ -10,6 +10,7 @@ package com.vacapp.core;
 public final class UserContext {
 
     private static final ThreadLocal<String> usuarioActual = new ThreadLocal<>();
+    private static final ThreadLocal<String> rolActual = new ThreadLocal<>();
 
     private UserContext() {}
 
@@ -26,8 +27,22 @@ public final class UserContext {
         return usuarioActual.get();
     }
 
+    /** Establece el rol del usuario para la petición actual. */
+    public static void establecerRol(String rol) {
+        rolActual.set(rol);
+    }
+
+    /**
+     * Retorna el rol del usuario autenticado en el hilo actual.
+     * Retorna {@code null} si no hay ningún rol configurado.
+     */
+    public static String obtenerRol() {
+        return rolActual.get();
+    }
+
     /** Elimina el usuario del contexto del hilo actual. Llamar siempre en el bloque finally del filtro. */
     public static void limpiar() {
         usuarioActual.remove();
+        rolActual.remove();
     }
 }

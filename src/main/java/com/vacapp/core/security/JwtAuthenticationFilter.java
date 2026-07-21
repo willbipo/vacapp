@@ -40,6 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = extraerTokenDeCabecera(request);
 
             if (StringUtils.hasText(token) && jwtTokenProvider.esValido(token)) {
+                String userId = jwtTokenProvider.extraerUserId(token);
                 String username = jwtTokenProvider.extraerUsername(token);
                 String role = jwtTokenProvider.extraerRole(token);
                 String tenantId = jwtTokenProvider.extraerTenantId(token);
@@ -52,8 +53,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Configura el contexto de multi-tenancy
                 TenantContext.establecerTenant(tenantId);
                 
-                // Configura el contexto del usuario (username como identificador)
-                UserContext.establecerUsuario(username);
+                // Configura el contexto del usuario (userId UUID como identificador)
+                UserContext.establecerUsuario(userId);
+                UserContext.establecerRol(role);
             }
         } catch (Exception e) {
             log.error("Error al procesar el token JWT: {}", e.getMessage());

@@ -9,6 +9,7 @@ import com.vacapp.empleados.internal.infrastructure.controllers.mobile.dtos.Empl
 import com.vacapp.empleados.internal.infrastructure.controllers.mobile.dtos.MensajeResponse;
 import com.vacapp.empleados.internal.infrastructure.services.EmailService;
 import com.vacapp.core.TenantContext;
+import com.vacapp.ranchos.internal.application.usecases.ObtenerRanchoUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,9 @@ public class EmpleadoRestController {
     private final ListarEmpleadosUseCase listarEmpleadosUseCase;
     private final ActualizarEmpleadoUseCase actualizarEmpleadoUseCase;
     private final ObtenerEmpleadoUseCase obtenerEmpleadoUseCase;
+    private final EliminarEmpleadoUseCase eliminarEmpleadoUseCase;
     private final EmailService emailService;
+    private final ObtenerRanchoUseCase obtenerRanchoUseCase;
 
     @PostMapping
     public ResponseEntity<EmpleadoResponse> registrarEmpleado(
@@ -61,7 +64,8 @@ public class EmpleadoRestController {
                 request.nombre(),
                 request.email(),
                 request.telefono(),
-                rolSolicitado
+                rolSolicitado,
+                request.ranchoId()
             );
             return ResponseEntity.status(HttpStatus.CREATED)
                 .body(mapToResponse(empleado));
@@ -90,6 +94,13 @@ public class EmpleadoRestController {
         );
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<EmpleadoResponse> obtenerEmpleado(@PathVariable String id) {
+        String tenantId = TenantContext.obtenerTenant();
+        Empleado empleado = obtenerEmpleadoUseCase.ejecutar(id, tenantId);
+        return ResponseEntity.ok(mapToResponse(empleado));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<EmpleadoResponse> actualizarEmpleado(
         @PathVariable String id,
@@ -103,9 +114,17 @@ public class EmpleadoRestController {
             request.email(),
             request.telefono(),
             Rol.valueOf(request.rol()),
-            Estado.valueOf(request.estado())
+            Estado.valueOf(request.estado()),
+            request.ranchoId()
         );
         return ResponseEntity.ok(mapToResponse(empleado));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarEmpleado(@PathVariable String id) {
+        String tenantId = TenantContext.obtenerTenant();
+        eliminarEmpleadoUseCase.ejecutar(id, tenantId);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/enviar-invitacion")
@@ -123,6 +142,19 @@ public class EmpleadoRestController {
     }
 
     private EmpleadoResponse mapToResponse(Empleado empleado) {
+        String ranchoNombre = null;
+        
+        if (empleado.getRanchoId() != null && !empleado.getRanchoId().isBlank()) {
+            try {
+                String tenantId = TenantContext.obtenerTenant();
+                var rancho = obtenerRanchoUseCase.ejecutar(empleado.getRanchoId(), tenantId);
+                ranchoNombre = rancho.getNombre();
+            } catch (Exception e) {
+                // Si no se puede obtener el rancho, dejar como null
+                ranchoNombre = null;
+            }
+        }
+        
         return new EmpleadoResponse(
             empleado.getId(),
             empleado.getNombre(),
@@ -130,7 +162,9 @@ public class EmpleadoRestController {
             empleado.getTelefono(),
             empleado.getRol().name(),
             empleado.getEstado().name(),
-            empleado.getFechaRegistro()
+            empleado.getFechaRegistro(),
+            empleado.getRanchoId(),
+            ranchoNombre
         );
     }
 

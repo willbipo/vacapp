@@ -56,6 +56,33 @@ paths:
           description: No autenticado
 
   /api/v1/empleados/{id}:
+    get:
+      tags:
+        - Empleados
+      operationId: obtenerEmpleado
+      summary: Obtener empleado
+      description: Obtiene un empleado específico por ID del tenant autenticado
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Identificador único del empleado
+          example: 1f5644fb-7ae1-4f87-8b07-8a2036e28cd1
+      responses:
+        '200':
+          description: Empleado encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmpleadoResponse'
+        '401':
+          description: No autenticado
+        '404':
+          description: Empleado no encontrado
+
     put:
       tags:
         - Empleados
@@ -86,6 +113,29 @@ paths:
                 $ref: '#/components/schemas/EmpleadoResponse'
         '400':
           description: Datos inválidos
+        '401':
+          description: No autenticado
+        '404':
+          description: Empleado no encontrado
+
+    delete:
+      tags:
+        - Empleados
+      operationId: eliminarEmpleado
+      summary: Eliminar empleado
+      description: Elimina un empleado del tenant autenticado
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Identificador único del empleado
+          example: 1f5644fb-7ae1-4f87-8b07-8a2036e28cd1
+      responses:
+        '204':
+          description: Empleado eliminado
         '401':
           description: No autenticado
         '404':

@@ -190,10 +190,15 @@ INSERT IGNORE INTO potreros (id, rancho_id, seccion_id, nombre, hectareas, tipo_
 --  EMPLEADOS PARA RANCHO 1 (Santa María)
 -- ============================================================
 
-INSERT IGNORE INTO empleados (id, nombre, email, telefono, rol, estado, fecha_registro, fecha_actualizacion, tenant_id) VALUES 
-    ('e60e8400-e29b-41d4-a716-446655440001', 'María García López', 'maria.garcia@vacapp.test', '3001234567', 'DOCTOR', 'ACTIVO', NOW(), NOW(), 'default'),
-    ('e60e8400-e29b-41d4-a716-446655440002', 'Juan Pérez Rodríguez', 'juan.perez@vacapp.test', '3011234567', 'WORKER', 'ACTIVO', NOW(), NOW(), 'default'),
-    ('e60e8400-e29b-41d4-a716-446655440003', 'Carlos López Martínez', 'carlos.lopez@vacapp.test', '3012345678', 'WORKER', 'PENDIENTE', NOW(), NOW(), 'default');
+INSERT IGNORE INTO empleados (id, nombre, email, telefono, rol, estado, fecha_registro, fecha_actualizacion, rancho_id, tenant_id) VALUES 
+    ('e60e8400-e29b-41d4-a716-446655440001', 'María García López', 'maria.garcia@vacapp.test', '3001234567', 'DOCTOR', 'ACTIVO', NOW(), NOW(), 'r60e8400-e29b-41d4-a716-446655440001', 'default'),
+    ('e60e8400-e29b-41d4-a716-446655440002', 'Juan Pérez Rodríguez', 'juan.perez@vacapp.test', '3011234567', 'WORKER', 'ACTIVO', NOW(), NOW(), 'r60e8400-e29b-41d4-a716-446655440001', 'default'),
+    ('e60e8400-e29b-41d4-a716-446655440003', 'Carlos López Martínez', 'carlos.lopez@vacapp.test', '3012345678', 'WORKER', 'PENDIENTE', NOW(), NOW(), 'r60e8400-e29b-41d4-a716-446655440001', 'default');
+
+-- Migración: actualizar rancho_id para empleados existentes
+UPDATE empleados SET rancho_id = 'r60e8400-e29b-41d4-a716-446655440001' 
+WHERE id IN ('e60e8400-e29b-41d4-a716-446655440001', 'e60e8400-e29b-41d4-a716-446655440002', 'e60e8400-e29b-41d4-a716-446655440003') 
+AND rancho_id IS NULL;
 
 -- Asignar empleados al Rancho Santa María
 INSERT IGNORE INTO empleados_ranchos (id, empleado_id, rancho_id, fecha_asignacion, fecha_fin_asignacion, activo, tenant_id) VALUES 
@@ -205,10 +210,15 @@ INSERT IGNORE INTO empleados_ranchos (id, empleado_id, rancho_id, fecha_asignaci
 --  EMPLEADOS PARA RANCHO 2 (Los Altos)
 -- ============================================================
 
-INSERT IGNORE INTO empleados (id, nombre, email, telefono, rol, estado, fecha_registro, fecha_actualizacion, tenant_id) VALUES 
-    ('e60e8400-e29b-41d4-a716-446655440004', 'Dr. Luis Fernando Sánchez', 'luis.sanchez@vacapp.test', '3023456789', 'DOCTOR', 'ACTIVO', NOW(), NOW(), 'default'),
-    ('e60e8400-e29b-41d4-a716-446655440005', 'Jorge Hernández García', 'jorge.hernandez@vacapp.test', '3034567890', 'WORKER', 'ACTIVO', NOW(), NOW(), 'default'),
-    ('e60e8400-e29b-41d4-a716-446655440006', 'Patricia Estrada Morales', 'patricia.estrada@vacapp.test', '3045678901', 'WORKER', 'ACTIVO', NOW(), NOW(), 'default');
+INSERT IGNORE INTO empleados (id, nombre, email, telefono, rol, estado, fecha_registro, fecha_actualizacion, rancho_id, tenant_id) VALUES 
+    ('e60e8400-e29b-41d4-a716-446655440004', 'Dr. Luis Fernando Sánchez', 'luis.sanchez@vacapp.test', '3023456789', 'DOCTOR', 'ACTIVO', NOW(), NOW(), 'r60e8400-e29b-41d4-a716-446655440002', 'default'),
+    ('e60e8400-e29b-41d4-a716-446655440005', 'Jorge Hernández García', 'jorge.hernandez@vacapp.test', '3034567890', 'WORKER', 'ACTIVO', NOW(), NOW(), 'r60e8400-e29b-41d4-a716-446655440002', 'default'),
+    ('e60e8400-e29b-41d4-a716-446655440006', 'Patricia Estrada Morales', 'patricia.estrada@vacapp.test', '3045678901', 'WORKER', 'ACTIVO', NOW(), NOW(), 'r60e8400-e29b-41d4-a716-446655440002', 'default');
+
+-- Migración: actualizar rancho_id para empleados existentes
+UPDATE empleados SET rancho_id = 'r60e8400-e29b-41d4-a716-446655440002' 
+WHERE id IN ('e60e8400-e29b-41d4-a716-446655440004', 'e60e8400-e29b-41d4-a716-446655440005', 'e60e8400-e29b-41d4-a716-446655440006') 
+AND rancho_id IS NULL;
 
 -- Asignar empleados al Rancho Los Altos
 INSERT IGNORE INTO empleados_ranchos (id, empleado_id, rancho_id, fecha_asignacion, fecha_fin_asignacion, activo, tenant_id) VALUES 

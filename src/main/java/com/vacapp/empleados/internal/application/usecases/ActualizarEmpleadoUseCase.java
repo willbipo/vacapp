@@ -27,7 +27,8 @@ public class ActualizarEmpleadoUseCase {
         String email,
         String telefono,
         Rol rol,
-        Estado estado
+        Estado estado,
+        String ranchoId
     ) {
         Empleado empleado = empleadoRepository.obtenerPorId(id, tenantId)
             .orElseThrow(() -> new EmpleadoNoEncontradoException(id));
@@ -37,6 +38,7 @@ public class ActualizarEmpleadoUseCase {
         empleado.setTelefono(telefono);
         empleado.setRol(rol);
         empleado.setEstado(estado);
+        empleado.setRanchoId(ranchoId);
         empleado.setFechaActualizacion(LocalDateTime.now());
 
         empleadoRepository.actualizar(empleado);

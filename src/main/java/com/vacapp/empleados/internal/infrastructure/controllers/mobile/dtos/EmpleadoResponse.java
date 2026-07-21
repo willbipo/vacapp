@@ -12,5 +12,7 @@ public record EmpleadoResponse(
     String telefono,
     String rol,
     String estado,
-    LocalDateTime fechaRegistro
+    LocalDateTime fechaRegistro,
+    String ranchoId,
+    String ranchoNombre
 ) {}

@@ -14,4 +14,5 @@ public interface EmpleadoRepository {
     List<Empleado> obtenerPorRancho(String ranchoId, String tenantId);  // Filtrar por rancho
     Optional<Empleado> obtenerPorEmail(String email, String tenantId);
     void actualizar(Empleado empleado);
+    void eliminar(String id, String tenantId);
 }
